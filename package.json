@@ -1,0 +1,35 @@
+{
+  "name": "quill-delta",
+  "version": "0.0.1",
+  "description": "Delta format for representing documents and changes in Quill",
+  "author": "Jason Chen <jhchen7@gmail.com>",
+  "homepage": "http://quilljs.com",
+  "main": "index.js",
+  "devDependencies": {
+    "chai": "~1.9.1",
+    "grunt": "~0.4.5",
+    "istanbul": "~0.3.0",
+    "mocha": "~1.21.4"
+  },
+  "engines": {
+    "node": ">=0.10"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quilljs/delta"
+  },
+  "bugs": {
+    "url": "https://github.com/quilljs/delta/issues"
+  },
+  "keywords": [
+    "quill",
+    "quilljs",
+    "ot",
+    "operational transform",
+    "delta"
+  ]
+}
