@@ -1,4 +1,4 @@
-var Delta = require('../index');
+var Delta = require('../../lib/delta');
 var expect = require('chai').expect;
 
 

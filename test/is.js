@@ -3,20 +3,6 @@ var expect = require('chai').expect;
 
 
 describe('is', function() {
-  describe('array', function() {
-    it('literal', function() {
-      expect(is.array([])).to.equal(true);
-    });
-
-    it('instance', function() {
-      expect(is.array(new Array())).to.equal(true);
-    });
-
-    it('null', function() {
-      expect(is.array(null)).to.equal(false);
-    });
-  });
-
   describe('equal', function() {
     it('exact objects', function() {
       var obj = { a: 1, b: true, c: 'test' };
@@ -47,6 +33,20 @@ describe('is', function() {
 
     it('existing with nonexisting', function() {
       expect(is.equal({}, null)).to.equal(false);
+    });
+  });
+
+  describe('array', function() {
+    it('literal', function() {
+      expect(is.array([])).to.equal(true);
+    });
+
+    it('instance', function() {
+      expect(is.array(new Array())).to.equal(true);
+    });
+
+    it('null', function() {
+      expect(is.array(null)).to.equal(false);
     });
   });
 

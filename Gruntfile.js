@@ -2,7 +2,8 @@ module.exports = function(grunt) {
   // Define to control testing order
   var tests = [
     'test/is.js',
-    'test/builder.js'
+    'test/op.js',
+    'test/delta/builder.js'
   ];
 
   grunt.registerTask('coverage', function() {
