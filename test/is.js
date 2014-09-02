@@ -83,8 +83,8 @@ describe('is', function() {
     });
 
     it('instance', function() {
-      function delta() {};
-      expect(is.object(delta)).to.equal(true);
+      function obj() {};
+      expect(is.object(new obj)).to.equal(true);
     });
 
     it('string literal', function() {
