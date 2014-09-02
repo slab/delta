@@ -4,6 +4,7 @@ module.exports = function (grunt) {
     'test/is.js',
     'test/op.js',
     'test/delta/builder.js',
+    'test/delta/helpers.js',
     'test/delta/compose.js'
   ];
 
