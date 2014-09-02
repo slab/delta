@@ -112,7 +112,7 @@ describe('op', function() {
         expect(iter.next()).to.deep.equal(this.delta.ops[i]);
       }
       expect(iter.next()).to.deep.equal({ retain: Infinity });
-      // Rerun to test multiple past end next calls
+      expect(iter.next(4)).to.deep.equal({ retain: 4 });
       expect(iter.next()).to.deep.equal({ retain: Infinity });
     });
 

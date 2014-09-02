@@ -3,7 +3,8 @@ module.exports = function(grunt) {
   var tests = [
     'test/is.js',
     'test/op.js',
-    'test/delta/builder.js'
+    'test/delta/builder.js',
+    'test/delta/compose.js'
   ];
 
   grunt.registerTask('coverage', function() {
