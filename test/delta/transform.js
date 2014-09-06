@@ -6,12 +6,12 @@ describe('transform', function () {
   it('insert + insert', function () {
     var a1 = new Delta().insert('A');
     var b1 = new Delta().insert('B');
-    var a2 = new Delta().insert('A');
-    var b2 = new Delta().insert('B');
-    var left = new Delta().retain(1).insert('B');
-    var right = new Delta().insert('B');
-    expect(a1.transform(b1, true)).to.deep.equal(left);
-    expect(a2.transform(b2, false)).to.deep.equal(right);
+    var a2 = new Delta(a1);
+    var b2 = new Delta(b1);
+    var expected1 = new Delta().retain(1).insert('B');
+    var expected2 = new Delta().insert('B');
+    expect(a1.transform(b1, true)).to.deep.equal(expected1);
+    expect(a2.transform(b2, false)).to.deep.equal(expected2);
   });
 
   it('insert + retain', function () {
@@ -68,5 +68,49 @@ describe('transform', function () {
     var b = new Delta().delete(-1);
     var expected = new Delta().delete(-1);
     expect(a.transform(b, true)).to.deep.equal(expected);
+  });
+
+  it('alternating edits', function () {
+    var a1 = new Delta().retain(2).insert('si').delete(5);
+    var b1 = new Delta().retain(1).insert('e').delete(5).retain(1).insert('ow');
+    var a2 = new Delta(a1);
+    var b2 = new Delta(b1);
+    var expected1 = new Delta().retain(1).insert('e').delete(1).retain(2).insert('ow');
+    var expected2 = new Delta().retain(2).insert('si').delete(1);
+    expect(a1.transform(b1, false)).to.deep.equal(expected1);
+    expect(b2.transform(a2, false)).to.deep.equal(expected2);
+  });
+
+  it('conflicting appends', function () {
+    var a1 = new Delta().retain(3).insert('aa');
+    var b1 = new Delta().retain(3).insert('bb');
+    var a2 = new Delta(a1);
+    var b2 = new Delta(b1);
+    var expected1 = new Delta().retain(5).insert('bb');
+    var expected2 = new Delta().retain(3).insert('aa');
+    expect(a1.transform(b1, true)).to.deep.equal(expected1);
+    expect(b2.transform(a2, false)).to.deep.equal(expected2);
+  });
+
+  it('prepend + append', function () {
+    var a1 = new Delta().insert('aa');
+    var b1 = new Delta().retain(3).insert('bb');
+    var expected1 = new Delta().retain(5).insert('bb');
+    var a2 = new Delta(a1);
+    var b2 = new Delta(b1);
+    var expected2 = new Delta().insert('aa');
+    expect(a1.transform(b1, false)).to.deep.equal(expected1);
+    expect(b2.transform(a2, false)).to.deep.equal(expected2);
+  });
+
+  it('trailing deletes with differing lengths', function () {
+    var a1 = new Delta().retain(2).delete(1);
+    var b1 = new Delta().delete(3);
+    var expected1 = new Delta().delete(2);
+    var a2 = new Delta(a1);
+    var b2 = new Delta(b1);
+    var expected2 = new Delta();
+    expect(a1.transform(b1, false)).to.deep.equal(expected1);
+    expect(b2.transform(a2, false)).to.deep.equal(expected2);
   });
 });
