@@ -1,16 +1,22 @@
 {
-  "name": "quillot",
-  "version": "0.0.0",
-  "description": "",
-  "main": "tandem.js",
+  "name": "ot-rich-text",
+  "version": "0.0.1",
+  "description": "OT type for rich text",
+  "main": "lib/rich-text.js",
   "dependencies": {
-    "tandem-core": "~0.6.1",
-    "ottypes": "~1.0.1"
+    "quill-delta": "*"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "~1.21.4",
+    "ot-fuzzer": "~1.0.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha test/fuzzer.js"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Jason Chen <jhchen7@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ottypes/rich-text/issues"
+  },
+  "homepage": "https://github.com/ottypes/rich-text"
 }
