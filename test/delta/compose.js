@@ -83,6 +83,13 @@ describe('compose', function () {
     expect(b.compose(deleteFirst)).to.deep.equal(expected);
   });
 
+  it('insert embed', function () {
+    var a = new Delta().insert({ src: 'http://quilljs.com/image.png' });
+    var b = new Delta().retain(1, { alt: 'logo' });
+    var expected = new Delta().insert({ src: 'http://quilljs.com/image.png', alt: 'logo' });
+    expect(a.compose(b)).to.deep.equal(expected);
+  });
+
   it('delete entire text', function () {
     var a = new Delta().retain(4).insert('Hello');
     var b = new Delta().delete(-9);

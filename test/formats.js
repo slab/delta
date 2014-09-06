@@ -8,7 +8,11 @@ describe('format', function () {
       bold: true,
       color: 'red',
       italic: null
-    }
+    };
+
+    it('undefined', function () {
+      expect(op.format.clone(undefined)).to.deep.equal({});
+    });
 
     it('keep null', function () {
       var clone = op.format.clone(formats, true);
