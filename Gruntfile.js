@@ -2,10 +2,12 @@ module.exports = function (grunt) {
   // Define to control testing order
   var tests = [
     'test/is.js',
+    'test/formats.js',
     'test/op.js',
     'test/delta/builder.js',
     'test/delta/helpers.js',
-    'test/delta/compose.js'
+    'test/delta/compose.js',
+    'test/delta/transform.js'
   ];
 
   grunt.registerTask('coverage', function () {
