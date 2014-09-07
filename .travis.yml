@@ -3,4 +3,6 @@ node_js: '0.10'
 before_install:
   - npm install -g grunt-cli
 script:
-  - npm test
+  - grunt coverage
+after_success:
+  - grunt coverage:report

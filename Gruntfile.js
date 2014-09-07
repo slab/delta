@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 module.exports = function (grunt) {
   // Define to control testing order
   var tests = [
@@ -16,6 +18,14 @@ module.exports = function (grunt) {
       args: ['cover', './node_modules/.bin/_mocha'].concat(tests).concat(['--dir', '.coverage']),
       opts: { stdio: 'inherit' }
     }, this.async());
+  });
+
+  grunt.registerTask('coverage:report', function () {
+    var file = fs.createReadStream('.coverage/lcov.info');
+    var child = grunt.util.spawn({
+      cmd: './node_modules/coveralls/bin/coveralls.js',
+    }, this.async());
+    file.pipe(child.stdin);
   });
 
   grunt.registerTask('test', function () {
