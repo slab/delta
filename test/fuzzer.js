@@ -4,10 +4,10 @@ var richType = require('../lib/rich-text');
 
 
 var generateRandomOp = function (snapshot) {
-  var op = new Delta().insert('Test');
+  var delta = new Delta().insert('Test');
   var snapshot = new Delta(snapshot);
-  snapshot.insert('Test');
-  return [op, snapshot];
+  var composed = snapshot.compose(delta);
+  return [delta.ops, composed.ops];
 };
 
 fuzzer(richType, generateRandomOp);
