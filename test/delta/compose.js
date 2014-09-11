@@ -62,7 +62,7 @@ describe('compose', function () {
   it('retain + delete', function () {
     var a = new Delta().retain(1, { color: 'blue' });
     var b = new Delta().delete(-1);
-    var expected = new Delta();
+    var expected = new Delta().delete(-1);
     expect(a.compose(b)).to.deep.equal(expected);
   });
 
@@ -93,7 +93,7 @@ describe('compose', function () {
   it('delete entire text', function () {
     var a = new Delta().retain(4).insert('Hello');
     var b = new Delta().delete(-9);
-    var expected = new Delta();
+    var expected = new Delta().delete(-4);
     expect(a.compose(b)).to.deep.equal(expected);
   });
 });
