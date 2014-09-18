@@ -18,6 +18,13 @@ describe('constructor', function () {
     expect(delta.ops.length).to.equal(0);
   });
 
+  it('empty ops', function () {
+    var delta = new Delta().insert('').delete(0).retain(0);
+    expect(delta).to.exist;
+    expect(delta.ops).to.exist;
+    expect(delta.ops.length).to.equal(0);
+  });
+
   it('array of ops', function () {
     var delta = new Delta([
       'abc',

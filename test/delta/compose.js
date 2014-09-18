@@ -96,4 +96,11 @@ describe('compose', function () {
     var expected = new Delta().delete(-4);
     expect(a.compose(b)).to.deep.equal(expected);
   });
+
+  it('retain more than length of text', function () {
+    var a = new Delta().insert('Hello');
+    var b = new Delta().retain(10);
+    var expected = new Delta().insert('Hello');
+    expect(a.compose(b)).to.deep.equal(expected);
+  });
 });
