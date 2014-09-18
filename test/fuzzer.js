@@ -11,11 +11,14 @@ var FORMATS = {
 };
 
 
-var generateRandomFormat = function () {
+var generateRandomFormat = function (includeNull) {
   var format = {};
   for (var key in FORMATS) {
     if (fuzzer.randomReal() < 0.5) {
-      format[key] = FORMATS[key][fuzzer.randomInt(FORMATS[key].length)];
+      var value = FORMATS[key][fuzzer.randomInt(FORMATS[key].length)];
+      if (value || includeNull) {
+        format[key] = value;
+      }
     }
   }
   return Object.keys(format).length > 0 ? format : undefined;
@@ -29,22 +32,31 @@ var generateRandomOp = function (snapshot) {
     return length + (op.insert ? op.insert.length : 1);
   }, 0);
 
-  var base = length > 100 ? 3 : 2; // Favor deleting on long documents
+  var base = length > 100 ? 8 : 6; // Favor deleting on long documents
   var delta = new Delta();
   do {
-    var random = fuzzer.randomInt(base);
     // Allows insert/delete to occur at the end (deletes will be noop)
     var index = fuzzer.randomInt(Math.min(length, 5) + 1);
+    var modLength = Math.min(length, fuzzer.randomInt(4) + 1);
     length -= index;
     delta.retain(index);
-    if (random === 0) {
-      delta.insert(fuzzer.randomWord());
-    } else {
-      var deleteLength = Math.min(length, fuzzer.randomInt(4) + 1);
-      delta.delete(deleteLength);
-      length -= deleteLength;
+    switch (fuzzer.randomInt(base)) {
+      case 0:
+        delta.insert(fuzzer.randomWord());
+        break;
+      case 1:
+        delta.insert(fuzzer.randomWord(), generateRandomFormat(false));
+        break;
+      case 2: case 3:
+        delta.retain(modLength, generateRandomFormat(true));
+        length -= modLength;
+        break;
+      default:
+        delta.delete(modLength);
+        length -= modLength;
+        break;
     }
-  } while (length > 0 && fuzzer.randomInt(4) > 0);
+  } while (length > 0 && fuzzer.randomInt(2) > 0);
 
   var composed = snapshot.compose(delta);
   return [delta.ops, composed.ops];
