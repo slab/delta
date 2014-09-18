@@ -35,7 +35,7 @@ describe('format', function () {
     });
 
     it('both are undefined', function () {
-      expect(op.format.compose(undefined, undefined)).to.deep.equal(undefined);
+      expect(op.format.compose(undefined, undefined)).to.equal(undefined);
     });
 
     it('missing', function () {
@@ -58,6 +58,14 @@ describe('format', function () {
         color: 'red'
       });
     });
+
+    it('remove to none', function () {
+      expect(op.format.compose(format, { bold: null, color: null })).to.equal(undefined);
+    });
+
+    it('remove missing', function () {
+      expect(op.format.compose(format, { italic: null })).to.deep.equal(format);
+    });
   });
 
   describe('transform', function () {
@@ -69,11 +77,11 @@ describe('format', function () {
     });
 
     it('right is undefined', function () {
-      expect(op.format.transform(leftFormat, undefined, false)).to.deep.equal(undefined);
+      expect(op.format.transform(leftFormat, undefined, false)).to.equal(undefined);
     });
 
     it('both are undefined', function () {
-      expect(op.format.transform(undefined, undefined, false)).to.deep.equal(undefined);
+      expect(op.format.transform(undefined, undefined, false)).to.equal(undefined);
     });
 
     it('with priority', function () {
