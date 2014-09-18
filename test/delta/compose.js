@@ -103,4 +103,11 @@ describe('compose', function () {
     var expected = new Delta().insert('Hello');
     expect(a.compose(b)).to.deep.equal(expected);
   });
+
+  it('retain empty embed', function () {
+    var a = new Delta().insert({});
+    var b = new Delta().retain(1);
+    var expected = new Delta().insert({});
+    expect(a.compose(b)).to.deep.equal(expected);
+  });
 });
