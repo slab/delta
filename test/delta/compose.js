@@ -12,7 +12,7 @@ describe('compose', function () {
 
   it('insert + retain', function () {
     var a = new Delta().insert('A');
-    var b = new Delta().retain(1, { bold: true, color: 'red' });
+    var b = new Delta().retain(1, { bold: true, color: 'red', font: null });
     var expected = new Delta().insert('A', { bold: true, color: 'red' });
     expect(a.compose(b)).to.deep.equal(expected);
   });
@@ -54,8 +54,8 @@ describe('compose', function () {
 
   it('retain + retain', function () {
     var a = new Delta().retain(1, { color: 'blue' });
-    var b = new Delta().retain(1, { bold: true, color: 'red' });
-    var expected = new Delta().retain(1, { bold: true, color: 'red' });
+    var b = new Delta().retain(1, { bold: true, color: 'red', font: null });
+    var expected = new Delta().retain(1, { bold: true, color: 'red', font: null });
     expect(a.compose(b)).to.deep.equal(expected);
   });
 
