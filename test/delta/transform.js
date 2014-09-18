@@ -57,10 +57,25 @@ describe('transform', function () {
   });
 
   it('retain + retain', function () {
-    var a = new Delta().retain(1, { color: 'blue' });
-    var b = new Delta().retain(1, { bold: true, color: 'red' });
-    var expected = new Delta().retain(1, { bold: true, color: 'red' });
-    expect(a.transform(b, true)).to.deep.equal(expected);
+    var a1 = new Delta().retain(1, { color: 'blue' });
+    var b1 = new Delta().retain(1, { bold: true, color: 'red' });
+    var a2 = new Delta().retain(1, { color: 'blue' });
+    var b2 = new Delta().retain(1, { bold: true, color: 'red' });
+    var expected1 = new Delta().retain(1, { bold: true });
+    var expected2 = new Delta();
+    expect(a1.transform(b1, true)).to.deep.equal(expected1);
+    expect(b2.transform(a2, true)).to.deep.equal(expected2);
+  });
+
+  it('retain + retain without priority', function () {
+    var a1 = new Delta().retain(1, { color: 'blue' });
+    var b1 = new Delta().retain(1, { bold: true, color: 'red' });
+    var a2 = new Delta().retain(1, { color: 'blue' });
+    var b2 = new Delta().retain(1, { bold: true, color: 'red' });
+    var expected1 = new Delta().retain(1, { bold: true, color: 'red' });
+    var expected2 = new Delta().retain(1, { color: 'blue' });
+    expect(a1.transform(b1, false)).to.deep.equal(expected1);
+    expect(b2.transform(a2, false)).to.deep.equal(expected2);
   });
 
   it('retain + delete', function () {

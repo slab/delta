@@ -32,6 +32,7 @@ describe('format', function () {
 
   describe('compose', function () {
     var format = { bold: true, color: 'red' };
+
     it('left is undefined', function () {
       expect(op.format.compose(undefined, format)).to.deep.equal(format);
     });
@@ -63,6 +64,33 @@ describe('format', function () {
       expect(op.format.compose(format, { bold: null })).to.deep.equal({
         color: 'red'
       });
+    });
+  });
+
+  describe('transform', function () {
+    var leftFormat = { bold: true, color: 'red', font: null };
+    var rightFormat = { color: 'blue', font: 'serif', italic: true };
+
+    it('left is undefined', function () {
+      expect(op.format.transform(undefined, leftFormat, false)).to.deep.equal(leftFormat);
+    });
+
+    it('right is undefined', function () {
+      expect(op.format.transform(leftFormat, undefined, false)).to.deep.equal(undefined);
+    });
+
+    it('both are undefined', function () {
+      expect(op.format.transform(undefined, undefined, false)).to.deep.equal(undefined);
+    });
+
+    it('with priority', function () {
+      expect(op.format.transform(leftFormat, rightFormat, true)).to.deep.equal({
+        italic: true
+      });
+    });
+
+    it('without priority', function () {
+      expect(op.format.transform(leftFormat, rightFormat, false)).to.deep.equal(rightFormat);
     });
   });
 });
