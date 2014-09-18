@@ -32,7 +32,7 @@ var generateRandomOp = function (snapshot) {
     return length + (op.insert ? op.insert.length : 1);
   }, 0);
 
-  var base = length > 100 ? 8 : 6; // Favor deleting on long documents
+  var base = length > 100 ? 10 : 7; // Favor deleting on long documents
   var delta = new Delta();
   do {
     // Allows insert/delete to occur at the end (deletes will be noop)
@@ -42,12 +42,18 @@ var generateRandomOp = function (snapshot) {
     delta.retain(index);
     switch (fuzzer.randomInt(base)) {
       case 0:
+        // Insert plain text
         delta.insert(fuzzer.randomWord());
         break;
       case 1:
+        // Insert formatted text
         delta.insert(fuzzer.randomWord(), generateRandomFormat(false));
         break;
-      case 2: case 3:
+      case 2:
+        // Insert embed
+        delta.insert(generateRandomFormat(false));
+        break;
+      case 3: case 4:
         delta.retain(modLength, generateRandomFormat(true));
         length -= modLength;
         break;
