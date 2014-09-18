@@ -4,23 +4,16 @@ var expect = require('chai').expect;
 
 describe('format', function () {
   describe('clone', function () {
-    var formats = {
-      bold: true,
-      color: 'red',
-      italic: null
-    };
-
     it('undefined', function () {
       expect(op.format.clone(undefined)).to.deep.equal({});
     });
 
-    it('keep null', function () {
-      var clone = op.format.clone(formats, true);
-      expect(clone === formats).to.equal(false);
-      expect(clone).to.deep.equal(formats);
-    });
-
-    it('dont keep null', function () {
+    it('object', function () {
+      var formats = {
+        bold: true,
+        color: 'red',
+        italic: null
+      };
       var clone = op.format.clone(formats, false);
       expect(clone === formats).to.equal(false);
       expect(clone).to.deep.equal({
