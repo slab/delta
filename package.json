@@ -1,16 +1,17 @@
 {
-  "name": "quill-delta",
-  "version": "0.0.1",
-  "description": "Delta format for representing documents and changes in Quill",
+  "name": "rich-text",
+  "version": "0.1.0",
+  "description": "Format for representing rich text documents and changes.",
   "author": "Jason Chen <jhchen7@gmail.com>",
-  "homepage": "http://quilljs.com",
+  "homepage": "https://github.com/ottypes/rich-text",
   "main": "index.js",
   "devDependencies": {
     "chai": "~1.9.1",
     "coveralls": "~2.11.1",
     "grunt": "~0.4.5",
     "istanbul": "~0.3.0",
-    "mocha": "~1.21.4"
+    "mocha": "~1.21.4",
+    "ot-fuzzer": "~1.0.0"
   },
   "engines": {
     "node": ">=0.10"
@@ -21,14 +22,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/quilljs/delta"
+    "url": "https://github.com/ottypes/rich-text"
   },
   "bugs": {
-    "url": "https://github.com/quilljs/delta/issues"
+    "url": "https://github.com/ottypes/rich-text/issues"
   },
   "keywords": [
-    "quill",
-    "quilljs",
+    "rich text",
     "ot",
     "operational transform",
     "delta"
