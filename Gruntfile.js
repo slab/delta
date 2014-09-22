@@ -35,4 +35,12 @@ module.exports = function (grunt) {
       opts: { stdio: 'inherit' }
     }, this.async());
   });
+
+  grunt.registerTask('test:fuzzer', function () {
+    grunt.util.spawn({
+      cmd: './node_modules/.bin/mocha',
+      args: ['test/fuzzer.js'],
+      opts: { stdio: 'inherit' }
+    }, this.async());
+  });
 };

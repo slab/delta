@@ -1,7 +1,6 @@
-var Delta = require('quill-delta');
-Delta.op = require('quill-delta/lib/op');
 var fuzzer = require('ot-fuzzer');
-var richType = require('../lib/rich-text');
+var richType = require('../lib/type');
+var Delta = richType.Delta;
 
 var FORMATS = {
   color: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', null],

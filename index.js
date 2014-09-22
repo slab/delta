@@ -1,1 +1,1 @@
-module.exports = require('./lib/delta');
+module.exports = require('./lib/type');
