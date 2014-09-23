@@ -51,23 +51,22 @@ describe('insert', function () {
   });
 
   it('insert(embed)', function () {
-    var obj = { url: 'http://quilljs.com', alt: 'Quill' };
-    var delta = new Delta().insert(obj);
+    var delta = new Delta().insert(1);
     expect(delta.ops.length).to.equal(1);
-    expect(delta.ops[0]).to.deep.equal({ attributes: obj });
+    expect(delta.ops[0]).to.deep.equal({ insert: 1 });
+  });
+
+  it('insert(embed, attributes)', function () {
+    var obj = { url: 'http://quilljs.com', alt: 'Quill' };
+    var delta = new Delta().insert(1, obj);
+    expect(delta.ops.length).to.equal(1);
+    expect(delta.ops[0]).to.deep.equal({ insert: 1, attributes: obj });
   });
 
   it('insert(text, attributes)', function () {
     var delta = new Delta().insert('test', { bold: true });
     expect(delta.ops.length).to.equal(1);
     expect(delta.ops[0]).to.deep.equal({ insert: 'test', attributes: { bold: true } });
-  });
-
-  it('insert(null, attributes)', function () {
-    var obj = { url: 'http://quilljs.com', alt: 'Quill' };
-    var delta = new Delta().insert(null, obj);
-    expect(delta.ops.length).to.equal(1);
-    expect(delta.ops[0]).to.deep.equal({ attributes: obj });
   });
 });
 

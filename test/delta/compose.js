@@ -84,9 +84,9 @@ describe('compose', function () {
   });
 
   it('insert embed', function () {
-    var a = new Delta().insert({ src: 'http://quilljs.com/image.png' });
+    var a = new Delta().insert(1, { src: 'http://quilljs.com/image.png' });
     var b = new Delta().retain(1, { alt: 'logo' });
-    var expected = new Delta().insert({ src: 'http://quilljs.com/image.png', alt: 'logo' });
+    var expected = new Delta().insert(1, { src: 'http://quilljs.com/image.png', alt: 'logo' });
     expect(a.compose(b)).to.deep.equal(expected);
   });
 
@@ -105,9 +105,9 @@ describe('compose', function () {
   });
 
   it('retain empty embed', function () {
-    var a = new Delta().insert({});
+    var a = new Delta().insert(1);
     var b = new Delta().retain(1);
-    var expected = new Delta().insert({});
+    var expected = new Delta().insert(1);
     expect(a.compose(b)).to.deep.equal(expected);
   });
 });

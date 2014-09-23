@@ -18,13 +18,13 @@ describe('op', function () {
     });
 
     it('insert embed', function () {
-      expect(op.length({})).to.equal(1);
+      expect(op.length({ insert: 2 })).to.equal(1);
     });
   });
 
   describe('iterator', function () {
     beforeEach(function () {
-      this.delta = new Delta().insert('Hello', { bold: true }).retain(3).delete(4).insert({ src: 'http://quilljs.com/' });
+      this.delta = new Delta().insert('Hello', { bold: true }).retain(3).delete(4).insert(2, { src: 'http://quilljs.com/' });
     });
 
     it('hasNext() true', function () {
