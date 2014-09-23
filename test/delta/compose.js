@@ -110,4 +110,18 @@ describe('compose', function () {
     var expected = new Delta().insert(1);
     expect(a.compose(b)).to.deep.equal(expected);
   });
+
+  it('remove all attributes', function () {
+    var a = new Delta().insert('A', { bold: true });
+    var b = new Delta().retain(1, { bold: null });
+    var expected = new Delta().insert('A');
+    expect(a.compose(b)).to.deep.equal(expected);
+  });
+
+  it('remove all embed attributes', function () {
+    var a = new Delta().insert(2, { bold: true });
+    var b = new Delta().retain(1, { bold: null });
+    var expected = new Delta().insert(2);
+    expect(a.compose(b)).to.deep.equal(expected);
+  });
 });
