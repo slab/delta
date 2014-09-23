@@ -23,28 +23,28 @@ describe('transform', function () {
 
   it('insert + delete', function () {
     var a = new Delta().insert('A');
-    var b = new Delta().delete(-1);
-    var expected = new Delta().retain(1).delete(-1);
+    var b = new Delta().delete(1);
+    var expected = new Delta().retain(1).delete(1);
     expect(a.transform(b, true)).to.deep.equal(expected);
   });
 
   it('delete + insert', function () {
-    var a = new Delta().delete(-1);
+    var a = new Delta().delete(1);
     var b = new Delta().insert('B');
     var expected = new Delta().insert('B');
     expect(a.transform(b, true)).to.deep.equal(expected);
   });
 
   it('delete + retain', function () {
-    var a = new Delta().delete(-1);
+    var a = new Delta().delete(1);
     var b = new Delta().retain(1, { bold: true, color: 'red' });
     var expected = new Delta();
     expect(a.transform(b, true)).to.deep.equal(expected);
   });
 
   it('delete + delete', function () {
-    var a = new Delta().delete(-1);
-    var b = new Delta().delete(-1);
+    var a = new Delta().delete(1);
+    var b = new Delta().delete(1);
     var expected = new Delta();
     expect(a.transform(b, true)).to.deep.equal(expected);
   });
@@ -80,8 +80,8 @@ describe('transform', function () {
 
   it('retain + delete', function () {
     var a = new Delta().retain(1, { color: 'blue' });
-    var b = new Delta().delete(-1);
-    var expected = new Delta().delete(-1);
+    var b = new Delta().delete(1);
+    var expected = new Delta().delete(1);
     expect(a.transform(b, true)).to.deep.equal(expected);
   });
 

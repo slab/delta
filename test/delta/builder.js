@@ -26,14 +26,7 @@ describe('constructor', function () {
   });
 
   it('array of ops', function () {
-    var delta = new Delta([
-      'abc',
-      { retain: 1, attributes: { color: 'red' } },
-      -4,
-      { insert: 'def', attributes: { bold: true } },
-      5,
-      { retain: 1 }
-    ]);
+    var delta = new Delta(ops);
     expect(delta.ops).to.deep.equal(ops);
   });
 
@@ -84,12 +77,6 @@ describe('delete', function () {
     expect(delta.ops.length).to.equal(0);
   });
 
-  it('delete(negative)', function () {
-    var delta = new Delta().delete(-1);
-    expect(delta.ops.length).to.equal(1);
-    expect(delta.ops[0]).to.deep.equal({ delete: 1 });
-  });
-
   it('delete(positive)', function () {
     var delta = new Delta().delete(1);
     expect(delta.ops.length).to.equal(1);
@@ -124,7 +111,7 @@ describe('_push', function () {
   });
 
   it('_push(op) consecutive delete', function () {
-    var delta = new Delta().delete(-2);
+    var delta = new Delta().delete(2);
     delta._push({ delete: 3 });
     expect(delta.ops.length).to.equal(1);
     expect(delta.ops[0]).to.deep.equal({ delete: 5 });

@@ -24,7 +24,7 @@ describe('op', function () {
 
   describe('iterator', function () {
     beforeEach(function () {
-      this.delta = new Delta().insert('Hello', { bold: true }).retain(3).delete(-4).insert({ src: 'http://quilljs.com/' });
+      this.delta = new Delta().insert('Hello', { bold: true }).retain(3).delete(4).insert({ src: 'http://quilljs.com/' });
     });
 
     it('hasNext() true', function () {
