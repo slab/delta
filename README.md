@@ -37,6 +37,8 @@ Operations describe a singular change to a document. They can be an insert, dele
 
 Insert operations have an `insert` key defined. A String value represents inserting text. A Number represents inserting an embed. In both cases an optional `attributes` key can be defined with an Object to describe additonal formatting information. Formats can be changed by the [retain](#retain) operation.
 
+Here we will use 1 to represent images and 2 to represent videos, but your application can choose whatever mapping is convenienit.
+
 ```js
 // Insert a bolded "Text"
 { insert: "Text", attributes: { bold: true } }
@@ -63,8 +65,6 @@ Insert operations have an `insert` key defined. A String value represents insert
   }
 }
 ```
-
-It is not set anywhere that a 1 means an image and 2 means a video.
 
 ### Delete Operation
 
