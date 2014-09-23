@@ -20,6 +20,14 @@ module.exports = function (grunt) {
     }, this.async());
   });
 
+  grunt.registerTask('coverage:fuzzer', function () {
+    grunt.util.spawn({
+      cmd: './node_modules/.bin/istanbul',
+      args: ['cover', './node_modules/.bin/_mocha', 'test/fuzzer.js', '--dir', '.coverage'],
+      opts: { stdio: 'inherit' }
+    }, this.async());
+  });
+
   grunt.registerTask('coverage:report', function () {
     var file = fs.createReadStream('.coverage/lcov.info');
     var child = grunt.util.spawn({
@@ -29,6 +37,14 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('test', function () {
+    grunt.util.spawn({
+      cmd: './node_modules/.bin/mocha',
+      args: tests.concat(['test/fuzzer.js']),
+      opts: { stdio: 'inherit' }
+    }, this.async());
+  });
+
+  grunt.registerTask('test:unit', function () {
     grunt.util.spawn({
       cmd: './node_modules/.bin/mocha',
       args: tests,
