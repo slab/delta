@@ -243,7 +243,7 @@ Transform against another Delta.
 var a = new Delta().insert('a');
 var b = new Delta().insert('b');
 
-a.tranform(b, true);  // new Delta().retain(1).insert('b');
+a.transform(b, true);  // new Delta().retain(1).insert('b');
 ```
 
 
