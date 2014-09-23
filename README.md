@@ -98,6 +98,9 @@ Retain operations have a Number `retain` key defined representing the number of 
 
 A Delta is made up of an array of operations. Unless otherwise specified all methods are self modifying and returns `this` for chainability.
 
+Deltas should always be represented in the most compact form. For example two consecutive insert operations of plain text should always be combined into one.
+
+
 ### constructor
 
 Creates a new Delta object.
