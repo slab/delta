@@ -100,6 +100,7 @@ A Delta is made up of an array of operations. Unless otherwise specified all met
 
 Deltas should always be represented in the most compact form. For example two consecutive insert operations of plain text should always be combined into one.
 
+---
 
 ### constructor
 
@@ -133,8 +134,9 @@ var other = new Delta(JSON.parse(packet));
 var chained = new Delta().insert('Hello World').insert('!', { bold: true });
 ```
 
+---
 
-### insert(insert, attributes)
+### insert()
 
 Appends an insert operation.
 
@@ -156,6 +158,7 @@ delta.insert('Text', { bold: true, color: '#ccc' });
 delta.insert(1, { src: 'https://octodex.github.com/images/labtocat.png' });
 ```
 
+---
 
 ### delete()
 
@@ -174,6 +177,8 @@ Appends a delete operation.
 ```js
 delta.delete(5);
 ```
+
+---
 
 ### retain()
 
@@ -194,6 +199,7 @@ Appends a retain operation.
 delta.retain(4).retain(5, { color: '#0c6' });
 ```
 
+---
 
 ### compose()
 
@@ -216,6 +222,7 @@ var b = new Delta().retain(1).delete(1);
 a.compose(b);  //new Delta().insert('ac');
 ```
 
+---
 
 ### transform()
 
