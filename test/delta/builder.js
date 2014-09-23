@@ -102,56 +102,56 @@ describe('retain', function () {
   });
 });
 
-describe('_push', function () {
-  it('_push(op) into empty', function () {
+describe('push', function () {
+  it('push(op) into empty', function () {
     var delta = new Delta();
-    delta._push({ insert: 'test' });
+    delta.push({ insert: 'test' });
     expect(delta.ops.length).to.equal(1);
   });
 
-  it('_push(op) consecutive delete', function () {
+  it('push(op) consecutive delete', function () {
     var delta = new Delta().delete(2);
-    delta._push({ delete: 3 });
+    delta.push({ delete: 3 });
     expect(delta.ops.length).to.equal(1);
     expect(delta.ops[0]).to.deep.equal({ delete: 5 });
   });
 
-  it('_push(op) consecutive text', function () {
+  it('push(op) consecutive text', function () {
     var delta = new Delta().insert('a');
-    delta._push({ insert: 'b' });
+    delta.push({ insert: 'b' });
     expect(delta.ops.length).to.equal(1);
     expect(delta.ops[0]).to.deep.equal({ insert: 'ab' });
   });
 
-  it('_push(op) consecutive texts with matching attributes', function () {
+  it('push(op) consecutive texts with matching attributes', function () {
     var delta = new Delta().insert('a', { bold: true });
-    delta._push({ insert: 'b', attributes: { bold: true } });
+    delta.push({ insert: 'b', attributes: { bold: true } });
     expect(delta.ops.length).to.equal(1);
     expect(delta.ops[0]).to.deep.equal({ insert: 'ab', attributes: { bold: true } });
   });
 
-  it('_push(op) consecutive retains with matching attributes', function () {
+  it('push(op) consecutive retains with matching attributes', function () {
     var delta = new Delta().retain(1, { bold: true });
-    delta._push({ retain: 3, attributes: { bold : true } });
+    delta.push({ retain: 3, attributes: { bold : true } });
     expect(delta.ops.length).to.equal(1);
     expect(delta.ops[0]).to.deep.equal({ retain: 4, attributes: { bold: true } });
   });
 
-  it('_push(op) consecutive texts with mismatched attributes', function () {
+  it('push(op) consecutive texts with mismatched attributes', function () {
     var delta = new Delta().insert('a', { bold: true });
-    delta._push({ insert: 'b' });
+    delta.push({ insert: 'b' });
     expect(delta.ops.length).to.equal(2);
   });
 
-  it('_push(op) consecutive retains with mismatched attributes', function () {
+  it('push(op) consecutive retains with mismatched attributes', function () {
     var delta = new Delta().retain(1, { bold: true });
-    delta._push({ retain: 3 });
+    delta.push({ retain: 3 });
     expect(delta.ops.length).to.equal(2);
   });
 
-  it('_push(op) consecutive embeds with matching attributes', function () {
+  it('push(op) consecutive embeds with matching attributes', function () {
     var delta = new Delta().insert({ url: 'http://quilljs.com' });
-    delta._push({ attributes: { url: 'http://quilljs.com' } });
+    delta.push({ attributes: { url: 'http://quilljs.com' } });
     expect(delta.ops.length).to.equal(2);
   });
 });
