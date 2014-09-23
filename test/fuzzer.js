@@ -28,7 +28,7 @@ var generateRandomOp = function (snapshot) {
   var snapshot = new Delta(snapshot);
   var length = snapshot.ops.reduce(function(length, op) {
     // Snapshot should only have inserts
-    return length + (op.insert ? op.insert.length : 1);
+    return length + (typeof op.insert === 'string' ? op.insert.length : 1);
   }, 0);
 
   var base = length > 100 ? 10 : 7; // Favor deleting on long documents
@@ -50,7 +50,7 @@ var generateRandomOp = function (snapshot) {
         break;
       case 2:
         // Insert embed
-        delta.insert(generateRandomFormat(false));
+        delta.insert(fuzzer.randomInt(2) + 1, generateRandomFormat(false));
         break;
       case 3: case 4:
         delta.retain(modLength, generateRandomFormat(true));
