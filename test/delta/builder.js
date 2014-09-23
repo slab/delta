@@ -5,9 +5,9 @@ var expect = require('chai').expect;
 describe('constructor', function () {
   var ops = [
     { insert: 'abc' },
-    { retain: 1, formats: { color: 'red' } },
+    { retain: 1, attributes: { color: 'red' } },
     { delete: 4 },
-    { insert: 'def', formats: { bold: true } },
+    { insert: 'def', attributes: { bold: true } },
     { retain: 6 }
   ];
 
@@ -28,9 +28,9 @@ describe('constructor', function () {
   it('array of ops', function () {
     var delta = new Delta([
       'abc',
-      { retain: 1, formats: { color: 'red' } },
+      { retain: 1, attributes: { color: 'red' } },
       -4,
-      { insert: 'def', formats: { bold: true } },
+      { insert: 'def', attributes: { bold: true } },
       5,
       { retain: 1 }
     ]);
@@ -61,20 +61,20 @@ describe('insert', function () {
     var obj = { url: 'http://quilljs.com', alt: 'Quill' };
     var delta = new Delta().insert(obj);
     expect(delta.ops.length).to.equal(1);
-    expect(delta.ops[0]).to.deep.equal({ formats: obj });
+    expect(delta.ops[0]).to.deep.equal({ attributes: obj });
   });
 
   it('insert(text, attributes)', function () {
     var delta = new Delta().insert('test', { bold: true });
     expect(delta.ops.length).to.equal(1);
-    expect(delta.ops[0]).to.deep.equal({ insert: 'test', formats: { bold: true } });
+    expect(delta.ops[0]).to.deep.equal({ insert: 'test', attributes: { bold: true } });
   });
 
   it('insert(null, attributes)', function () {
     var obj = { url: 'http://quilljs.com', alt: 'Quill' };
     var delta = new Delta().insert(null, obj);
     expect(delta.ops.length).to.equal(1);
-    expect(delta.ops[0]).to.deep.equal({ formats: obj });
+    expect(delta.ops[0]).to.deep.equal({ attributes: obj });
   });
 });
 
@@ -112,7 +112,7 @@ describe('retain', function () {
   it('retain(length, attributes)', function () {
     var delta = new Delta().retain(1, { bold: true });
     expect(delta.ops.length).to.equal(1);
-    expect(delta.ops[0]).to.deep.equal({ retain: 1, formats: { bold: true } });
+    expect(delta.ops[0]).to.deep.equal({ retain: 1, attributes: { bold: true } });
   });
 });
 
@@ -139,16 +139,16 @@ describe('_push', function () {
 
   it('_push(op) consecutive texts with matching attributes', function () {
     var delta = new Delta().insert('a', { bold: true });
-    delta._push({ insert: 'b', formats: { bold: true } });
+    delta._push({ insert: 'b', attributes: { bold: true } });
     expect(delta.ops.length).to.equal(1);
-    expect(delta.ops[0]).to.deep.equal({ insert: 'ab', formats: { bold: true } });
+    expect(delta.ops[0]).to.deep.equal({ insert: 'ab', attributes: { bold: true } });
   });
 
   it('_push(op) consecutive retains with matching attributes', function () {
     var delta = new Delta().retain(1, { bold: true });
-    delta._push({ retain: 3, formats: { bold : true } });
+    delta._push({ retain: 3, attributes: { bold : true } });
     expect(delta.ops.length).to.equal(1);
-    expect(delta.ops[0]).to.deep.equal({ retain: 4, formats: { bold: true } });
+    expect(delta.ops[0]).to.deep.equal({ retain: 4, attributes: { bold: true } });
   });
 
   it('_push(op) consecutive texts with mismatched attributes', function () {
@@ -165,7 +165,7 @@ describe('_push', function () {
 
   it('_push(op) consecutive embeds with matching attributes', function () {
     var delta = new Delta().insert({ url: 'http://quilljs.com' });
-    delta._push({ formats: { url: 'http://quilljs.com' } });
+    delta._push({ attributes: { url: 'http://quilljs.com' } });
     expect(delta.ops.length).to.equal(2);
   });
 });

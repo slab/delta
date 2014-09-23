@@ -82,8 +82,8 @@ describe('op', function () {
 
     it('next(length)', function () {
       var iter = op.iterator(this.delta.ops);
-      expect(iter.next(2)).to.deep.equal({ insert: 'He', formats: { bold: true }});
-      expect(iter.next(10)).to.deep.equal({ insert: 'llo', formats: { bold: true }});
+      expect(iter.next(2)).to.deep.equal({ insert: 'He', attributes: { bold: true }});
+      expect(iter.next(10)).to.deep.equal({ insert: 'llo', attributes: { bold: true }});
       expect(iter.next(1)).to.deep.equal({ retain: 1 });
       expect(iter.next(2)).to.deep.equal({ retain: 2 });
     });
