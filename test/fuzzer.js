@@ -25,8 +25,7 @@ function generateRandomFormat (includeNull) {
 };
 
 function generateRandomOp (snapshot) {
-  console.log('Generate', _.cloneDeep(snapshot));
-  var composed = new Delta(_.cloneDeep(snapshot));
+  snapshot = _.cloneDeep(snapshot);
   var length = snapshot.reduce(function(length, op) {
     if (!op.insert) {
       console.error(snapshot);
@@ -46,11 +45,9 @@ function generateRandomOp (snapshot) {
     length -= modIndex;
     var modLength = Math.min(length, fuzzer.randomInt(4) + 1);
 
-    console.log('skip retain', modIndex)
-    var ops = next(snapshot, modIndex);
     delta.retain(modIndex);
+    var ops = next(snapshot, modIndex);
     for (var i in ops) {
-      console.log('pushing', ops[i]);
       result.push(ops[i]);
     }
 
@@ -58,7 +55,6 @@ function generateRandomOp (snapshot) {
       case 0:
         // Insert plain text
         var word = fuzzer.randomWord();
-        console.log('insert', word);
         delta.insert(word);
         result.insert(word);
         break;
@@ -66,23 +62,20 @@ function generateRandomOp (snapshot) {
         // Insert formatted text
         var word = fuzzer.randomWord();
         var formats = generateRandomFormat(false);
-        console.log('insert', word, formats);
         delta.insert(word, formats);
-        result.insert(word, _.clone(formats));
+        result.insert(word, formats);
         break;
       case 2:
         // Insert embed
         var type = fuzzer.randomInt(2) + 1;
         var formats = generateRandomFormat(false);
-        console.log('insert', type, formats);
         delta.insert(type, formats);
-        result.insert(type, _.clone(formats));
+        result.insert(type, formats);
         break;
       case 3: case 4:
-        console.log('retain', modLength, attributes);
-        ops = next(snapshot, modLength);
         var attributes = generateRandomFormat(true);
         delta.retain(modLength, attributes);
+        ops = next(snapshot, modLength);
         for (var i in ops) {
           ops[i].attributes = ops[i].attributes || {};
           for (var key in attributes) {
@@ -95,14 +88,12 @@ function generateRandomOp (snapshot) {
             return memo;
           }, {});
           var newOp = { insert: ops[i].insert };
-          if (_.keys(ops[i].attributes).length > 0) ops[i].attributes = ops[i].attributes;
-          console.log('more pushing', ops[i])
-          result.push(ops[i]);
+          if (_.keys(ops[i].attributes).length > 0) newOp.attributes = ops[i].attributes;
+          result.push(newOp);
         }
         length -= modLength;
         break;
       default:
-        console.log('delete', modLength)
         next(snapshot, modLength);
         delta.delete(modLength);
         length -= modLength;
@@ -110,20 +101,14 @@ function generateRandomOp (snapshot) {
     }
   } while (length > 0 && fuzzer.randomInt(2) > 0);
 
-  console.log('retain rest', _.cloneDeep(snapshot));
   for (var i in snapshot) {
     result.push(snapshot[i]);
   }
-
-  console.log("Delta", delta.ops);
-  console.log("Result", result.ops);
-  console.log("Composed", composed.compose(delta).ops);
 
   return [delta.ops, result.ops];
 };
 
 function next (snapshot, length) {
-  console.log('next', _.cloneDeep(snapshot), length);
   var ops = [];
   while (length > 0) {
     var opLength;
@@ -137,7 +122,7 @@ function next (snapshot, length) {
         opLength = insert.length;
         var op = { insert: insert };
         if (snapshot[0].attributes) {
-          op.attributes = snapshot[0].attributes;
+          op.attributes = _.clone(snapshot[0].attributes);
         }
         ops.push(op);
       }
@@ -147,7 +132,6 @@ function next (snapshot, length) {
     }
     length -= opLength;
   }
-  console.log('retuing', _.cloneDeep(ops))
   return ops;
 };
 
