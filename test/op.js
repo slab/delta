@@ -24,7 +24,7 @@ describe('op', function () {
 
   describe('iterator', function () {
     beforeEach(function () {
-      this.delta = new Delta().insert('Hello', { bold: true }).retain(3).delete(4).insert(2, { src: 'http://quilljs.com/' });
+      this.delta = new Delta().insert('Hello', { bold: true }).retain(3).insert(2, { src: 'http://quilljs.com/' }).delete(4);
     });
 
     it('hasNext() true', function () {
@@ -42,6 +42,8 @@ describe('op', function () {
       expect(iter.peekLength()).to.equal(5);
       iter.next();
       expect(iter.peekLength()).to.equal(3);
+      iter.next();
+      expect(iter.peekLength()).to.equal(1);
       iter.next();
       expect(iter.peekLength()).to.equal(4);
     });
@@ -63,9 +65,9 @@ describe('op', function () {
       iter.next();
       expect(iter.peekType()).to.equal('retain');
       iter.next();
-      expect(iter.peekType()).to.equal('delete');
-      iter.next();
       expect(iter.peekType()).to.equal('insert');
+      iter.next();
+      expect(iter.peekType()).to.equal('delete');
       iter.next();
       expect(iter.peekType()).to.equal('retain');
     });

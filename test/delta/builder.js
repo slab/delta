@@ -68,6 +68,24 @@ describe('insert', function () {
     expect(delta.ops.length).to.equal(1);
     expect(delta.ops[0]).to.deep.equal({ insert: 'test', attributes: { bold: true } });
   });
+
+  it('insert(text) after delete', function () {
+    var delta = new Delta().delete(1).insert('a');
+    var expected = new Delta().insert('a').delete(1);
+    expect(delta).to.deep.equal(expected);
+  });
+
+  it('insert(text) after delete with merge', function () {
+    var delta = new Delta().insert('a').delete(1).insert('b');
+    var expected = new Delta().insert('ab').delete(1);
+    expect(delta).to.deep.equal(expected);
+  });
+
+  it('insert(text) after delete no merge', function () {
+    var delta = new Delta().insert(1).delete(1).insert('a');
+    var expected = new Delta().insert(1).insert('a').delete(1);
+    expect(delta).to.deep.equal(expected);
+  });
 });
 
 describe('delete', function () {
