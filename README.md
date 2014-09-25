@@ -17,8 +17,8 @@ var death = new Delta().retain(12)
                        .delete(4)
                        .insert('White', { color: '#fff' });
 
-var delta = delta.compose(death);
-// Result is:
+delta.compose(death);
+// delta is now:
 // {
 //   ops: [
 //     { insert: 'Gandalf ', attributes: { bold: true } },
@@ -81,7 +81,7 @@ Delete operations have a Number `delete` key defined representing the number of 
 
 Retain operations have a Number `retain` key defined representing the number of characters to keep (other libraries might use the name keep or skip). An optional `attributes` key can be defined with an Object to describe formatting changes to the character range. A value of null in the `attributes` Object represents removal of that key.
 
-*Note: It is not necessary to retain the end of a document as this is implied.*
+*Note: It is not necessary to retain the last characters of a document as this is implied.*
 
 ```js
 // Keep the next 5 characters
@@ -99,7 +99,7 @@ Retain operations have a Number `retain` key defined representing the number of 
 
 ## Deltas
 
-A Delta is made up of an array of operations. Unless otherwise specified all methods are self modifying and returns `this` for chainability.
+A Delta is made up of an array of operations. Unless otherwise specified all methods are self modifying and return `this` for chainability.
 
 All methods also maintain the property that Deltas are represented in the most compact form. For example two consecutive insert operations of plain text will be merged into one.
 

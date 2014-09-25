@@ -29,6 +29,7 @@ function generateRandomOp (snapshot) {
   var composed = new Delta(_.cloneDeep(snapshot));
   var length = snapshot.reduce(function(length, op) {
     if (!op.insert) {
+      console.error(snapshot);
       throw new Error('Snapshot should only have inserts');
     }
     // Snapshot should only have inserts
@@ -42,6 +43,7 @@ function generateRandomOp (snapshot) {
   do {
     // Allows insert/delete to occur at the end (deletes will be noop)
     var modIndex = fuzzer.randomInt(Math.min(length, 5) + 1);
+    length -= modIndex;
     var modLength = Math.min(length, fuzzer.randomInt(4) + 1);
 
     console.log('skip retain', modIndex)
@@ -51,7 +53,6 @@ function generateRandomOp (snapshot) {
       console.log('pushing', ops[i]);
       result.push(ops[i]);
     }
-    length -= modIndex;
 
     switch (fuzzer.randomInt(base)) {
       case 0:
