@@ -35,9 +35,11 @@ Operations describe a singular change to a document. They can be an insert, dele
 
 ### Insert Operation
 
-Insert operations have an `insert` key defined. A String value represents inserting text. A Number represents inserting an embed. In both cases an optional `attributes` key can be defined with an Object to describe additonal formatting information. Formats can be changed by the [retain](#retain) operation.
+Insert operations have an `insert` key defined. A String value represents inserting text. A Number value represents inserting an embed, with the value corresponding to an embed type (such as an image or video).
 
-Here we will use 1 to represent images and 2 to represent videos, but your application can choose whatever mapping is convenienit.
+Here we will use 1 to represent images and 2 to represent videos, but your application can choose whatever mapping is convenient.
+
+In both cases of text and embeds, an optional `attributes` key can be defined with an Object to describe additonal formatting information. Formats can be changed by the [retain](#retain) operation.
 
 ```js
 // Insert a bolded "Text"
@@ -89,7 +91,8 @@ Retain operations have a Number `retain` key defined representing the number of 
 { retain: 5, attributes: { bold: true } }
 
 // Keep and unbold the next 5 characters
-// More specifically, remove the bold key in the attributes Object in the next 5 characters
+// More specifically, remove the bold key in the attributes Object
+// in the next 5 characters
 { retain: 5, attributes: { bold: null } }
 ```
 
