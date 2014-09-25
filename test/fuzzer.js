@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var fuzzer = require('ot-fuzzer');
 var richType = require('../lib/type');
 var Delta = richType.Delta;
@@ -28,7 +29,7 @@ var generateRandomOp = function (snapshot) {
   var snapshot = new Delta(snapshot);
   var length = snapshot.ops.reduce(function(length, op) {
     // Snapshot should only have inserts
-    return length + (typeof op.insert === 'string' ? op.insert.length : 1);
+    return length + (_.isString(op.insert) ? op.insert.length : 1);
   }, 0);
 
   var base = length > 100 ? 10 : 7; // Favor deleting on long documents
