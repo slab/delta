@@ -28,6 +28,10 @@ var generateRandomFormat = function (includeNull) {
 var generateRandomOp = function (snapshot) {
   var snapshot = new Delta(snapshot);
   var length = snapshot.ops.reduce(function(length, op) {
+    if (!op.insert) {
+      console.error(snapshot);
+      throw new Error('Snapshot should only have inserts');
+    }
     // Snapshot should only have inserts
     return length + (_.isString(op.insert) ? op.insert.length : 1);
   }, 0);
