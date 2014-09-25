@@ -41,8 +41,8 @@ var generateRandomOp = function (snapshot) {
   do {
     // Allows insert/delete to occur at the end (deletes will be noop)
     var index = fuzzer.randomInt(Math.min(length, 5) + 1);
-    var modLength = Math.min(length, fuzzer.randomInt(4) + 1);
     length -= index;
+    var modLength = Math.min(length, fuzzer.randomInt(4) + 1);
     delta.retain(index);
     switch (fuzzer.randomInt(base)) {
       case 0:
