@@ -79,7 +79,7 @@ Delete operations have a Number `delete` key defined representing the number of 
 
 ### Retain Operation
 
-Retain operations have a Number `retain` key defined representing the number of characters to keep (other libraries use the name keep or skip). An optional `attributes` key can be defined with an Object to describe formatting changes to the character range. A value of null in the `attributes` Object represents removal of that key.
+Retain operations have a Number `retain` key defined representing the number of characters to keep (other libraries might use the name keep or skip). An optional `attributes` key can be defined with an Object to describe formatting changes to the character range. A value of null in the `attributes` Object represents removal of that key.
 
 *Note: It is not necessary to retain the end of a document as this is implied.*
 
@@ -101,7 +101,7 @@ Retain operations have a Number `retain` key defined representing the number of 
 
 A Delta is made up of an array of operations. Unless otherwise specified all methods are self modifying and returns `this` for chainability.
 
-Deltas should always be represented in the most compact form. For example two consecutive insert operations of plain text should always be combined into one.
+All methods also maintain the property that Deltas are represented in the most compact form. For example two consecutive insert operations of plain text will be merged into one.
 
 ---
 
@@ -222,7 +222,7 @@ Compose with another Delta.
 var a = new Delta().insert('abc');
 var b = new Delta().retain(1).delete(1);
 
-a.compose(b);  //new Delta().insert('ac');
+a.compose(b);  // a == new Delta().insert('ac');
 ```
 
 ---
@@ -238,7 +238,7 @@ Transform against another Delta.
 #### Parameters
 
 - `other` - Delta to transform
-- `priority` - Boolean indicating priority, used to break ties
+- `priority` - Boolean used to break ties
 
 #### Example
 
@@ -246,7 +246,7 @@ Transform against another Delta.
 var a = new Delta().insert('a');
 var b = new Delta().insert('b');
 
-a.transform(b, true);  // new Delta().retain(1).insert('b');
+a.transform(b, true);  // a == new Delta().retain(1).insert('b');
 ```
 
 
