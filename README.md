@@ -1,9 +1,8 @@
 # Rich Text [![Build Status](https://travis-ci.org/ottypes/rich-text.svg?branch=master)](http://travis-ci.org/ottypes/rich-text) [![Coverage Status](https://img.shields.io/coveralls/ottypes/rich-text.svg)](https://coveralls.io/r/ottypes/rich-text)
 
-A format for representing rich text documents and changes. This format is suitable for [Operational Transform](https://en.wikipedia.org/wiki/Operational_transformation) and defines several functions to support this use case.
+A format for representing rich text documents and changes. It aimes to be intuitive and human readable with the ability to express any change necessary to deal with rich text. A document can also be expressed with this format--as the change from an empty document.
 
-
-### Quick Example
+## Quick Example
 
 ```js
 var delta = new Delta([
@@ -16,6 +15,14 @@ var delta = new Delta([
 var death = new Delta().retain(12)
                        .delete(4)
                        .insert('White', { color: '#fff' });
+// this produces:
+// {
+//   ops: [
+//     { retain: 12 },
+//     { delete: '4 ' },
+//     { insert: 'White', attributes: { color: '#fff' } }
+//   ]
+// }
 
 delta.compose(death);
 // delta is now:
@@ -26,7 +33,10 @@ delta.compose(death);
 //     { insert: 'White', attributes: { color: '#fff' } }
 //   ]
 // }
+
 ```
+
+This format is suitable for [Operational Transform](https://en.wikipedia.org/wiki/Operational_transformation) and defines several functions to support this use case.
 
 
 ## Operations
