@@ -75,6 +75,41 @@ describe('attributes', function () {
     });
   });
 
+  describe('diff', function () {
+    var format = { bold: true, color: 'red' };
+
+    it('left is undefined', function () {
+      expect(op.attributes.diff(undefined, format)).to.deep.equal(format);
+    });
+
+    it('right is undefined', function () {
+      var expected = { bold: null, color: null };
+      expect(op.attributes.diff(format, undefined)).to.deep.equal(expected);
+    });
+
+    it('same format', function () {
+      expect(op.attributes.diff(format, format)).to.equal(undefined);
+    });
+
+    it('add format', function () {
+      var added = { bold: true, italic: true, color: 'red' };
+      var expected = { italic: true };
+      expect(op.attributes.diff(format, added)).to.deep.equal(expected);
+    });
+
+    it('remove format', function () {
+      var removed = { bold: true };
+      var expected = { color: null };
+      expect(op.attributes.diff(format, removed)).to.deep.equal(expected);
+    });
+
+    it('overwrite format', function () {
+      var overwritten = { bold: true, color: 'blue' };
+      var expected = { color: 'blue' };
+      expect(op.attributes.diff(format, overwritten)).to.deep.equal(expected);
+    });
+  });
+
   describe('transform', function () {
     var left = { bold: true, color: 'red', font: null };
     var right = { color: 'blue', font: 'serif', italic: true };

@@ -9,7 +9,8 @@ module.exports = function (grunt) {
     'test/delta/builder.js',
     'test/delta/helpers.js',
     'test/delta/compose.js',
-    'test/delta/transform.js'
+    'test/delta/transform.js',
+    'test/delta/diff.js'
   ];
 
   grunt.registerTask('coverage', function () {
