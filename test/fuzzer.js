@@ -136,4 +136,4 @@ function next (snapshot, length) {
 };
 
 
-fuzzer(richType, generateRandomOp);
+fuzzer(richType, generateRandomOp, 100);

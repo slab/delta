@@ -62,4 +62,11 @@ describe('diff()', function () {
     var expected = new Delta().retain(2, { bold: null, color: 'red' }).retain(1, { italic: null, color: 'red' }).delete(1);
     expect(a.diff(b)).to.deep.equal(expected);
   });
+
+  it('combination', function () {
+    var a = new Delta().insert('Bad', { color: 'red' }).insert('cat', { color: 'blue' });
+    var b = new Delta().insert('Good', { bold: true }).insert('dog', { italic: true });
+    var expected = new Delta().insert('Good', { bold: true }).delete(2).retain(1, { italic: true, color: null }).delete(3).insert('og', { italic: true });
+    expect(a.diff(b)).to.deep.equal(expected);
+  });
 });
