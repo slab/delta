@@ -5,6 +5,9 @@
   "author": "Jason Chen <jhchen7@gmail.com>",
   "homepage": "https://github.com/ottypes/rich-text",
   "main": "index.js",
+  "dependencies": {
+    "fast-diff": "~1.0.0"
+  },
   "devDependencies": {
     "chai": "~1.9.1",
     "coveralls": "~2.11.1",
