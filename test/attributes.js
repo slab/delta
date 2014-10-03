@@ -3,7 +3,7 @@ var expect = require('chai').expect;
 
 
 describe('attributes', function () {
-  describe('clone', function () {
+  describe('clone()', function () {
     var attributes = {
       bold: true,
       color: 'red',
@@ -30,7 +30,7 @@ describe('attributes', function () {
     });
   });
 
-  describe('compose', function () {
+  describe('compose()', function () {
     var attributes = { bold: true, color: 'red' };
 
     it('left is undefined', function () {
@@ -75,7 +75,7 @@ describe('attributes', function () {
     });
   });
 
-  describe('diff', function () {
+  describe('diff()', function () {
     var format = { bold: true, color: 'red' };
 
     it('left is undefined', function () {
@@ -110,7 +110,7 @@ describe('attributes', function () {
     });
   });
 
-  describe('transform', function () {
+  describe('transform()', function () {
     var left = { bold: true, color: 'red', font: null };
     var right = { color: 'blue', font: 'serif', italic: true };
 

@@ -43,7 +43,7 @@ describe('constructor', function () {
   });
 });
 
-describe('insert', function () {
+describe('insert()', function () {
   it('insert(text)', function () {
     var delta = new Delta().insert('test');
     expect(delta.ops.length).to.equal(1);
@@ -88,7 +88,7 @@ describe('insert', function () {
   });
 });
 
-describe('delete', function () {
+describe('delete()', function () {
   it('delete(0)', function () {
     var delta = new Delta().delete(0);
     expect(delta.ops.length).to.equal(0);
@@ -101,7 +101,7 @@ describe('delete', function () {
   });
 });
 
-describe('retain', function () {
+describe('retain()', function () {
   it('retain(0)', function () {
     var delta = new Delta().retain(0);
     expect(delta.ops.length).to.equal(0);
@@ -120,7 +120,7 @@ describe('retain', function () {
   });
 });
 
-describe('push', function () {
+describe('push()', function () {
   it('push(op) into empty', function () {
     var delta = new Delta();
     delta.push({ insert: 'test' });

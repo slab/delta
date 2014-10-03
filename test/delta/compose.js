@@ -2,7 +2,7 @@ var Delta = require('../../lib/delta');
 var expect = require('chai').expect;
 
 
-describe('compose', function () {
+describe('compose()', function () {
   it('insert + insert', function () {
     var a = new Delta().insert('A');
     var b = new Delta().insert('B');

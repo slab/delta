@@ -2,7 +2,7 @@ var Delta = require('../../lib/delta');
 var expect = require('chai').expect;
 
 
-describe('diff', function () {
+describe('diff()', function () {
   it('insert', function () {
     var a = new Delta().insert('A');
     var b = new Delta().insert('AB');

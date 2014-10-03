@@ -3,7 +3,7 @@ var expect = require('chai').expect;
 
 
 describe('is', function () {
-  describe('equal', function () {
+  describe('equal()', function () {
     it('exact objects', function () {
       var obj = { a: 1, b: true, c: 'test' };
       expect(is.equal(obj, obj)).to.equal(true);
@@ -36,7 +36,7 @@ describe('is', function () {
     });
   });
 
-  describe('array', function () {
+  describe('array()', function () {
     it('literal', function () {
       expect(is.array([])).to.equal(true);
     });
@@ -50,7 +50,7 @@ describe('is', function () {
     });
   });
 
-  describe('number', function () {
+  describe('number()', function () {
     it('literal', function () {
       expect(is.number(11)).to.equal(true);
     });
@@ -77,7 +77,7 @@ describe('is', function () {
     });
   });
 
-  describe('object', function () {
+  describe('object()', function () {
     it('literal', function () {
       expect(is.object({})).to.equal(true);
     });
@@ -112,7 +112,7 @@ describe('is', function () {
     });
   });
 
-  describe('string', function () {
+  describe('string()', function () {
     it('literal', function () {
       expect(is.string('test')).to.equal(true);
     });

@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 
 
 describe('op', function () {
-  describe('length', function () {
+  describe('length()', function () {
     it('delete', function () {
       expect(op.length({ delete: 5 })).to.equal(5);
     });
@@ -22,7 +22,7 @@ describe('op', function () {
     });
   });
 
-  describe('iterator', function () {
+  describe('iterator()', function () {
     beforeEach(function () {
       this.delta = new Delta().insert('Hello', { bold: true }).retain(3).insert(2, { src: 'http://quilljs.com/' }).delete(4);
     });
