@@ -55,4 +55,11 @@ describe('diff()', function () {
       b.diff(a);
     }).to.throw(Error);
   });
+
+  it('inconvenient indexes', function () {
+    var a = new Delta().insert('12', { bold: true }).insert('34', { italic: true });
+    var b = new Delta().insert('123', { color: 'red' });
+    var expected = new Delta().retain(2, { bold: null, color: 'red' }).retain(1, { italic: null, color: 'red' }).delete(1);
+    expect(a.diff(b)).to.deep.equal(expected);
+  });
 });
