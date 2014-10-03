@@ -26,7 +26,7 @@ function generateRandomFormat (includeNull) {
 
 function generateRandomOp (snapshot) {
   snapshot = _.cloneDeep(snapshot);
-  var length = snapshot.reduce(function(length, op) {
+  var length = snapshot.ops.reduce(function(length, op) {
     if (!op.insert) {
       console.error(snapshot);
       throw new Error('Snapshot should only have inserts');
@@ -101,33 +101,33 @@ function generateRandomOp (snapshot) {
     }
   } while (length > 0 && fuzzer.randomInt(2) > 0);
 
-  for (var i in snapshot) {
-    result.push(snapshot[i]);
+  for (var i in snapshot.ops) {
+    result.push(snapshot.ops[i]);
   }
 
-  return [delta.ops, result.ops];
+  return [delta, result];
 };
 
 function next (snapshot, length) {
   var ops = [];
   while (length > 0) {
     var opLength;
-    if (_.isString(snapshot[0].insert)) {
-      if (length >= snapshot[0].insert.length) {
-        opLength = snapshot[0].insert.length;
-        ops.push(snapshot.shift());
+    if (_.isString(snapshot.ops[0].insert)) {
+      if (length >= snapshot.ops[0].insert.length) {
+        opLength = snapshot.ops[0].insert.length;
+        ops.push(snapshot.ops.shift());
       } else {
-        var insert = snapshot[0].insert.substr(0, length);
-        snapshot[0].insert = snapshot[0].insert.substr(insert.length);
+        var insert = snapshot.ops[0].insert.substr(0, length);
+        snapshot.ops[0].insert = snapshot.ops[0].insert.substr(insert.length);
         opLength = insert.length;
         var op = { insert: insert };
-        if (snapshot[0].attributes) {
-          op.attributes = _.clone(snapshot[0].attributes);
+        if (snapshot.ops[0].attributes) {
+          op.attributes = _.clone(snapshot.ops[0].attributes);
         }
         ops.push(op);
       }
     } else {
-      ops.push(snapshot.shift());
+      ops.push(snapshot.ops.shift());
       opLength = 1;
     }
     length -= opLength;
