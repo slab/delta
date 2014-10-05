@@ -10,6 +10,7 @@ module.exports = function (grunt) {
     'test/delta/helpers.js',
     'test/delta/compose.js',
     'test/delta/transform.js',
+    'test/delta/transform-position.js',
     'test/delta/diff.js'
   ];
 
