@@ -22,4 +22,36 @@ describe('helpers', function () {
       expect(delta.chop()).to.deep.equal(expected);
     })
   });
+
+  describe('slice()', function () {
+    it('start', function () {
+      var slice = new Delta().retain(2).insert('A').slice(2);
+      var expected = new Delta().insert('A');
+      expect(slice).to.deep.equal(expected);
+    });
+
+    it('start and end', function () {
+      var slice = new Delta().retain(2).insert('A', { bold: true }).insert('B').slice(2, 3);
+      var expected = new Delta().insert('A', { bold: true });
+      expect(slice).to.deep.equal(expected);
+    });
+
+    it('no params', function () {
+      var delta = new Delta().retain(2).insert('A', { bold: true }).insert('B');
+      var slice = delta.slice();
+      expect(slice).to.deep.equal(delta);
+    });
+
+    it('split ops', function () {
+      var slice = new Delta().insert('AB', { bold: true }).insert('C').slice(1, 2);
+      var expected = new Delta().insert('B', { bold: true });
+      expect(slice).to.deep.equal(expected);
+    });
+
+    it('split ops multiple times', function () {
+      var slice = new Delta().insert('ABC', { bold: true }).insert('D').slice(1, 2);
+      var expected = new Delta().insert('B', { bold: true });
+      expect(slice).to.deep.equal(expected);
+    });
+  });
 });
