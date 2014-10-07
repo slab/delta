@@ -23,6 +23,18 @@ describe('helpers', function () {
     })
   });
 
+  describe('length()', function () {
+    it('document', function () {
+      var delta = new Delta().insert('AB', { bold: true }).insert(1);
+      expect(delta.length()).to.equal(3);
+    });
+
+    it('mixed', function () {
+      var delta = new Delta().insert('AB', { bold: true }).insert(1).retain(2, { bold: null }).delete(1);
+      expect(delta.length()).to.equal(6);
+    });
+  });
+
   describe('slice()', function () {
     it('start', function () {
       var slice = new Delta().retain(2).insert('A').slice(2);
