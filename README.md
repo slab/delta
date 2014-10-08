@@ -38,6 +38,29 @@ delta.compose(death);
 
 This format is suitable for [Operational Transform](https://en.wikipedia.org/wiki/Operational_transformation) and defines several functions to support this use case.
 
+## Contents
+
+#### [Operations](#operations-1)
+
+- [insert](#insert-operation)
+- [delete](#delete-operation)
+- [retain](#retain-operation)
+
+#### [Deltas](#deltas-1)
+
+- [`constructor`](#constructor)
+- [`insert`](#insert)
+- [`delete`](#delete)
+- [`retain`](#retain)
+- [`length`](#length)
+- [`slice`](#slice)
+- [`compose`](#compose)
+- [`transform`](#transform)
+
+#### [Documents](#documents-1)
+
+- [`diff`](#diff)
+
 
 ## Operations
 
