@@ -86,6 +86,12 @@ describe('insert()', function () {
     var expected = new Delta().insert(1).insert('a').delete(1);
     expect(delta).to.deep.equal(expected);
   });
+
+  it('insert(text, {})', function () {
+    var delta = new Delta().insert('a', {});
+    var expected = new Delta().insert('a');
+    expect(delta).to.deep.equal(expected);
+  });
 });
 
 describe('delete()', function () {
