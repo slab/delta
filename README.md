@@ -41,7 +41,7 @@ This format is suitable for [Operational Transform](https://en.wikipedia.org/wik
 
 ## Operations
 
-Operations describe a singular change to a document. They can be an insert, delete or retain. Note operations do not take an index. They always describe the change at the current index. Use retains to "keep" or "skip" certain parts of the document.
+Operations describe a singular change to a document. They can be an [`insert`](#insert-operation), [`delete`](#delete-operation) or [`retain`](#retain-operation). Note operations do not take an index. They always describe the change at the current index. Use retains to "keep" or "skip" certain parts of the document.
 
 ### Insert Operation
 
@@ -214,9 +214,64 @@ delta.retain(4).retain(5, { color: '#0c6' });
 
 ---
 
+### length()
+
+Returns length of Delta.
+
+#### Methods
+
+- `length()`
+
+#### Example
+
+```js
+new Delta().insert('Hello').length();  // Returns 5
+
+new Delta().insert('A').retain(2).delete(1) // Returns 4
+```
+
+---
+
+### slice()
+
+Returns copy of delta with subset of operations.
+
+#### Methods
+
+- `slice()`
+- `slice(start)`
+- `slice(start, end)`
+
+#### Parameters
+
+- `start` - Start index of subset, defaults to 0
+- `end` - End index of subset, defaults to rest of operations
+
+#### Example
+
+```js
+var delta = new Delta().insert('Hello', { bold: true }).insert(' World');
+
+// {
+//   ops: [
+//     { insert: 'Hello', attributes: { bold: true } },
+//     { insert: ' World' }
+//   ]
+// }
+var copy = delta.slice();
+
+// { ops: [{ insert: 'World' }] }
+var world = delta.slice(6);
+
+// { ops: [{ insert: ' ' }] }
+var space = delta.slice(5, 6);
+```
+
+---
+
 ### compose()
 
-Compose with another Delta.
+Compose with another Delta, i.e. merge the operations of another Delta. This method is self modifying.
 
 #### Methods
 
@@ -235,15 +290,14 @@ var b = new Delta().retain(1).delete(1);
 a.compose(b);  // a == new Delta().insert('ac');
 ```
 
----
-
 ### transform()
 
-Transform against another Delta.
+Transform against another Delta. This method is self modifying.
 
 #### Methods
 
 - `transform(other, priority)`
+- `transform(index)` - Alias for [`transformPosition`](#tranformposition)
 
 #### Parameters
 
@@ -259,7 +313,51 @@ var b = new Delta().insert('b');
 a.transform(b, true);  // a == new Delta().retain(1).insert('b');
 ```
 
+---
+
+### transformPosition()
+
+Transform an index against the delta. Useful for representing cursor/selection positions.
+
+#### Methods
+
+- `transformPosition(index)`
+
+#### Parameters
+
+- `index` - index to transform
+
+#### Example
+
+```js
+var index = 12;
+var transformedIndex = delta.transformPosition(index);
+```
+
 
 ## Documents
 
-A Delta with only insert operations can be used to represent a rich text document.
+A Delta with only insert operations can be used to represent a rich text document. This can be thought of as a Delta applied to an empty document.
+
+---
+
+### diff()
+
+Calculates the difference between two documents expressed as a Delta.
+
+#### Methods
+
+- `diff(other)`
+
+#### Parameters
+
+- `other` - Document Delta to diff against
+
+#### Example
+
+```js
+var a = new Delta().insert('Hello');
+var b = new Delta().insert('Hello!');
+
+var diff = a.diff(b);  // { ops: [{ retain: 5 }, { insert: '!' }] }
+```
