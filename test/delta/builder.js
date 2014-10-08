@@ -124,6 +124,12 @@ describe('retain()', function () {
     expect(delta.ops.length).to.equal(1);
     expect(delta.ops[0]).to.deep.equal({ retain: 1, attributes: { bold: true } });
   });
+
+  it('retain(length, {})', function () {
+    var delta = new Delta().retain(2, {}).delete(1);    // Delete prevents chop
+    var expected = new Delta().retain(2).delete(1);
+    expect(delta).to.deep.equal(expected);
+  });
 });
 
 describe('push()', function () {
