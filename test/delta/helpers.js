@@ -42,6 +42,12 @@ describe('helpers', function () {
       expect(slice).to.deep.equal(expected);
     });
 
+    it('start and end chop', function () {
+      var slice = new Delta().insert('0123456789').slice(2, 7);
+      var expected = new Delta().insert('23456');
+      expect(slice).to.deep.equal(expected);
+    });
+
     it('start and end', function () {
       var slice = new Delta().retain(2).insert('A', { bold: true }).insert('B').slice(2, 3);
       var expected = new Delta().insert('A', { bold: true });
