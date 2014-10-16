@@ -315,7 +315,7 @@ a.compose(b);  // a == new Delta().insert('ac');
 
 ### transform()
 
-Transform against another Delta. This method is self modifying.
+Transform given Delta against own operations.
 
 #### Methods
 
@@ -327,13 +327,17 @@ Transform against another Delta. This method is self modifying.
 - `other` - Delta to transform
 - `priority` - Boolean used to break ties
 
+#### Returns
+
+- `Delta` - transformed Delta
+
 #### Example
 
 ```js
 var a = new Delta().insert('a');
 var b = new Delta().insert('b');
 
-a.transform(b, true);  // a == new Delta().retain(1).insert('b');
+b = a.transform(b, true);  // new Delta().retain(1).insert('b');
 ```
 
 ---
@@ -349,6 +353,10 @@ Transform an index against the delta. Useful for representing cursor/selection p
 #### Parameters
 
 - `index` - index to transform
+
+#### Returns
+
+- `Number` - transformed index
 
 #### Example
 
@@ -375,6 +383,10 @@ Calculates the difference between two documents expressed as a Delta.
 #### Parameters
 
 - `other` - Document Delta to diff against
+
+#### Returns
+
+- `Delta` - difference between the two documents
 
 #### Example
 
