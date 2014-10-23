@@ -48,6 +48,12 @@ describe('helpers', function () {
       expect(slice).to.deep.equal(expected);
     });
 
+    it('start and end multiple chop', function () {
+      var slice = new Delta().insert('0123', { bold: true }).insert('4567').slice(3, 5);
+      var expected = new Delta().insert('3', { bold: true }).insert('4');
+      expect(slice).to.deep.equal(expected);
+    });
+
     it('start and end', function () {
       var slice = new Delta().retain(2).insert('A', { bold: true }).insert('B').slice(2, 3);
       var expected = new Delta().insert('A', { bold: true });
