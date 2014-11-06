@@ -313,6 +313,8 @@ var b = new Delta().retain(1).delete(1);
 a.compose(b);  // a == new Delta().insert('ac');
 ```
 
+---
+
 ### transform()
 
 Transform given Delta against own operations.
@@ -370,6 +372,8 @@ var transformedIndex = delta.transformPosition(index);
 
 A Delta with only insert operations can be used to represent a rich text document. This can be thought of as a Delta applied to an empty document.
 
+The following methods are supported only for Deltas that represent a document (i.e. they only contain inserts). There are no guarantees on the behavior on non-document Deltas.
+
 ---
 
 ### diff()
@@ -395,4 +399,25 @@ var a = new Delta().insert('Hello');
 var b = new Delta().insert('Hello!');
 
 var diff = a.diff(b);  // { ops: [{ retain: 5 }, { insert: '!' }] }
+```
+
+---
+
+### length()
+
+Calculates the length of the document.
+
+#### Methods
+
+- `length()`
+
+#### Returns
+
+- `Number` - length of the document
+
+#### Example
+
+```js
+var delta = new Delta().insert('Hello');
+var length = delta.length();
 ```
