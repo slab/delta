@@ -1,7 +1,7 @@
 var _ = require('lodash');
 var fuzzer = require('ot-fuzzer');
-var richType = require('../lib/type');
-var Delta = richType.Delta;
+var richText = require('../lib/type');
+var Delta = richText.Delta;
 
 var FORMATS = {
   color: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', null],
@@ -136,4 +136,4 @@ function next (snapshot, length) {
 };
 
 
-fuzzer(richType, generateRandomOp, 100);
+fuzzer(richText.type, generateRandomOp, 100);
