@@ -6,15 +6,15 @@
   "homepage": "https://github.com/ottypes/rich-text",
   "main": "index.js",
   "dependencies": {
-    "fast-diff": "~1.0.0"
+    "fast-diff": "~1.0.1"
   },
   "devDependencies": {
-    "chai": "~2.1.1",
-    "coveralls": "~2.11.1",
+    "chai": "~2.3.0",
+    "coveralls": "~2.11.2",
     "grunt": "~0.4.5",
-    "istanbul": "~0.3.0",
-    "lodash": "~3.5.0",
-    "mocha": "~2.2.1",
+    "istanbul": "~0.3.14",
+    "lodash": "~3.9.3",
+    "mocha": "~2.2.5",
     "ot-fuzzer": "~1.0.0"
   },
   "engines": {
