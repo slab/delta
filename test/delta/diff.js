@@ -69,4 +69,18 @@ describe('diff()', function () {
     var expected = new Delta().insert('Good', { bold: true }).delete(2).retain(1, { italic: true, color: null }).delete(3).insert('og', { italic: true });
     expect(a.diff(b)).to.deep.equal(expected);
   });
+
+  it('immutability', function () {
+    var attr1 = { color: 'red' };
+    var attr2 = { color: 'red' };
+    var a1 = new Delta().insert('A', attr1);
+    var a2 = new Delta().insert('A', attr1);
+    var b1 = new Delta().insert('A', { bold: true }).insert('B');
+    var b2 = new Delta().insert('A', { bold: true }).insert('B');
+    var expected = new Delta().retain(1, { bold: true, color: null }).insert('B');
+    expect(a1.diff(b1)).to.deep.equal(expected);
+    expect(a1).to.deep.equal(a2);
+    expect(b2).to.deep.equal(b2);
+    expect(attr1).to.deep.equal(attr2);
+  });
 });
