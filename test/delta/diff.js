@@ -70,6 +70,12 @@ describe('diff()', function () {
     expect(a.diff(b)).to.deep.equal(expected);
   });
 
+  it('same document', function () {
+    var a = new Delta().insert('A').insert('B', { bold: true });
+    expected = new Delta();
+    expect(a.diff(a)).to.deep.equal(expected);
+  });
+
   it('immutability', function () {
     var attr1 = { color: 'red' };
     var attr2 = { color: 'red' };
