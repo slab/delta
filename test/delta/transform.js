@@ -128,4 +128,15 @@ describe('transform()', function () {
     expect(a1.transform(b1, false)).to.deep.equal(expected1);
     expect(b2.transform(a2, false)).to.deep.equal(expected2);
   });
+
+  it('immutability', function () {
+    var a1 = new Delta().insert('A');
+    var a2 = new Delta().insert('A');
+    var b1 = new Delta().insert('B');
+    var b2 = new Delta().insert('B');
+    var expected = new Delta().retain(1).insert('B');
+    expect(a1.transform(b1, true)).to.deep.equal(expected);
+    expect(a1).to.deep.equal(a2);
+    expect(b1).to.deep.equal(b2);
+  });
 });

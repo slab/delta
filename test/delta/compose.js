@@ -126,16 +126,16 @@ describe('compose()', function () {
   });
 
   it('immutability', function () {
-    var attr = { bold: true };
-    var attrCopy = { bold: true };
-    var a = new Delta().insert('Test', attr);
-    var aCopy = new Delta().insert('Test', attr);
-    var b = new Delta().retain(1, { color: 'red' }).delete(2);
-    var bCopy = new Delta().retain(1, { color: 'red' }).delete(2);
-    var expected = new Delta().insert('T', { color: 'red', bold: true }).insert('t', attr);
-    expect(a.compose(b)).to.deep.equal(expected);
-    expect(a).to.deep.equal(aCopy);
-    expect(b).to.deep.equal(bCopy);
-    expect(attr).to.deep.equal(attrCopy);
+    var attr1 = { bold: true };
+    var attr2 = { bold: true };
+    var a1 = new Delta().insert('Test', attr1);
+    var a2 = new Delta().insert('Test', attr1);
+    var b1 = new Delta().retain(1, { color: 'red' }).delete(2);
+    var b2 = new Delta().retain(1, { color: 'red' }).delete(2);
+    var expected = new Delta().insert('T', { color: 'red', bold: true }).insert('t', attr1);
+    expect(a1.compose(b1)).to.deep.equal(expected);
+    expect(a1).to.deep.equal(a2);
+    expect(b1).to.deep.equal(b2);
+    expect(attr1).to.deep.equal(attr2);
   });
 });
