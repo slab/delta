@@ -36,7 +36,7 @@ delta.compose(death);
 
 ```
 
-This format is suitable for [Operational Transform](https://en.wikipedia.org/wiki/Operational_transformation) and defines several functions to support this use case.
+This format is suitable for [Operational Transform](https://en.wikipedia.org/wiki/Operational_transformation) and defines several functions ([`compose`](#compose), [`transform`](#transform), [`diff`](#diff)) to support this use case.
 
 ## Contents
 
@@ -132,9 +132,7 @@ Retain operations have a Number `retain` key defined representing the number of 
 
 ## Deltas
 
-A Delta is made up of an array of operations. Unless otherwise specified all methods are self modifying and return `this` for chainability.
-
-All methods also maintain the property that Deltas are represented in the most compact form. For example two consecutive insert operations of plain text will be merged into one.
+A Delta is made up of an array of operations. All methods maintain the property that Deltas are represented in the most compact form. For example two consecutive insert operations of plain text will be merged into one. Thus a vanilla deep Object/Array comparison can be used to determine Delta equality.
 
 ---
 
@@ -174,7 +172,7 @@ var chained = new Delta().insert('Hello World').insert('!', { bold: true });
 
 ### insert()
 
-Appends an insert operation.
+Appends an insert operation. Returns `this` for chainability.
 
 #### Methods
 
@@ -198,7 +196,7 @@ delta.insert(1, { src: 'https://octodex.github.com/images/labtocat.png' });
 
 ### delete()
 
-Appends a delete operation.
+Appends a delete operation. Returns `this` for chainability.
 
 #### Methods
 
@@ -218,7 +216,7 @@ delta.delete(5);
 
 ### retain()
 
-Appends a retain operation.
+Appends a retain operation. Returns `this` for chainability.
 
 #### Methods
 
@@ -239,7 +237,7 @@ delta.retain(4).retain(5, { color: '#0c6' });
 
 ### length()
 
-Returns length of Delta.
+Returns length of a Delta, which is the sum of the lengths of its operations.
 
 #### Methods
 
@@ -294,7 +292,7 @@ var space = delta.slice(5, 6);
 
 ### compose()
 
-Compose with another Delta, i.e. merge the operations of another Delta. This method is self modifying.
+Returns a Delta that is equivalent to applying the operations of own Delta, followed by another Delta.
 
 #### Methods
 
@@ -310,7 +308,8 @@ Compose with another Delta, i.e. merge the operations of another Delta. This met
 var a = new Delta().insert('abc');
 var b = new Delta().retain(1).delete(1);
 
-a.compose(b);  // a == new Delta().insert('ac');
+var composed = a.compose(b);  // composed == new Delta().insert('ac');
+
 ```
 
 ---
@@ -378,7 +377,7 @@ The following methods are supported only for Deltas that represent a document (i
 
 ### diff()
 
-Calculates the difference between two documents expressed as a Delta.
+Returns a Delta representing the difference between two documents.
 
 #### Methods
 
@@ -399,25 +398,6 @@ var a = new Delta().insert('Hello');
 var b = new Delta().insert('Hello!');
 
 var diff = a.diff(b);  // { ops: [{ retain: 5 }, { insert: '!' }] }
-```
+                       // a.compose(diff) == b
 
----
-
-### length()
-
-Calculates the length of the document.
-
-#### Methods
-
-- `length()`
-
-#### Returns
-
-- `Number` - length of the document
-
-#### Example
-
-```js
-var delta = new Delta().insert('Hello');
-var length = delta.length();
 ```
