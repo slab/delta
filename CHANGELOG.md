@@ -2,3 +2,4 @@
 
 Changes:
 - `compose()` returns a new Delta instead of self-modifying
+- Support embed being any non-string type

@@ -31,10 +31,31 @@ describe('diff()', function () {
     expect(a.diff(b)).to.deep.equal(expected);
   });
 
-  it('embed match', function () {
+  it('embed integer match', function () {
     var a = new Delta().insert(1);
     var b = new Delta().insert(1);
     var expected = new Delta();
+    expect(a.diff(b)).to.deep.equal(expected);
+  });
+
+  it('embed integer mismatch', function () {
+    var a = new Delta().insert(1);
+    var b = new Delta().insert(2);
+    var expected = new Delta().delete(1).insert(2);
+    expect(a.diff(b)).to.deep.equal(expected);
+  });
+
+  it('embed object match', function () {
+    var a = new Delta().insert({ image: 'http://quilljs.com' });
+    var b = new Delta().insert({ image: 'http://quilljs.com' });
+    var expected = new Delta();
+    expect(a.diff(b)).to.deep.equal(expected);
+  });
+
+  it('embed object mismatch', function () {
+    var a = new Delta().insert({ image: 'http://quilljs.com', alt: 'Overwrite' });
+    var b = new Delta().insert({ image: 'http://quilljs.com' });
+    var expected = new Delta().insert({ image: 'http://quilljs.com' }).delete(1);
     expect(a.diff(b)).to.deep.equal(expected);
   });
 

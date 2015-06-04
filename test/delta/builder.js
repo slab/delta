@@ -63,6 +63,14 @@ describe('insert()', function () {
     expect(delta.ops[0]).to.deep.equal({ insert: 1, attributes: obj });
   });
 
+  it('insert(embed) non-integer', function () {
+    var embed = { url: 'http://quilljs.com' };
+    var attr = { alt: 'Quill' };
+    var delta = new Delta().insert(embed, attr);
+    expect(delta.ops.length).to.equal(1);
+    expect(delta.ops[0]).to.deep.equal({ insert: embed, attributes: attr });
+  });
+
   it('insert(text, attributes)', function () {
     var delta = new Delta().insert('test', { bold: true });
     expect(delta.ops.length).to.equal(1);
@@ -78,6 +86,12 @@ describe('insert()', function () {
   it('insert(text) after delete with merge', function () {
     var delta = new Delta().insert('a').delete(1).insert('b');
     var expected = new Delta().insert('ab').delete(1);
+    expect(delta).to.deep.equal(expected);
+  });
+
+  it('insert(text) after delete no merge', function () {
+    var delta = new Delta().insert(1).delete(1).insert('a');
+    var expected = new Delta().insert(1).insert('a').delete(1);
     expect(delta).to.deep.equal(expected);
   });
 
@@ -180,8 +194,9 @@ describe('push()', function () {
   });
 
   it('push(op) consecutive embeds with matching attributes', function () {
-    var delta = new Delta().insert({ url: 'http://quilljs.com' });
-    delta.push({ attributes: { url: 'http://quilljs.com' } });
+    var delta = new Delta().insert(1, { alt: 'Description' });
+    delta.push({ insert: { url: 'http://quilljs.com' }, attributes: { alt: 'Description' } });
+    console.log(JSON.stringify(delta))
     expect(delta.ops.length).to.equal(2);
   });
 });

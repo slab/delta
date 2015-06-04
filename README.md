@@ -68,9 +68,7 @@ Operations describe a singular change to a document. They can be an [`insert`](#
 
 ### Insert Operation
 
-Insert operations have an `insert` key defined. A String value represents inserting text. A Number value represents inserting an embed, with the value corresponding to an embed type (such as an image or video).
-
-Here we will use 1 to represent images and 2 to represent videos, but your application can choose whatever mapping is convenient.
+Insert operations have an `insert` key defined. A String value represents inserting text. Any other type represents inserting an embed (however only one level of object comparison will be performed for equality).
 
 In both cases of text and embeds, an optional `attributes` key can be defined with an Object to describe additonal formatting information. Formats can be changed by the [retain](#retain) operation.
 
@@ -81,20 +79,16 @@ In both cases of text and embeds, an optional `attributes` key can be defined wi
 // Insert a link
 { insert: "Google", attributes: { href: 'https://www.google.com' } }
 
-// Insert an image
+// Insert an embed
 {
-  insert: 1,
-  attributes: {
-    alt: "Lab Octocat",
-    src: 'https://octodex.github.com/images/labtocat.png'
-  }
+  insert: { image: 'https://octodex.github.com/images/labtocat.png' },
+  attributes: { alt: "Lab Octocat" }
 }
 
-// Insert a video
+// Insert another embed
 {
-  insert: 2,
+  insert: { video: 'https://www.youtube.com/watch?v=dMH0bHeiRNg' },
   attributes: {
-    src: "https://www.youtube.com/watch?v=dMH0bHeiRNg",
     width: 420,
     height: 315
   }

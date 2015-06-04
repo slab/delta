@@ -10,6 +10,14 @@ var FORMATS = {
   italic: [true, null]
 };
 
+function generateRandomEmbed () {
+  switch(fuzzer.randomInt(4)) {
+    case 0: return 1;
+    case 1: return 2;
+    case 2: return { image: 'http://quilljs.com' };
+    case 3: return { url: 'http://quilljs.com' };
+  }
+};
 
 function generateRandomFormat (includeNull) {
   var format = {};
@@ -67,7 +75,7 @@ function generateRandomOp (snapshot) {
         break;
       case 2:
         // Insert embed
-        var type = fuzzer.randomInt(2) + 1;
+        var type = generateRandomEmbed();
         var formats = generateRandomFormat(false);
         delta.insert(type, formats);
         result.insert(type, formats);
