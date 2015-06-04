@@ -1,6 +1,6 @@
 {
   "name": "rich-text",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Format for representing rich text documents and changes.",
   "author": "Jason Chen <jhchen7@gmail.com>",
   "homepage": "https://github.com/ottypes/rich-text",
