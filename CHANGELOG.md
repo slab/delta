@@ -1,3 +1,9 @@
+## v2.1.0
+
+Changes:
+- Add `concat()` method for document Deltas
+
+
 ## v2.0.0
 
 Changes:
