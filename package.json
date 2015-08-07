@@ -9,11 +9,11 @@
     "fast-diff": "~1.0.1"
   },
   "devDependencies": {
-    "chai": "~2.3.0",
+    "chai": "~3.2.0",
     "coveralls": "~2.11.2",
     "grunt": "~0.4.5",
     "istanbul": "~0.3.14",
-    "lodash": "~3.9.3",
+    "lodash": "~3.10.1",
     "mocha": "~2.2.5",
     "ot-fuzzer": "~1.0.0"
   },
