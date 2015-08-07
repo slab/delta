@@ -3,6 +3,29 @@ var expect = require('chai').expect;
 
 
 describe('helpers', function () {
+  describe('concat()', function () {
+    it('empty delta', function () {
+      var delta = new Delta().insert('Test');
+      var concat = new Delta();
+      var expected = new Delta().insert('Test');
+      expect(delta.concat(concat)).to.deep.equal(expected);
+    });
+
+    it('unmergeable', function () {
+      var delta = new Delta().insert('Test');
+      var concat = new Delta().insert('!', { bold: true });
+      var expected = new Delta().insert('Test').insert('!', { bold: true });
+      expect(delta.concat(concat)).to.deep.equal(expected);
+    });
+
+    it('mergeable', function () {
+      var delta = new Delta().insert('Test', { bold: true });
+      var concat = new Delta().insert('!', { bold: true }).insert('\n');
+      var expected = new Delta().insert('Test!', { bold: true }).insert('\n');
+      expect(delta.concat(concat)).to.deep.equal(expected);
+    });
+  });
+
   describe('chop()', function () {
     it('retain', function () {
       var delta = new Delta().insert('Test').retain(4);

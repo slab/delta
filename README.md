@@ -369,6 +369,40 @@ The following methods are supported only for Deltas that represent a document (i
 
 ---
 
+### concat()
+
+Returns a new Delta representing the concatenation of this and another document Delta's operations.
+
+#### Methods
+
+- `concat(other)`
+
+#### Parameters
+
+- `other` - Document Delta to concatenate
+
+#### Returns
+
+- `Delta` - Concatenated document Delta
+
+#### Example
+
+```js
+var a = new Delta().insert('Hello');
+var b = new Delta().insert('!', { bold: true });
+
+
+// {
+//   ops: [
+//     { insert: 'Hello' },
+//     { insert: '!', attributes: { bold: true } }
+//   ]
+// }
+var concat = a.concat(b);
+```
+
+---
+
 ### diff()
 
 Returns a Delta representing the difference between two documents.
