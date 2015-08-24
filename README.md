@@ -106,7 +106,7 @@ Delete operations have a Number `delete` key defined representing the number of 
 
 ### Retain Operation
 
-Retain operations have a Number `retain` key defined representing the number of characters to keep (other libraries might use the name keep or skip). An optional `attributes` key can be defined with an Object to describe formatting changes to the character range. A value of null in the `attributes` Object represents removal of that key.
+Retain operations have a Number `retain` key defined representing the number of characters to keep (other libraries might use the name keep or skip). An optional `attributes` key can be defined with an Object to describe formatting changes to the character range. A value of `null` in the `attributes` Object represents removal of that key.
 
 *Note: It is not necessary to retain the last characters of a document as this is implied.*
 
