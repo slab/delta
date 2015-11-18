@@ -9,12 +9,12 @@
     "fast-diff": "~1.0.1"
   },
   "devDependencies": {
-    "chai": "~3.2.0",
+    "chai": "~3.4.1",
     "coveralls": "~2.11.2",
     "grunt": "~0.4.5",
-    "istanbul": "~0.3.14",
+    "istanbul": "~0.4.0",
     "lodash": "~3.10.1",
-    "mocha": "~2.2.5",
+    "mocha": "~2.3.4",
     "ot-fuzzer": "~1.0.0"
   },
   "engines": {
