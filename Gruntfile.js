@@ -3,7 +3,6 @@ var fs = require('fs');
 module.exports = function (grunt) {
   // Define to control testing order
   var tests = [
-    'test/is.js',
     'test/attributes.js',
     'test/op.js',
     'test/delta/builder.js',

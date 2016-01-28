@@ -1,21 +1,22 @@
 {
   "name": "rich-text",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Format for representing rich text documents and changes.",
   "author": "Jason Chen <jhchen7@gmail.com>",
   "homepage": "https://github.com/ottypes/rich-text",
   "main": "index.js",
   "dependencies": {
-    "fast-diff": "~1.0.1"
+    "deep-equal": "^1.0.1",
+    "fast-diff": "^1.0.1"
   },
   "devDependencies": {
-    "chai": "~3.4.1",
-    "coveralls": "~2.11.2",
+    "chai": "^3.5.0",
+    "coveralls": "^2.11.6",
     "grunt": "~0.4.5",
-    "istanbul": "~0.4.0",
-    "lodash": "~3.10.1",
-    "mocha": "~2.3.4",
-    "ot-fuzzer": "~1.0.0"
+    "istanbul": "~0.4.2",
+    "lodash": "^4.0.1",
+    "mocha": "^2.4.4",
+    "ot-fuzzer": "^1.0.0"
   },
   "engines": {
     "node": ">=0.10"
