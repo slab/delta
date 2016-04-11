@@ -3,33 +3,6 @@ var expect = require('chai').expect;
 
 
 describe('attributes', function () {
-  describe('clone()', function () {
-    var attributes = {
-      bold: true,
-      color: 'red',
-      italic: null
-    };
-
-    it('undefined', function () {
-      expect(op.attributes.clone(undefined)).to.deep.equal({});
-    });
-
-    it('keep null', function () {
-      var clone = op.attributes.clone(attributes, true);
-      expect(clone === attributes).to.equal(false);
-      expect(clone).to.deep.equal(attributes);
-    });
-
-    it('dont keep null', function () {
-      var clone = op.attributes.clone(attributes, false);
-      expect(clone === attributes).to.equal(false);
-      expect(clone).to.deep.equal({
-        bold: true,
-        color: 'red'
-      });
-    });
-  });
-
   describe('compose()', function () {
     var attributes = { bold: true, color: 'red' };
 
