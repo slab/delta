@@ -1,3 +1,12 @@
+## v3.0.0
+
+#### Breaking Changes
+- Deep copy and compare attributes and deltas
+
+
+#### Features
+
+
 ## v2.1.0
 
 #### Features
