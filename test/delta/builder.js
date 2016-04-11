@@ -196,7 +196,6 @@ describe('push()', function () {
   it('push(op) consecutive embeds with matching attributes', function () {
     var delta = new Delta().insert(1, { alt: 'Description' });
     delta.push({ insert: { url: 'http://quilljs.com' }, attributes: { alt: 'Description' } });
-    console.log(JSON.stringify(delta))
     expect(delta.ops.length).to.equal(2);
   });
 });
