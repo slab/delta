@@ -31,6 +31,13 @@ describe('diff()', function () {
     expect(a.diff(b)).to.deep.equal(expected);
   });
 
+  it('object attributes', function () {
+    var a = new Delta().insert('A', { font: { family: 'Helvetica', size: '15px' } });
+    var b = new Delta().insert('A', { font: { family: 'Helvetica', size: '15px' } });
+    var expected = new Delta();
+    expect(a.diff(b)).to.deep.equal(expected);
+  });
+
   it('embed integer match', function () {
     var a = new Delta().insert(1);
     var b = new Delta().insert(1);
