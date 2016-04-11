@@ -66,6 +66,15 @@ describe('diff()', function () {
     expect(a.diff(b)).to.deep.equal(expected);
   });
 
+  it('embed object change', function () {
+    var embed = { image: 'http://quilljs.com' };
+    var a = new Delta().insert(embed);
+    embed.image = 'http://github.com';
+    var b = new Delta().insert(embed);
+    var expected = new Delta().insert({ image: 'http://github.com' }).delete(1);
+    expect(a.diff(b)).to.deep.equal(expected);
+  });
+
   it('embed false positive', function () {
     var a = new Delta().insert(1);
     var b = new Delta().insert(String.fromCharCode(0)); // Placeholder char for embed in diff()
