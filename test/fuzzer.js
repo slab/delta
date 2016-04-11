@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var expect = require('chai').expect;
 var fuzzer = require('ot-fuzzer');
 var richText = require('../lib/type');
 var Delta = richText.Delta;
@@ -143,5 +144,10 @@ function next (snapshot, length) {
   return ops;
 };
 
-
-fuzzer(richText.type, generateRandomOp, 100);
+describe('fuzzer', function() {
+  it('random operations', function () {
+    expect(function () {
+      fuzzer(richText.type, generateRandomOp, 100);
+    }).to.not.throw(Error);
+  });
+});
