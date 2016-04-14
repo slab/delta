@@ -24,8 +24,8 @@ var death = new Delta().retain(12)
 //   ]
 // }
 
-delta.compose(death);
-// delta is now:
+var restored = delta.compose(death);
+// restored is:
 // {
 //   ops: [
 //     { insert: 'Gandalf ', attributes: { bold: true } },
