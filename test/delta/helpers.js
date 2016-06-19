@@ -13,16 +13,20 @@ describe('helpers', function () {
 
     it('unmergeable', function () {
       var delta = new Delta().insert('Test');
+      var original = new Delta(JSON.parse(JSON.stringify(delta)));
       var concat = new Delta().insert('!', { bold: true });
       var expected = new Delta().insert('Test').insert('!', { bold: true });
       expect(delta.concat(concat)).to.deep.equal(expected);
+      expect(delta).to.deep.equal(original);
     });
 
     it('mergeable', function () {
       var delta = new Delta().insert('Test', { bold: true });
+      var original = new Delta(JSON.parse(JSON.stringify(delta)));
       var concat = new Delta().insert('!', { bold: true }).insert('\n');
       var expected = new Delta().insert('Test!', { bold: true }).insert('\n');
       expect(delta.concat(concat)).to.deep.equal(expected);
+      expect(delta).to.deep.equal(original);
     });
   });
 
