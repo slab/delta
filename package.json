@@ -1,10 +1,10 @@
 {
-  "name": "rich-text",
+  "name": "quill-delta",
   "version": "3.0.2",
   "description": "Format for representing rich text documents and changes.",
   "author": "Jason Chen <jhchen7@gmail.com>",
-  "homepage": "https://github.com/ottypes/rich-text",
-  "main": "index.js",
+  "homepage": "https://github.com/quilljs/delta",
+  "main": "lib/delta.js",
   "dependencies": {
     "deep-equal": "^1.0.1",
     "extend": "^3.0.0",
@@ -16,22 +16,21 @@
     "grunt": "~1.0.1",
     "istanbul": "~0.4.3",
     "lodash": "^4.10.0",
-    "mocha": "^2.4.5",
-    "ot-fuzzer": "^1.0.0"
+    "mocha": "^2.4.5"
   },
   "engines": {
     "node": ">=0.10"
   },
   "license": "MIT",
   "scripts": {
-    "test": "grunt test"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ottypes/rich-text"
+    "url": "https://github.com/quilljs/delta"
   },
   "bugs": {
-    "url": "https://github.com/ottypes/rich-text/issues"
+    "url": "https://github.com/quilljs/delta/issues"
   },
   "keywords": [
     "rich text",
