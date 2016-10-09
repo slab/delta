@@ -11,18 +11,16 @@
     "fast-diff": "^1.0.1"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
     "coveralls": "^2.11.9",
-    "grunt": "~1.0.1",
     "istanbul": "~0.4.3",
-    "mocha": "^2.4.5"
+    "jasmine": "^2.5.2"
   },
   "engines": {
     "node": ">=0.10"
   },
   "license": "MIT",
   "scripts": {
-    "test": "mocha"
+    "test": "jasmine test/**/*.js"
   },
   "repository": {
     "type": "git",
