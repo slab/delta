@@ -356,12 +356,138 @@ var world = delta.slice(6);
 var space = delta.slice(5, 6);
 ```
 
+
 ## Iteration
-- [`filter`](#filter)
-- [`forEach`](#forEach)
-- [`groupLines`](#groupLines)
-- [`map`](#map)
-- [`reduce`](#map)
+
+### filter()
+
+Returns an array of operations that passes a given function.
+
+#### Methods
+
+- `filter(predicate)`
+
+#### Parameters
+
+- `predicate` - Function to test each operation against. Return `true` to keep the operation, `false` otherwise.
+
+#### Returns
+
+- `Array` - Filtered resulting array
+
+#### Example
+
+```js
+var delta = new Delta().insert('Hello', { bold: true })
+                       .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
+                       .insert('World!');
+
+var text = delta.filter(function(op) {
+  return typeof op.insert === 'string';
+}).map(function(op) {
+  return op.insert;
+}).join('');
+```
+
+---
+
+### forEach()
+
+Iterates through operations, calling the provided function for each operation.
+
+#### Methods
+
+- `forEach(predicate)`
+
+#### Parameters
+
+- `predicate` - Function to call during iteration, passing in the current operation.
+
+#### Example
+
+```js
+delta.forEach(function(op) {
+  console.log(op);
+});
+```
+
+---
+
+### groupLines()
+
+#### Methods
+
+
+#### Parameters
+
+
+#### Example
+
+---
+
+### map()
+
+Returns a new array with the results of calling provided function on each operation.
+
+#### Methods
+
+- `map(predicate)`
+
+#### Parameters
+
+- `predicate` - Function to call, passing in the current operation, returning an element of the new array to be returned
+
+#### Returns
+
+- `Array` - A new array with each element being the result of the given function.
+
+#### Example
+
+```js
+var delta = new Delta().insert('Hello', { bold: true })
+                       .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
+                       .insert('World!');
+
+var text = delta.map(function(op) {
+  if (typeof op.insert === 'string') {
+    return op.insert;
+  } else {
+    return '';
+  }
+}).join('');
+```
+
+---
+
+### reduce()
+
+Applies given function against an accumulator and each operation to reduce to a single value.
+
+#### Methods
+
+- `reduce(predicate, initialValue)`
+
+#### Parameters
+
+- `predicate` - Function to call per iteration, returning an accumulated value
+- `initialValue` - Initial value to pass to first call to predicate
+
+#### Returns
+
+- `any` - the accumulated value
+
+#### Example
+
+```js
+var delta = new Delta().insert('Hello', { bold: true })
+                       .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
+                       .insert('World!');
+
+var length = delta.reduce(function(length, op) {
+  return length + (op.insert.length || 1);
+}, 0);
+```
+
 
 ## Operational Transform
 
