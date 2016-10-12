@@ -44,8 +44,7 @@ var restored = delta.compose(death);
 
 ```
 
-This README describes Deltas in its general form and API functionality. The way Quill specifically uses Deltas can be found on its own [Delta docs](http://quilljs.com/docs/delta/).
-A walkthough of the motivation and design thinking behind Deltas are on [Designing the Delta Format](http://quilljs.com/guides/designing-the-delta-format/).
+This README describes Deltas in its general form and API functionality. Additional information on the way Quill specifically uses Deltas can be found on its own [Delta docs](http://quilljs.com/docs/delta/). A walkthough of the motivation and design thinking behind Deltas are on [Designing the Delta Format](http://quilljs.com/guides/designing-the-delta-format/).
 
 This format is suitable for [Operational Transform](https://en.wikipedia.org/wiki/Operational_transformation) and defines several functions to support this use case.
 
@@ -70,11 +69,9 @@ This format is suitable for [Operational Transform](https://en.wikipedia.org/wik
 - [`slice`](#slice)
 
 #### Iteration
-- [`filter`](#filter)
 - [`forEach`](#forEach)
-- [`groupLines`](#groupLines)
 - [`map`](#map)
-- [`reduce`](#map)
+- [`reduce`](#reduce)
 
 #### Operational Transform
 - [`compose`](#compose)
