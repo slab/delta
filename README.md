@@ -52,28 +52,37 @@ This format is suitable for [Operational Transform](https://en.wikipedia.org/wik
 ## Contents
 
 #### Operations
+
 - [insert](#insert-operation)
 - [delete](#delete-operation)
 - [retain](#retain-operation)
 
 #### Construction
+
 - [`constructor`](#constructor)
 - [`insert`](#insert)
 - [`delete`](#delete)
 - [`retain`](#retain)
 
 #### Documents
+
+These methods called on or with non-document Deltas will result in undefined behavior.
+
 - [`concat`](#concat)
 - [`diff`](#diff)
-- [`length`](#length)
-- [`slice`](#slice)
+- [`eachLine`](#eachline)
 
 #### Iteration
+
+- [`filter`](#filter)
 - [`forEach`](#forEach)
+- [`length`](#length)
 - [`map`](#map)
 - [`reduce`](#reduce)
+- [`slice`](#slice)
 
 #### Operational Transform
+
 - [`compose`](#compose)
 - [`transform`](#transform)
 - [`transformPosition`](#transformposition)
@@ -303,57 +312,36 @@ var diff = a.diff(b);  // { ops: [{ retain: 5 }, { insert: '!' }] }
 
 ---
 
-### length()
+### eachLine()
 
-Returns length of a Delta, which is the sum of the lengths of its operations.
-
-#### Methods
-
-- `length()`
-
-#### Example
-
-```js
-new Delta().insert('Hello').length();  // Returns 5
-
-new Delta().insert('A').retain(2).delete(1) // Returns 4
-```
-
----
-
-### slice()
-
-Returns copy of delta with subset of operations.
+Iterates through document Delta, calling a given function with a Delta and attributes object, representing the line segment.
 
 #### Methods
 
-- `slice()`
-- `slice(start)`
-- `slice(start, end)`
+- `eachLine(predicate, newline)`
 
 #### Parameters
 
-- `start` - Start index of subset, defaults to 0
-- `end` - End index of subset, defaults to rest of operations
+- `predicate` - function to call on each line group
+- `newline` - newline character, defaults to `\n`
 
 #### Example
 
 ```js
-var delta = new Delta().insert('Hello', { bold: true }).insert(' World');
+var delta = Delta().insert('Hello\n\n')
+                   .insert('World')
+                   .insert({ image: 'octocat.png' })
+                   .insert('\n', { align: 'right' })
+                   .insert('!');
 
-// {
-//   ops: [
-//     { insert: 'Hello', attributes: { bold: true } },
-//     { insert: ' World' }
-//   ]
-// }
-var copy = delta.slice();
-
-// { ops: [{ insert: 'World' }] }
-var world = delta.slice(6);
-
-// { ops: [{ insert: ' ' }] }
-var space = delta.slice(5, 6);
+delta.eachline(function(line, attributes) {
+  console.log(line, attributes);
+});
+// Should log:
+// { ops: [{ insert: 'Hello' }] }, {}
+// { ops: [{ insert: '' }] }, {}
+// { ops: [{ insert: 'Word' }, { insert: { image: 'octocat' } }] }, { align: 'right' }
+// { ops: [{ insert: '!' }] }, {}
 ```
 
 
@@ -413,15 +401,21 @@ delta.forEach(function(op) {
 
 ---
 
-### groupLines()
+### length()
+
+Returns length of a Delta, which is the sum of the lengths of its operations.
 
 #### Methods
 
-
-#### Parameters
-
+- `length()`
 
 #### Example
+
+```js
+new Delta().insert('Hello').length();  // Returns 5
+
+new Delta().insert('A').retain(2).delete(1) // Returns 4
+```
 
 ---
 
@@ -486,6 +480,43 @@ var delta = new Delta().insert('Hello', { bold: true })
 var length = delta.reduce(function(length, op) {
   return length + (op.insert.length || 1);
 }, 0);
+```
+
+---
+
+### slice()
+
+Returns copy of delta with subset of operations.
+
+#### Methods
+
+- `slice()`
+- `slice(start)`
+- `slice(start, end)`
+
+#### Parameters
+
+- `start` - Start index of subset, defaults to 0
+- `end` - End index of subset, defaults to rest of operations
+
+#### Example
+
+```js
+var delta = new Delta().insert('Hello', { bold: true }).insert(' World');
+
+// {
+//   ops: [
+//     { insert: 'Hello', attributes: { bold: true } },
+//     { insert: ' World' }
+//   ]
+// }
+var copy = delta.slice();
+
+// { ops: [{ insert: 'World' }] }
+var world = delta.slice(6);
+
+// { ops: [{ insert: ' ' }] }
+var space = delta.slice(5, 6);
 ```
 
 
