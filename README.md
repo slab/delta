@@ -1,31 +1,39 @@
-# Rich Text [![Build Status](https://travis-ci.org/ottypes/rich-text.svg?branch=master)](http://travis-ci.org/ottypes/rich-text) [![Coverage Status](https://img.shields.io/coveralls/ottypes/rich-text.svg)](https://coveralls.io/r/ottypes/rich-text)
+# Delta [![Build Status](https://travis-ci.org/quilljs/delta.svg?branch=master)](http://travis-ci.org/quilljs/delta) [![Coverage Status](https://img.shields.io/coveralls/quilljs/delta.svg)](https://coveralls.io/r/quilljs/delta)
 
-A format for representing rich text documents and changes. It aimes to be intuitive and human readable with the ability to express any change necessary to deal with rich text. A document can also be expressed with this format--as the change from an empty document.
+Deltas are a simple, yet expressive format that can be used to describe contents and changes. The format is JSON based, and is human readable, yet easily parsible by machines. Deltas can describe any rich text document, includes all text and formatting information, without the ambiguity and complexity of HTML.
+
+A Delta is made up of an [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) of Operations, which describe changes to a document. They can be an [`insert`](#insert-operation), [`delete`](#delete-operation) or [`retain`](#retain-operation). Note operations do not take an index. They always describe the change at the current index. Use retains to "keep" or "skip" certain parts of the document.
+
+Don’t be confused by its name Delta&mdash;Deltas represents both documents and changes to documents. If you think of Deltas as the instructions from going from one document to another, the way Deltas represent a document is by expressing the instructions starting from an empty document.
+
 
 ## Quick Example
 
 ```js
+// Document with text "Gandalf the Grey"
+// with "Gandalf" bolded, and "Grey" in grey
 var delta = new Delta([
   { insert: 'Gandalf', attributes: { bold: true } },
   { insert: ' the ' },
   { insert: 'Grey', attributes: { color: '#ccc' } }
 ]);
 
-// Keep the first 12 characters, delete the next 4, and insert a white 'White'
+// Change intended to be applied to above:
+// Keep the first 12 characters, delete the next 4,
+// and insert a white 'White'
 var death = new Delta().retain(12)
                        .delete(4)
                        .insert('White', { color: '#fff' });
-// this produces:
 // {
 //   ops: [
 //     { retain: 12 },
-//     { delete: '4 ' },
+//     { delete: 4 },
 //     { insert: 'White', attributes: { color: '#fff' } }
 //   ]
 // }
 
+// Applying the above:
 var restored = delta.compose(death);
-// restored is:
 // {
 //   ops: [
 //     { insert: 'Gandalf ', attributes: { bold: true } },
@@ -36,36 +44,45 @@ var restored = delta.compose(death);
 
 ```
 
-This format is suitable for [Operational Transform](https://en.wikipedia.org/wiki/Operational_transformation) and defines several functions ([`compose`](#compose), [`transform`](#transform), [`diff`](#diff)) to support this use case.
+This README describes Deltas in its general form and API functionality. The way Quill specifically uses Deltas can be found on its own [Delta docs](http://quilljs.com/docs/delta/).
+A walkthough of the motivation and design thinking behind Deltas are on [Designing the Delta Format](http://quilljs.com/guides/designing-the-delta-format/).
+
+This format is suitable for [Operational Transform](https://en.wikipedia.org/wiki/Operational_transformation) and defines several functions to support this use case.
+
 
 ## Contents
 
-#### [Operations](#operations-1)
-
+#### Operations
 - [insert](#insert-operation)
 - [delete](#delete-operation)
 - [retain](#retain-operation)
 
-#### [Deltas](#deltas-1)
-
+#### Construction
 - [`constructor`](#constructor)
 - [`insert`](#insert)
 - [`delete`](#delete)
 - [`retain`](#retain)
+
+#### Documents
+- [`concat`](#concat)
+- [`diff`](#diff)
 - [`length`](#length)
 - [`slice`](#slice)
+
+#### Iteration
+- [`filter`](#filter)
+- [`forEach`](#forEach)
+- [`groupLines`](#groupLines)
+- [`map`](#map)
+- [`reduce`](#map)
+
+#### Operational Transform
 - [`compose`](#compose)
 - [`transform`](#transform)
 - [`transformPosition`](#transformposition)
 
-#### [Documents](#documents-1)
-- [`concat`](#concat)
-- [`diff`](#diff)
-
 
 ## Operations
-
-Operations describe a singular change to a document. They can be an [`insert`](#insert-operation), [`delete`](#delete-operation) or [`retain`](#retain-operation). Note operations do not take an index. They always describe the change at the current index. Use retains to "keep" or "skip" certain parts of the document.
 
 ### Insert Operation
 
@@ -125,11 +142,7 @@ Retain operations have a Number `retain` key defined representing the number of 
 ```
 
 
-## Deltas
-
-A Delta is made up of an array of operations. All methods maintain the property that Deltas are represented in the most compact form. For example two consecutive insert operations of plain text will be merged into one. Thus a vanilla deep Object/Array comparison can be used to determine Delta equality.
-
----
+## Construction
 
 ### constructor
 
@@ -228,6 +241,69 @@ Appends a retain operation. Returns `this` for chainability.
 delta.retain(4).retain(5, { color: '#0c6' });
 ```
 
+## Documents
+
+### concat()
+
+Returns a new Delta representing the concatenation of this and another document Delta's operations.
+
+#### Methods
+
+- `concat(other)`
+
+#### Parameters
+
+- `other` - Document Delta to concatenate
+
+#### Returns
+
+- `Delta` - Concatenated document Delta
+
+#### Example
+
+```js
+var a = new Delta().insert('Hello');
+var b = new Delta().insert('!', { bold: true });
+
+
+// {
+//   ops: [
+//     { insert: 'Hello' },
+//     { insert: '!', attributes: { bold: true } }
+//   ]
+// }
+var concat = a.concat(b);
+```
+
+---
+
+### diff()
+
+Returns a Delta representing the difference between two documents.
+
+#### Methods
+
+- `diff(other)`
+
+#### Parameters
+
+- `other` - Document Delta to diff against
+
+#### Returns
+
+- `Delta` - difference between the two documents
+
+#### Example
+
+```js
+var a = new Delta().insert('Hello');
+var b = new Delta().insert('Hello!');
+
+var diff = a.diff(b);  // { ops: [{ retain: 5 }, { insert: '!' }] }
+                       // a.compose(diff) == b
+
+```
+
 ---
 
 ### length()
@@ -283,7 +359,14 @@ var world = delta.slice(6);
 var space = delta.slice(5, 6);
 ```
 
----
+## Iteration
+- [`filter`](#filter)
+- [`forEach`](#forEach)
+- [`groupLines`](#groupLines)
+- [`map`](#map)
+- [`reduce`](#map)
+
+## Operational Transform
 
 ### compose()
 
@@ -359,74 +442,4 @@ Transform an index against the delta. Useful for representing cursor/selection p
 ```js
 var index = 12;
 var transformedIndex = delta.transformPosition(index);
-```
-
-
-## Documents
-
-A Delta with only insert operations can be used to represent a rich text document. This can be thought of as a Delta applied to an empty document.
-
-The following methods are supported only for Deltas that represent a document (i.e. they only contain inserts). There are no guarantees on the behavior on non-document Deltas.
-
----
-
-### concat()
-
-Returns a new Delta representing the concatenation of this and another document Delta's operations.
-
-#### Methods
-
-- `concat(other)`
-
-#### Parameters
-
-- `other` - Document Delta to concatenate
-
-#### Returns
-
-- `Delta` - Concatenated document Delta
-
-#### Example
-
-```js
-var a = new Delta().insert('Hello');
-var b = new Delta().insert('!', { bold: true });
-
-
-// {
-//   ops: [
-//     { insert: 'Hello' },
-//     { insert: '!', attributes: { bold: true } }
-//   ]
-// }
-var concat = a.concat(b);
-```
-
----
-
-### diff()
-
-Returns a Delta representing the difference between two documents.
-
-#### Methods
-
-- `diff(other)`
-
-#### Parameters
-
-- `other` - Document Delta to diff against
-
-#### Returns
-
-- `Delta` - difference between the two documents
-
-#### Example
-
-```js
-var a = new Delta().insert('Hello');
-var b = new Delta().insert('Hello!');
-
-var diff = a.diff(b);  // { ops: [{ retain: 5 }, { insert: '!' }] }
-                       // a.compose(diff) == b
-
 ```
