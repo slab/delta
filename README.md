@@ -72,10 +72,10 @@ These methods called on or with non-document Deltas will result in undefined beh
 - [`diff`](#diff)
 - [`eachLine`](#eachline)
 
-#### Iteration
+#### Utility
 
 - [`filter`](#filter)
-- [`forEach`](#forEach)
+- [`forEach`](#foreach)
 - [`length`](#length)
 - [`map`](#map)
 - [`reduce`](#reduce)
@@ -345,7 +345,7 @@ delta.eachline(function(line, attributes) {
 ```
 
 
-## Iteration
+## Utility
 
 ### filter()
 
