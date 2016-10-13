@@ -49,6 +49,72 @@ describe('helpers', function () {
     })
   });
 
+  describe('eachLine()', function () {
+    var spy = { predicate: function () {} };
+
+    beforeEach(function () {
+      spyOn(spy, 'predicate').and.callThrough();
+    });
+
+    it('expected', function () {
+      var delta = new Delta().insert('Hello\n\n')
+                             .insert('World', { bold: true })
+                             .insert({ image: 'octocat.png' })
+                             .insert('\n', { align: 'right' })
+                             .insert('!');
+      delta.eachLine(spy.predicate);
+      expect(spy.predicate.calls.count()).toEqual(4);
+      expect(spy.predicate.calls.argsFor(0)).toEqual([ new Delta().insert('Hello'), {} ]);
+      expect(spy.predicate.calls.argsFor(1)).toEqual([ new Delta(), {} ]);
+      expect(spy.predicate.calls.argsFor(2)).toEqual([
+        new Delta().insert('World', { bold: true }).insert({ image: 'octocat.png' }),
+        { align: 'right' }
+      ]);
+      expect(spy.predicate.calls.argsFor(3)).toEqual([ new Delta().insert('!'), {} ]);
+    });
+
+    it('trailing newline', function () {
+      var delta = new Delta().insert('Hello\nWorld!\n');
+      delta.eachLine(spy.predicate);
+      expect(spy.predicate.calls.count()).toEqual(2);
+      expect(spy.predicate.calls.argsFor(0)).toEqual([ new Delta().insert('Hello'), {} ]);
+      expect(spy.predicate.calls.argsFor(1)).toEqual([ new Delta().insert('World!'), {} ]);
+    });
+
+    it('non-document', function () {
+      var delta = new Delta().retain(1).delete(2);
+      delta.eachLine(spy.predicate);
+      expect(spy.predicate.calls.count()).toEqual(0);
+    });
+  });
+
+  describe('iteration', function () {
+    beforeEach(function() {
+      this.delta = new Delta().insert('Hello').insert({ image: true }).insert('World!');
+    });
+
+    it('filter()', function () {
+      var arr = this.delta.filter(function (op) {
+        return typeof op.insert === 'string';
+      });
+      expect(arr.length).toEqual(2);
+    })
+
+    it('forEach()', function () {
+      var spy = { predicate: function () {} };
+      spyOn(spy, 'predicate').and.callThrough();
+      this.delta.forEach(spy.predicate);
+      expect(spy.predicate.calls.count()).toEqual(3);
+    });
+
+    it('map()', function () {
+      var arr = this.delta.map(function (op) {
+        return typeof op.insert === 'string' ? op.insert : '';
+      });
+      expect(arr).toEqual(['Hello', '', 'World!']);
+    });
+  });
+
   describe('length()', function () {
     it('document', function () {
       var delta = new Delta().insert('AB', { bold: true }).insert(1);

@@ -328,19 +328,19 @@ Iterates through document Delta, calling a given function with a Delta and attri
 #### Example
 
 ```js
-var delta = Delta().insert('Hello\n\n')
-                   .insert('World')
-                   .insert({ image: 'octocat.png' })
-                   .insert('\n', { align: 'right' })
-                   .insert('!');
+var delta = new Delta().insert('Hello\n\n')
+                       .insert('World')
+                       .insert({ image: 'octocat.png' })
+                       .insert('\n', { align: 'right' })
+                       .insert('!');
 
 delta.eachline(function(line, attributes) {
   console.log(line, attributes);
 });
 // Should log:
 // { ops: [{ insert: 'Hello' }] }, {}
-// { ops: [{ insert: '' }] }, {}
-// { ops: [{ insert: 'Word' }, { insert: { image: 'octocat' } }] }, { align: 'right' }
+// { ops: [] }, {}
+// { ops: [{ insert: 'World' }, { insert: { image: 'octocat.png' } }] }, { align: 'right' }
 // { ops: [{ insert: '!' }] }, {}
 ```
 
