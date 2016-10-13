@@ -3,4 +3,5 @@ node_js: '6'
 script:
   - npm test
 after_success:
+  - npm run test:coverage
   - npm run test:coverage:report
