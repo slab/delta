@@ -78,6 +78,7 @@ These methods called on or with non-document Deltas will result in undefined beh
 - [`forEach`](#foreach)
 - [`length`](#length)
 - [`map`](#map)
+- [`partition`](#partition)
 - [`reduce`](#reduce)
 - [`slice`](#slice)
 
