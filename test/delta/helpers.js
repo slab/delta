@@ -113,6 +113,15 @@ describe('helpers', function () {
       });
       expect(arr).toEqual(['Hello', '', 'World!']);
     });
+
+    it('partition()', function () {
+      var arr = this.delta.partition(function (op) {
+        return typeof op.insert === 'string';
+      });
+      var passed = arr[0], failed = arr[1];
+      expect(passed).toEqual([this.delta.ops[0], this.delta.ops[2]]);
+      expect(failed).toEqual([this.delta.ops[1]]);
+    });
   });
 
   describe('length()', function () {

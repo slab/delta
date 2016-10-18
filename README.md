@@ -453,6 +453,39 @@ var text = delta.map(function(op) {
 
 ---
 
+### partition()
+
+Create an array op two arrays, the first with operations that pass the given function, the other that failed.
+
+#### Methods
+
+- `partition(predicate)`
+
+#### Parameters
+
+- `predicate` - Function to call, passing in the current operation, returning whether that operation passed
+
+#### Returns
+
+- `Array` - A new array of two Arrays, the first with passed operations, the other with failed operations
+
+#### Example
+
+```js
+var delta = new Delta().insert('Hello', { bold: true })
+                       .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
+                       .insert('World!');
+
+var results = delta.partition(function(op) {
+  return typeof op.insert === 'string';
+});
+var passed = results[0];  // [{ insert: 'Hello', attributes: { bold: true }},
+                              { insert: 'World'}]
+var failed = results[1];  // [{ insert: { image: 'https://octodex.github.com/images/labtocat.png' }}]
+```
+
+---
+
 ### reduce()
 
 Applies given function against an accumulator and each operation to reduce to a single value.
