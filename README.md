@@ -286,15 +286,17 @@ var concat = a.concat(b);
 
 ### diff()
 
-Returns a Delta representing the difference between two documents.
+Returns a Delta representing the difference between two documents. Optionally, accepts a suggested index where change took place, often representing a cursor position *before* change.
 
 #### Methods
 
 - `diff(other)`
+- `diff(other, index)`
 
 #### Parameters
 
 - `other` - Document Delta to diff against
+- `index` - Suggested index where change took place
 
 #### Returns
 

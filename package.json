@@ -8,7 +8,7 @@
   "dependencies": {
     "deep-equal": "^1.0.1",
     "extend": "^3.0.0",
-    "fast-diff": "^1.0.1"
+    "fast-diff": "^1.1.0"
   },
   "devDependencies": {
     "coveralls": "^2.11.14",
