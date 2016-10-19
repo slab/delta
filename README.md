@@ -458,7 +458,7 @@ var text = delta.map(function(op) {
 
 ### partition()
 
-Create an array op two arrays, the first with operations that pass the given function, the other that failed.
+Create an array of two arrays, the first with operations that pass the given function, the other that failed.
 
 #### Methods
 
