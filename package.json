@@ -1,6 +1,6 @@
 {
   "name": "quill-delta",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "Format for representing rich text documents and changes.",
   "author": "Jason Chen <jhchen7@gmail.com>",
   "homepage": "https://github.com/quilljs/delta",
@@ -8,7 +8,7 @@
   "dependencies": {
     "deep-equal": "^1.0.1",
     "extend": "^3.0.0",
-    "fast-diff": "^1.1.0"
+    "fast-diff": "1.1.1"
   },
   "devDependencies": {
     "coveralls": "^2.11.14",
