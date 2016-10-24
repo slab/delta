@@ -49,6 +49,12 @@ describe('insert()', function () {
     expect(delta.ops[0]).toEqual({ insert: 'test' });
   });
 
+  it('insert(text, null)', function () {
+    var delta = new Delta().insert('test', null);
+    expect(delta.ops.length).toEqual(1);
+    expect(delta.ops[0]).toEqual({ insert: 'test' });
+  });
+
   it('insert(embed)', function () {
     var delta = new Delta().insert(1);
     expect(delta.ops.length).toEqual(1);
@@ -128,6 +134,12 @@ describe('retain()', function () {
 
   it('retain(length)', function () {
     var delta = new Delta().retain(2);
+    expect(delta.ops.length).toEqual(1);
+    expect(delta.ops[0]).toEqual({ retain: 2 });
+  });
+
+  it('retain(length, null)', function () {
+    var delta = new Delta().retain(2, null);
     expect(delta.ops.length).toEqual(1);
     expect(delta.ops[0]).toEqual({ retain: 2 });
   });
