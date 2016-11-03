@@ -125,4 +125,12 @@ describe('diff()', function () {
     expect(b2).toEqual(b2);
     expect(attr1).toEqual(attr2);
   });
+
+  it('non-document', function () {
+    var a = new Delta().insert('Test');
+    var b = new Delta().delete(4);
+    expect(function() {
+      a.diff(b);
+    }).toThrow(new Error('diff() called on non-document'));
+  });
 });
