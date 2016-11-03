@@ -607,8 +607,8 @@ Transform given Delta against own operations.
 var a = new Delta().insert('a');
 var b = new Delta().insert('b').retain(5).insert('c');
 
-var transformed = a.transform(b, true);  // new Delta().retain(1).insert('b').retain(5).insert('c');
-var transformed = a.transform(b, false); // new Delta().insert('b').retain(6).insert('c');
+a.transform(b, true);  // new Delta().retain(1).insert('b').retain(5).insert('c');
+a.transform(b, false); // new Delta().insert('b').retain(6).insert('c');
 ```
 
 ---
@@ -633,6 +633,6 @@ Transform an index against the delta. Useful for representing cursor/selection p
 
 ```js
 var delta = new Delta().retain(5).insert('a');
-var transformed4 = delta.transformPosition(4); // 4
-var transformed5 = delta.transformPosition(5); // 6
+delta.transformPosition(4); // 4
+delta.transformPosition(5); // 6
 ```
