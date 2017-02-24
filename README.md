@@ -166,7 +166,7 @@ Creates a new Delta object.
 - `ops` - Array of operations
 - `delta` - Object with an `ops` key set to an array of operations
 
-*Note: No validity/sanity check is performed when constructed with ops or delta. The new delta's internal ops array will also be assigned to ops or delta.ops without deep copying.*
+*Note: No validity/sanity check is performed when constructed with ops or delta. The new delta's internal ops array will also be assigned from ops or delta.ops without deep copying.*
 
 #### Example
 
