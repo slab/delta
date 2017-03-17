@@ -337,14 +337,15 @@ var delta = new Delta().insert('Hello\n\n')
                        .insert('\n', { align: 'right' })
                        .insert('!');
 
-delta.eachline(function(line, attributes) {
-  console.log(line, attributes);
+delta.eachline(function(line, attributes, i) {
+  console.log(line, attributes, i);
+  // Can return false to exit loop early
 });
 // Should log:
-// { ops: [{ insert: 'Hello' }] }, {}
-// { ops: [] }, {}
-// { ops: [{ insert: 'World' }, { insert: { image: 'octocat.png' } }] }, { align: 'right' }
-// { ops: [{ insert: '!' }] }, {}
+// { ops: [{ insert: 'Hello' }] }, {}, 0
+// { ops: [] }, {}, 1
+// { ops: [{ insert: 'World' }, { insert: { image: 'octocat.png' } }] }, { align: 'right' }, 2
+// { ops: [{ insert: '!' }] }, {}, 3
 ```
 
 

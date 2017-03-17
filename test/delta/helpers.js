@@ -64,27 +64,42 @@ describe('helpers', function () {
                              .insert('!');
       delta.eachLine(spy.predicate);
       expect(spy.predicate.calls.count()).toEqual(4);
-      expect(spy.predicate.calls.argsFor(0)).toEqual([ new Delta().insert('Hello'), {} ]);
-      expect(spy.predicate.calls.argsFor(1)).toEqual([ new Delta(), {} ]);
+      expect(spy.predicate.calls.argsFor(0)).toEqual([ new Delta().insert('Hello'), {}, 0 ]);
+      expect(spy.predicate.calls.argsFor(1)).toEqual([ new Delta(), {}, 1 ]);
       expect(spy.predicate.calls.argsFor(2)).toEqual([
         new Delta().insert('World', { bold: true }).insert({ image: 'octocat.png' }),
-        { align: 'right' }
+        { align: 'right' },
+        2
       ]);
-      expect(spy.predicate.calls.argsFor(3)).toEqual([ new Delta().insert('!'), {} ]);
+      expect(spy.predicate.calls.argsFor(3)).toEqual([ new Delta().insert('!'), {}, 3 ]);
     });
 
     it('trailing newline', function () {
       var delta = new Delta().insert('Hello\nWorld!\n');
       delta.eachLine(spy.predicate);
       expect(spy.predicate.calls.count()).toEqual(2);
-      expect(spy.predicate.calls.argsFor(0)).toEqual([ new Delta().insert('Hello'), {} ]);
-      expect(spy.predicate.calls.argsFor(1)).toEqual([ new Delta().insert('World!'), {} ]);
+      expect(spy.predicate.calls.argsFor(0)).toEqual([ new Delta().insert('Hello'), {}, 0 ]);
+      expect(spy.predicate.calls.argsFor(1)).toEqual([ new Delta().insert('World!'), {}, 1 ]);
     });
 
     it('non-document', function () {
       var delta = new Delta().retain(1).delete(2);
       delta.eachLine(spy.predicate);
       expect(spy.predicate.calls.count()).toEqual(0);
+    });
+
+    it('early return', function () {
+      var delta = new Delta().insert('Hello\nNew\nWorld!');
+      var count = 0;
+      var spy = {
+        predicate: function() {
+          if (count === 1) return false;
+          count += 1;
+        }
+      };
+      spyOn(spy, 'predicate').and.callThrough();
+      delta.eachLine(spy.predicate);
+      expect(spy.predicate.calls.count()).toEqual(2);
     });
   });
 
