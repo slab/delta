@@ -1,15 +1,36 @@
+## v3.5.0
+
+- Add counter and early return to `eachLine()`
+
+
+## v3.4.0
+
+- Support index suggestion in `diff()`
+
+
+## v3.3.0
+
+- Add `partition()`
+
+
+## v3.2.0
+
+- Add `eachLine()`, `map()`, `reduce()`, `filter()`, `forEach()`
+
+
+## v3.1.0
+
+- Pull out quilljs/delta from ottypes/rich-text
+
+
 ## v3.0.0
 
 #### Breaking Changes
 - Deep copy and compare attributes and deltas
 
 
-#### Features
-
-
 ## v2.1.0
 
-#### Features
 - Add `concat()` method for document Deltas
 
 
