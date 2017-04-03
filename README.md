@@ -53,9 +53,9 @@ This format is suitable for [Operational Transform](https://en.wikipedia.org/wik
 
 #### Operations
 
-- [insert](#insert-operation)
-- [delete](#delete-operation)
-- [retain](#retain-operation)
+- [`insert`](#insert-operation)
+- [`delete`](#delete-operation)
+- [`retain`](#retain-operation)
 
 #### Construction
 
