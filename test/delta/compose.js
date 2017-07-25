@@ -96,13 +96,6 @@ describe('compose()', function () {
     expect(a.compose(b)).toEqual(expected);
   });
 
-  it('retain more than length of text', function () {
-    var a = new Delta().insert('Hello');
-    var b = new Delta().retain(10);
-    var expected = new Delta().insert('Hello');
-    expect(a.compose(b)).toEqual(expected);
-  });
-
   it('retain empty embed', function () {
     var a = new Delta().insert(1);
     var b = new Delta().retain(1);

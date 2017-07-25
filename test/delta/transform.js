@@ -8,7 +8,7 @@ describe('transform()', function () {
     var a2 = new Delta(a1);
     var b2 = new Delta(b1);
     var expected1 = new Delta().retain(1).insert('B');
-    var expected2 = new Delta().insert('B');
+    var expected2 = new Delta().insert('B').retain(1);
     expect(a1.transform(b1, true)).toEqual(expected1);
     expect(a2.transform(b2, false)).toEqual(expected2);
   });
@@ -51,7 +51,7 @@ describe('transform()', function () {
   it('retain + insert', function () {
     var a = new Delta().retain(1, { color: 'blue' });
     var b = new Delta().insert('B');
-    var expected = new Delta().insert('B');
+    var expected = new Delta().insert('B').retain(1);
     expect(a.transform(b, true)).toEqual(expected);
   });
 
@@ -61,7 +61,7 @@ describe('transform()', function () {
     var a2 = new Delta().retain(1, { color: 'blue' });
     var b2 = new Delta().retain(1, { bold: true, color: 'red' });
     var expected1 = new Delta().retain(1, { bold: true });
-    var expected2 = new Delta();
+    var expected2 = new Delta().retain(1);
     expect(a1.transform(b1, true)).toEqual(expected1);
     expect(b2.transform(a2, true)).toEqual(expected2);
   });
@@ -90,7 +90,7 @@ describe('transform()', function () {
     var a2 = new Delta(a1);
     var b2 = new Delta(b1);
     var expected1 = new Delta().retain(1).insert('e').delete(1).retain(2).insert('ow');
-    var expected2 = new Delta().retain(2).insert('si').delete(1);
+    var expected2 = new Delta().retain(2).insert('si').delete(1).retain(2);
     expect(a1.transform(b1, false)).toEqual(expected1);
     expect(b2.transform(a2, false)).toEqual(expected2);
   });
@@ -101,7 +101,7 @@ describe('transform()', function () {
     var a2 = new Delta(a1);
     var b2 = new Delta(b1);
     var expected1 = new Delta().retain(5).insert('bb');
-    var expected2 = new Delta().retain(3).insert('aa');
+    var expected2 = new Delta().retain(3).insert('aa').retain(2);
     expect(a1.transform(b1, true)).toEqual(expected1);
     expect(b2.transform(a2, false)).toEqual(expected2);
   });
@@ -112,7 +112,7 @@ describe('transform()', function () {
     var expected1 = new Delta().retain(5).insert('bb');
     var a2 = new Delta(a1);
     var b2 = new Delta(b1);
-    var expected2 = new Delta().insert('aa');
+    var expected2 = new Delta().insert('aa').retain(5);
     expect(a1.transform(b1, false)).toEqual(expected1);
     expect(b2.transform(a2, false)).toEqual(expected2);
   });

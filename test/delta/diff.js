@@ -19,7 +19,7 @@ describe('diff()', function () {
   it('retain', function () {
     var a = new Delta().insert('A');
     var b = new Delta().insert('A');
-    var expected = new Delta();
+    var expected = new Delta().retain(1);
     expect(a.diff(b)).toEqual(expected);
   });
 
@@ -33,14 +33,14 @@ describe('diff()', function () {
   it('object attributes', function () {
     var a = new Delta().insert('A', { font: { family: 'Helvetica', size: '15px' } });
     var b = new Delta().insert('A', { font: { family: 'Helvetica', size: '15px' } });
-    var expected = new Delta();
+    var expected = new Delta().retain(1);
     expect(a.diff(b)).toEqual(expected);
   });
 
   it('embed integer match', function () {
     var a = new Delta().insert(1);
     var b = new Delta().insert(1);
-    var expected = new Delta();
+    var expected = new Delta().retain(1);
     expect(a.diff(b)).toEqual(expected);
   });
 
@@ -54,7 +54,7 @@ describe('diff()', function () {
   it('embed object match', function () {
     var a = new Delta().insert({ image: 'http://quilljs.com' });
     var b = new Delta().insert({ image: 'http://quilljs.com' });
-    var expected = new Delta();
+    var expected = new Delta().retain(1);
     expect(a.diff(b)).toEqual(expected);
   });
 

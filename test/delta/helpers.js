@@ -29,26 +29,6 @@ describe('helpers', function () {
     });
   });
 
-  describe('chop()', function () {
-    it('retain', function () {
-      var delta = new Delta().insert('Test').retain(4);
-      var expected = new Delta().insert('Test');
-      expect(delta.chop()).toEqual(expected);
-    });
-
-    it('insert', function () {
-      var delta = new Delta().insert('Test');
-      var expected = new Delta().insert('Test');
-      expect(delta.chop()).toEqual(expected);
-    });
-
-    it('formatted retain', function () {
-      var delta = new Delta().insert('Test').retain(4, { bold: true });
-      var expected = new Delta().insert('Test').retain(4, { bold: true });
-      expect(delta.chop()).toEqual(expected);
-    })
-  });
-
   describe('eachLine()', function () {
     var spy = { predicate: function () {} };
 
