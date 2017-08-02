@@ -71,6 +71,7 @@ These methods called on or with non-document Deltas will result in undefined beh
 - [`concat`](#concat)
 - [`diff`](#diff)
 - [`eachLine`](#eachline)
+- [`slice`](#slice)
 
 #### Utility
 
@@ -80,7 +81,6 @@ These methods called on or with non-document Deltas will result in undefined beh
 - [`map`](#map)
 - [`partition`](#partition)
 - [`reduce`](#reduce)
-- [`slice`](#slice)
 
 #### Operational Transform
 
@@ -348,6 +348,43 @@ delta.eachline(function(line, attributes, i) {
 // { ops: [{ insert: '!' }] }, {}, 3
 ```
 
+---
+
+### slice()
+
+Returns copy of delta with subset of operations.
+
+#### Methods
+
+- `slice()`
+- `slice(start)`
+- `slice(start, end)`
+
+#### Parameters
+
+- `start` - Start index of subset, defaults to 0
+- `end` - End index of subset, defaults to rest of operations
+
+#### Example
+
+```js
+var delta = new Delta().insert('Hello', { bold: true }).insert(' World');
+
+// {
+//   ops: [
+//     { insert: 'Hello', attributes: { bold: true } },
+//     { insert: ' World' }
+//   ]
+// }
+var copy = delta.slice();
+
+// { ops: [{ insert: 'World' }] }
+var world = delta.slice(6);
+
+// { ops: [{ insert: ' ' }] }
+var space = delta.slice(5, 6);
+```
+
 
 ## Utility
 
@@ -517,43 +554,6 @@ var delta = new Delta().insert('Hello', { bold: true })
 var length = delta.reduce(function(length, op) {
   return length + (op.insert.length || 1);
 }, 0);
-```
-
----
-
-### slice()
-
-Returns copy of delta with subset of operations.
-
-#### Methods
-
-- `slice()`
-- `slice(start)`
-- `slice(start, end)`
-
-#### Parameters
-
-- `start` - Start index of subset, defaults to 0
-- `end` - End index of subset, defaults to rest of operations
-
-#### Example
-
-```js
-var delta = new Delta().insert('Hello', { bold: true }).insert(' World');
-
-// {
-//   ops: [
-//     { insert: 'Hello', attributes: { bold: true } },
-//     { insert: ' World' }
-//   ]
-// }
-var copy = delta.slice();
-
-// { ops: [{ insert: 'World' }] }
-var world = delta.slice(6);
-
-// { ops: [{ insert: ' ' }] }
-var space = delta.slice(5, 6);
 ```
 
 

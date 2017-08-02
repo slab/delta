@@ -93,7 +93,7 @@ describe('helpers', function () {
         return typeof op.insert === 'string';
       });
       expect(arr.length).toEqual(2);
-    })
+    });
 
     it('forEach()', function () {
       var spy = { predicate: function () {} };
@@ -133,7 +133,7 @@ describe('helpers', function () {
 
   describe('slice()', function () {
     it('start', function () {
-      var slice = new Delta().retain(2).insert('A').slice(2);
+      var slice = new Delta().insert('12', { bold: true }).insert('A').slice(2);
       var expected = new Delta().insert('A');
       expect(slice).toEqual(expected);
     });
@@ -151,13 +151,13 @@ describe('helpers', function () {
     });
 
     it('start and end', function () {
-      var slice = new Delta().retain(2).insert('A', { bold: true }).insert('B').slice(2, 3);
+      var slice = new Delta().insert('01').insert('A', { bold: true }).insert('B').slice(2, 3);
       var expected = new Delta().insert('A', { bold: true });
       expect(slice).toEqual(expected);
     });
 
     it('no params', function () {
-      var delta = new Delta().retain(2).insert('A', { bold: true }).insert('B');
+      var delta = new Delta().insert('01').insert('A', { bold: true }).insert('B');
       var slice = delta.slice();
       expect(slice).toEqual(delta);
     });
