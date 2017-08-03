@@ -5,8 +5,8 @@ describe('constructor', function () {
   var ops = [
     { insert: 'abc' },
     { retain: 1, attributes: { color: 'red' } },
-    { delete: 4 },
     { insert: 'def', attributes: { bold: true } },
+    { delete: 4 },
     { retain: 6 }
   ];
 
