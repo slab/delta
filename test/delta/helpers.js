@@ -151,6 +151,13 @@ describe('helpers', function () {
     });
   });
 
+  describe('changeLength()', function () {
+    it('mixed', function () {
+      var delta = new Delta().insert('AB', { bold: true }).retain(2, { bold: null }).delete(1);
+      expect(delta.changeLength()).toEqual(1);
+    });
+  });
+
   describe('slice()', function () {
     it('start', function () {
       var slice = new Delta().retain(2).insert('A').slice(2);
