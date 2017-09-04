@@ -337,7 +337,7 @@ var delta = new Delta().insert('Hello\n\n')
                        .insert('\n', { align: 'right' })
                        .insert('!');
 
-delta.eachline(function(line, attributes, i) {
+delta.eachLine(function(line, attributes, i) {
   console.log(line, attributes, i);
   // Can return false to exit loop early
 });
