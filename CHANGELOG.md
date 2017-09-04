@@ -1,3 +1,8 @@
+## v3.6.0
+
+- Add experimental method `changeLength()`
+
+
 ## v3.5.0
 
 - Add counter and early return to `eachLine()`
