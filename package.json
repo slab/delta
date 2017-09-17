@@ -8,12 +8,12 @@
   "dependencies": {
     "deep-equal": "^1.0.1",
     "extend": "^3.0.1",
-    "fast-diff": "1.1.1"
+    "fast-diff": "1.1.2"
   },
   "devDependencies": {
     "coveralls": "^2.13.1",
     "istanbul": "~0.4.5",
-    "jasmine": "^2.7.0"
+    "jasmine": "^2.8.0"
   },
   "engines": {
     "node": ">=0.10"
