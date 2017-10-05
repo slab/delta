@@ -197,14 +197,14 @@ Appends an insert operation. Returns `this` for chainability.
 #### Parameters
 
 - `text` - String representing text to insert
-- `embed` - Number representing embed type to insert
+- `embed` - Object representing embed type to insert
 - `attributes` - Optional attributes to apply
 
 #### Example
 
 ```js
 delta.insert('Text', { bold: true, color: '#ccc' });
-delta.insert(1, { src: 'https://octodex.github.com/images/labtocat.png' });
+delta.insert({ image: 'https://octodex.github.com/images/labtocat.png' });
 ```
 
 ---
