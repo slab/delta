@@ -590,7 +590,7 @@ Transform given Delta against own operations.
 #### Methods
 
 - `transform(other, priority)`
-- `transform(index)` - Alias for [`transformPosition`](#tranformposition)
+- `transform(index, priority)` - Alias for [`transformPosition`](#tranformposition)
 
 #### Parameters
 
@@ -620,7 +620,7 @@ Transform an index against the delta. Useful for representing cursor/selection p
 
 #### Methods
 
-- `transformPosition(index)`
+- `transformPosition(index, priority)`
 
 #### Parameters
 
