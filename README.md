@@ -484,7 +484,7 @@ var results = delta.partition(function(op) {
   return typeof op.insert === 'string';
 });
 var passed = results[0];  // [{ insert: 'Hello', attributes: { bold: true }},
-                              { insert: 'World'}]
+                          //  { insert: 'World'}]
 var failed = results[1];  // [{ insert: { image: 'https://octodex.github.com/images/labtocat.png' }}]
 ```
 
