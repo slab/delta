@@ -44,6 +44,13 @@ describe('compose()', function () {
     expect(a.compose(b)).toEqual(expected);
   });
 
+  it('delete + delete attributes', function () {
+    var a = new Delta().delete(1);
+    var b = new Delta().push({delete: 1, attributes: { who: 1}});
+    var expected = new Delta().delete(1).push({delete:1 , attributes: { who: 1}});
+    expect(a.compose(b)).toEqual(expected);
+  });
+
   it('retain + insert', function () {
     var a = new Delta().retain(1, { color: 'blue' });
     var b = new Delta().insert('B');

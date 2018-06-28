@@ -87,6 +87,15 @@ describe('op', function () {
       expect(iter.next(10)).toEqual({ insert: 'llo', attributes: { bold: true }});
       expect(iter.next(1)).toEqual({ retain: 1 });
       expect(iter.next(2)).toEqual({ retain: 2 });
+      expect(iter.next(2)).toEqual({ insert: 2, attributes: { src: 'http://quilljs.com/' } });
+    });
+
+    it('next() retains attributes', function () {
+      var delta = new Delta().insert('Hello', { bold: true }).retain(3, { bold: true }).insert(2, { src: 'http://quilljs.com/' }).push({delete: 2, attributes: { who: 1}});
+      var iter = op.iterator(delta.ops);
+      for (var i = 0; i < this.delta.ops.length; i += 1) {
+        expect(iter.next()).toEqual(delta.ops[i]);
+      }
     });
   });
 });
