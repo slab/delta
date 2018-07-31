@@ -138,7 +138,7 @@ describe('compose()', function () {
     expect(attr1).toEqual(attr2);
   });
 
-  it('retain optimization', function () {
+  it('retain start optimization', function () {
     var a = new Delta().insert('A', { bold: true })
                        .insert('B')
                        .insert('C', { bold: true })
@@ -152,7 +152,7 @@ describe('compose()', function () {
     expect(a.compose(b)).toEqual(expected);
   });
 
-  it('retain optimization split', function () {
+  it('retain start optimization split', function () {
     var a = new Delta().insert('A', { bold: true })
                        .insert('B')
                        .insert('C', { bold: true })
@@ -166,6 +166,30 @@ describe('compose()', function () {
                               .insert('D')
                               .retain(4)
                               .delete(1);
+    expect(a.compose(b)).toEqual(expected);
+  });
+
+  it('retain end optimization', function () {
+    var a = new Delta().insert('A', { bold: true })
+                       .insert('B')
+                       .insert('C', { bold: true });
+    var b = new Delta().delete(1);
+    var expected = new Delta().insert('B').insert('C', { bold: true })
+    expect(a.compose(b)).toEqual(expected);
+  });
+
+  it('retain end optimization join', function () {
+    var a = new Delta().insert('A', { bold: true })
+                       .insert('B')
+                       .insert('C', { bold: true })
+                       .insert('D')
+                       .insert('E', { bold: true })
+                       .insert('F')
+    var b = new Delta().retain(1).delete(1);
+    var expected = new Delta().insert('AC', { bold: true })
+                              .insert('D')
+                              .insert('E', { bold: true })
+                              .insert('F')
     expect(a.compose(b)).toEqual(expected);
   });
 });

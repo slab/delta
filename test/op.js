@@ -88,5 +88,26 @@ describe('op', function () {
       expect(iter.next(1)).toEqual({ retain: 1 });
       expect(iter.next(2)).toEqual({ retain: 2 });
     });
+
+    it('rest()', function () {
+      var iter = op.iterator(this.delta.ops);
+      iter.next(2);
+      expect(iter.rest()).toEqual([
+        { insert: 'llo', attributes: { bold: true }},
+        { retain: 3 },
+        { insert: 2, attributes: { src: 'http://quilljs.com/' } },
+        { delete: 4 }
+      ]);
+      iter.next(3);
+      expect(iter.rest()).toEqual([
+        { retain: 3 },
+        { insert: 2, attributes: { src: 'http://quilljs.com/' } },
+        { delete: 4 }
+      ]);
+      iter.next(3);
+      iter.next(2);
+      iter.next(4);
+      expect(iter.rest()).toEqual([]);
+    })
   });
 });
