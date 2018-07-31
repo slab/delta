@@ -137,4 +137,35 @@ describe('compose()', function () {
     expect(b1).toEqual(b2);
     expect(attr1).toEqual(attr2);
   });
+
+  it('retain optimization', function () {
+    var a = new Delta().insert('A', { bold: true })
+                       .insert('B')
+                       .insert('C', { bold: true })
+                       .delete(1);
+    var b = new Delta().retain(3).insert('D');
+    var expected = new Delta().insert('A', { bold: true })
+                              .insert('B')
+                              .insert('C', { bold: true })
+                              .insert('D')
+                              .delete(1);
+    expect(a.compose(b)).toEqual(expected);
+  });
+
+  it('retain optimization split', function () {
+    var a = new Delta().insert('A', { bold: true })
+                       .insert('B')
+                       .insert('C', { bold: true })
+                       .retain(5)
+                       .delete(1);
+    var b = new Delta().retain(4).insert('D');
+    var expected = new Delta().insert('A', { bold: true })
+                              .insert('B')
+                              .insert('C', { bold: true })
+                              .retain(1)
+                              .insert('D')
+                              .retain(4)
+                              .delete(1);
+    expect(a.compose(b)).toEqual(expected);
+  });
 });
