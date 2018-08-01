@@ -7,13 +7,13 @@
   "main": "lib/delta.js",
   "dependencies": {
     "deep-equal": "^1.0.1",
-    "extend": "^3.0.1",
+    "extend": "^3.0.2",
     "fast-diff": "1.1.2"
   },
   "devDependencies": {
-    "coveralls": "^2.13.1",
+    "coveralls": "^3.0.2",
     "istanbul": "~0.4.5",
-    "jasmine": "^2.8.0"
+    "jasmine": "^3.1.0"
   },
   "engines": {
     "node": ">=0.10"
