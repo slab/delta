@@ -1,3 +1,15 @@
+## v3.6.3
+
+- Performance optimization for `compose`
+
+## v3.6.2
+
+- Documentation fixes
+
+## v3.6.1
+
+- Stop using `=>` because of IE11
+
 ## v3.6.0
 
 - Add experimental method `changeLength()`
