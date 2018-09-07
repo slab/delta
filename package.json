@@ -15,16 +15,13 @@
     "istanbul": "~0.4.5",
     "jasmine": "^3.2.0",
     "prettier": "^1.14.2",
-    "ts-loader": "^5.0.0",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
-    "typescript": "^3.0.0",
-    "webpack": "^4.17.1",
-    "webpack-cli": "^3.1.0"
+    "typescript": "^3.0.0"
   },
   "license": "MIT",
   "scripts": {
-    "build": "webpack --config webpack.conf.js",
+    "build": "tsc",
     "lint": "tslint 'src/**/*.ts'",
     "test": "npm run build; jasmine test/*.js test/**/*.js",
     "test:coverage": "istanbul cover jasmine test/*.js test/**/*.js",

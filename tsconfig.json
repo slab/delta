@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "module": "es6",
-    "target": "es6",
     "declaration": true,
+    "module": "ES5",
+    "outDir": "dist/",
+    "sourceMap": true,
     "strict": true,
+    "target": "ES5",
+    "noEmitHelpers": true,
+    "noErrorTruncation": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "exclude": ["node_modules", "test"]
+  "include": ["src/**/*.ts"]
 }

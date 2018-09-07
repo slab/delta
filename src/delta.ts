@@ -1,5 +1,7 @@
+import DeltaOp from "./op";
+
 class Delta {
   public ops = [];
 }
 
-export default Delta;
+export { Delta as default, DeltaOp };
