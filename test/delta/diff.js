@@ -1,4 +1,4 @@
-var Delta = require("../../dist/delta");
+var Delta = require("../../dist/Delta").default;
 
 describe("diff()", function() {
   it("insert", function() {

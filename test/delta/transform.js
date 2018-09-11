@@ -1,4 +1,4 @@
-var Delta = require("../../dist/delta");
+var Delta = require("../../dist/Delta").default;
 
 describe("transform()", function() {
   it("insert + insert", function() {

@@ -1,22 +1,22 @@
-var Delta = require("../dist/delta");
-var op = require("../dist/op");
+var Delta = require("../dist/Delta").default;
+var Op = require("../dist/Op").default;
 
-describe("op", function() {
+describe("Op", function() {
   describe("length()", function() {
     it("delete", function() {
-      expect(op.length({ delete: 5 })).toEqual(5);
+      expect(Op.length({ delete: 5 })).toEqual(5);
     });
 
     it("retain", function() {
-      expect(op.length({ retain: 2 })).toEqual(2);
+      expect(Op.length({ retain: 2 })).toEqual(2);
     });
 
     it("insert text", function() {
-      expect(op.length({ insert: "text" })).toEqual(4);
+      expect(Op.length({ insert: "text" })).toEqual(4);
     });
 
     it("insert embed", function() {
-      expect(op.length({ insert: 2 })).toEqual(1);
+      expect(Op.length({ insert: 2 })).toEqual(1);
     });
   });
 
@@ -30,17 +30,17 @@ describe("op", function() {
     });
 
     it("hasNext() true", function() {
-      var iter = op.iterator(this.delta.ops);
+      var iter = Op.iterator(this.delta.ops);
       expect(iter.hasNext()).toEqual(true);
     });
 
     it("hasNext() false", function() {
-      var iter = op.iterator([]);
+      var iter = Op.iterator([]);
       expect(iter.hasNext()).toEqual(false);
     });
 
     it("peekLength() offset === 0", function() {
-      var iter = op.iterator(this.delta.ops);
+      var iter = Op.iterator(this.delta.ops);
       expect(iter.peekLength()).toEqual(5);
       iter.next();
       expect(iter.peekLength()).toEqual(3);
@@ -51,18 +51,18 @@ describe("op", function() {
     });
 
     it("peekLength() offset > 0", function() {
-      var iter = op.iterator(this.delta.ops);
+      var iter = Op.iterator(this.delta.ops);
       iter.next(2);
       expect(iter.peekLength()).toEqual(5 - 2);
     });
 
     it("peekLength() no ops left", function() {
-      var iter = op.iterator([]);
+      var iter = Op.iterator([]);
       expect(iter.peekLength()).toEqual(Infinity);
     });
 
     it("peekType()", function() {
-      var iter = op.iterator(this.delta.ops);
+      var iter = Op.iterator(this.delta.ops);
       expect(iter.peekType()).toEqual("insert");
       iter.next();
       expect(iter.peekType()).toEqual("retain");
@@ -75,7 +75,7 @@ describe("op", function() {
     });
 
     it("next()", function() {
-      var iter = op.iterator(this.delta.ops);
+      var iter = Op.iterator(this.delta.ops);
       for (var i = 0; i < this.delta.ops.length; i += 1) {
         expect(iter.next()).toEqual(this.delta.ops[i]);
       }
@@ -85,7 +85,7 @@ describe("op", function() {
     });
 
     it("next(length)", function() {
-      var iter = op.iterator(this.delta.ops);
+      var iter = Op.iterator(this.delta.ops);
       expect(iter.next(2)).toEqual({
         insert: "He",
         attributes: { bold: true }
@@ -99,7 +99,7 @@ describe("op", function() {
     });
 
     it("rest()", function() {
-      var iter = op.iterator(this.delta.ops);
+      var iter = Op.iterator(this.delta.ops);
       iter.next(2);
       expect(iter.rest()).toEqual([
         { insert: "llo", attributes: { bold: true } },

@@ -1,4 +1,4 @@
-var Delta = require("../../dist/delta");
+var Delta = require("../../dist/Delta").default;
 
 describe("helpers", function() {
   describe("concat()", function() {

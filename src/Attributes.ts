@@ -56,8 +56,8 @@ namespace Attributes {
   }
 
   export function transform(
-    a: Attributes = {},
-    b: Attributes = {},
+    a: Attributes | undefined,
+    b: Attributes | undefined,
     priority: boolean = false
   ): Attributes | undefined {
     if (typeof a !== "object") {

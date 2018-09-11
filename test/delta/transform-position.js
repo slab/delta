@@ -1,4 +1,4 @@
-var Delta = require("../../dist/delta");
+var Delta = require("../../dist/Delta").default;
 
 describe("transformPosition()", function() {
   it("insert before position", function() {
