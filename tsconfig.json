@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "module": "ES5",
     "outDir": "dist/",
     "sourceMap": true,
     "strict": true,
