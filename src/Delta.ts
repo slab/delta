@@ -419,3 +419,5 @@ export default class Delta {
     return index;
   }
 }
+
+export { Op, Attributes };
