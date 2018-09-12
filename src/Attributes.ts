@@ -1,5 +1,5 @@
-import equal = require("deep-equal");
-import extend = require("extend");
+import equal = require('deep-equal');
+import extend = require('extend');
 
 interface Attributes {
   [key: string]: any;
@@ -9,12 +9,12 @@ namespace Attributes {
   export function compose(
     a: Attributes = {},
     b: Attributes = {},
-    keepNull: boolean
+    keepNull: boolean,
   ): Attributes | undefined {
-    if (typeof a !== "object") {
+    if (typeof a !== 'object') {
       a = {};
     }
-    if (typeof b !== "object") {
+    if (typeof b !== 'object') {
       b = {};
     }
     let attributes = extend(true, {}, b);
@@ -36,12 +36,12 @@ namespace Attributes {
 
   export function diff(
     a: Attributes = {},
-    b: Attributes = {}
+    b: Attributes = {},
   ): Attributes | undefined {
-    if (typeof a !== "object") {
+    if (typeof a !== 'object') {
       a = {};
     }
-    if (typeof b !== "object") {
+    if (typeof b !== 'object') {
       b = {};
     }
     const attributes = Object.keys(a)
@@ -58,12 +58,12 @@ namespace Attributes {
   export function transform(
     a: Attributes | undefined,
     b: Attributes | undefined,
-    priority: boolean = false
+    priority: boolean = false,
   ): Attributes | undefined {
-    if (typeof a !== "object") {
+    if (typeof a !== 'object') {
       return b;
     }
-    if (typeof b !== "object") {
+    if (typeof b !== 'object') {
       return undefined;
     }
     if (!priority) {

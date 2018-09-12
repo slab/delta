@@ -1,5 +1,5 @@
-import Attributes from "./Attributes";
-import Iterator from "./Iterator";
+import Attributes from './Attributes';
+import Iterator from './Iterator';
 
 interface Op {
   // only one property out of {insert, delete, retain} will be present
@@ -16,12 +16,12 @@ namespace Op {
   }
 
   export function length(op: Op): number {
-    if (typeof op.delete === "number") {
+    if (typeof op.delete === 'number') {
       return op.delete;
-    } else if (typeof op.retain === "number") {
+    } else if (typeof op.retain === 'number') {
       return op.retain;
     } else {
-      return typeof op.insert === "string" ? op.insert.length : 1;
+      return typeof op.insert === 'string' ? op.insert.length : 1;
     }
   }
 }

@@ -31,6 +31,10 @@
     "test:coverage": "istanbul cover jasmine test/*.js test/**/*.js",
     "test:coverage:report": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/quilljs/delta"

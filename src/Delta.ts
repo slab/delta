@@ -1,8 +1,8 @@
-import equal = require("deep-equal");
-import extend = require("extend");
-import diff = require("fast-diff");
-import Attributes from "./Attributes";
-import Op from "./Op";
+import equal = require('deep-equal');
+import extend = require('extend');
+import diff = require('fast-diff');
+import Attributes from './Attributes';
+import Op from './Op';
 
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
 
@@ -21,13 +21,13 @@ export default class Delta {
 
   insert(arg: string | object, attributes?: Attributes): this {
     const newOp: Op = {};
-    if (typeof arg === "string" && arg.length === 0) {
+    if (typeof arg === 'string' && arg.length === 0) {
       return this;
     }
     newOp.insert = arg;
     if (
       attributes != null &&
-      typeof attributes === "object" &&
+      typeof attributes === 'object' &&
       Object.keys(attributes).length > 0
     ) {
       newOp.attributes = attributes;
@@ -49,7 +49,7 @@ export default class Delta {
     const newOp: Op = { retain: length };
     if (
       attributes != null &&
-      typeof attributes === "object" &&
+      typeof attributes === 'object' &&
       Object.keys(attributes).length > 0
     ) {
       newOp.attributes = attributes;
@@ -61,40 +61,40 @@ export default class Delta {
     let index = this.ops.length;
     let lastOp = this.ops[index - 1];
     newOp = extend(true, {}, newOp);
-    if (typeof lastOp === "object") {
+    if (typeof lastOp === 'object') {
       if (
-        typeof newOp.delete === "number" &&
-        typeof lastOp.delete === "number"
+        typeof newOp.delete === 'number' &&
+        typeof lastOp.delete === 'number'
       ) {
         this.ops[index - 1] = { delete: lastOp.delete + newOp.delete };
         return this;
       }
       // Since it does not matter if we insert before or after deleting at the same index,
       // always prefer to insert first
-      if (typeof lastOp.delete === "number" && newOp.insert != null) {
+      if (typeof lastOp.delete === 'number' && newOp.insert != null) {
         index -= 1;
         lastOp = this.ops[index - 1];
-        if (typeof lastOp !== "object") {
+        if (typeof lastOp !== 'object') {
           this.ops.unshift(newOp);
           return this;
         }
       }
       if (equal(newOp.attributes, lastOp.attributes)) {
         if (
-          typeof newOp.insert === "string" &&
-          typeof lastOp.insert === "string"
+          typeof newOp.insert === 'string' &&
+          typeof lastOp.insert === 'string'
         ) {
           this.ops[index - 1] = { insert: lastOp.insert + newOp.insert };
-          if (typeof newOp.attributes === "object") {
+          if (typeof newOp.attributes === 'object') {
             this.ops[index - 1].attributes = newOp.attributes;
           }
           return this;
         } else if (
-          typeof newOp.retain === "number" &&
-          typeof lastOp.retain === "number"
+          typeof newOp.retain === 'number' &&
+          typeof lastOp.retain === 'number'
         ) {
           this.ops[index - 1] = { retain: lastOp.retain + newOp.retain };
-          if (typeof newOp.attributes === "object") {
+          if (typeof newOp.attributes === 'object') {
             this.ops[index - 1].attributes = newOp.attributes;
           }
           return this;
@@ -141,7 +141,7 @@ export default class Delta {
 
   reduce<T>(
     predicate: (accum: T, curr: Op, index: number) => T,
-    initialValue: T
+    initialValue: T,
   ): T {
     return this.ops.reduce(predicate, initialValue);
   }
@@ -187,12 +187,12 @@ export default class Delta {
     const firstOther = otherIter.peek();
     if (
       firstOther != null &&
-      typeof firstOther.retain === "number" &&
+      typeof firstOther.retain === 'number' &&
       firstOther.attributes == null
     ) {
       let firstLeft = firstOther.retain;
       while (
-        thisIter.peekType() === "insert" &&
+        thisIter.peekType() === 'insert' &&
         thisIter.peekLength() <= firstLeft
       ) {
         firstLeft -= thisIter.peekLength();
@@ -204,17 +204,17 @@ export default class Delta {
     }
     const delta = new Delta(ops);
     while (thisIter.hasNext() || otherIter.hasNext()) {
-      if (otherIter.peekType() === "insert") {
+      if (otherIter.peekType() === 'insert') {
         delta.push(otherIter.next());
-      } else if (thisIter.peekType() === "delete") {
+      } else if (thisIter.peekType() === 'delete') {
         delta.push(thisIter.next());
       } else {
         const length = Math.min(thisIter.peekLength(), otherIter.peekLength());
         const thisOp = thisIter.next(length);
         const otherOp = otherIter.next(length);
-        if (typeof otherOp.retain === "number") {
+        if (typeof otherOp.retain === 'number') {
           const newOp: Op = {};
-          if (typeof thisOp.retain === "number") {
+          if (typeof thisOp.retain === 'number') {
             newOp.retain = length;
           } else {
             newOp.insert = thisOp.insert;
@@ -223,7 +223,7 @@ export default class Delta {
           const attributes = Attributes.compose(
             thisOp.attributes,
             otherOp.attributes,
-            typeof thisOp.retain === "number"
+            typeof thisOp.retain === 'number',
           );
           if (attributes) {
             newOp.attributes = attributes;
@@ -242,8 +242,8 @@ export default class Delta {
           // Other op should be delete, we could be an insert or retain
           // Insert + delete cancels out
         } else if (
-          typeof otherOp.delete === "number" &&
-          typeof thisOp.retain === "number"
+          typeof otherOp.delete === 'number' &&
+          typeof thisOp.retain === 'number'
         ) {
           delta.push(otherOp);
         }
@@ -269,12 +269,12 @@ export default class Delta {
       return delta
         .map(op => {
           if (op.insert != null) {
-            return typeof op.insert === "string" ? op.insert : NULL_CHARACTER;
+            return typeof op.insert === 'string' ? op.insert : NULL_CHARACTER;
           }
-          const prep = delta === other ? "on" : "with";
-          throw new Error("diff() called " + prep + " non-document");
+          const prep = delta === other ? 'on' : 'with';
+          throw new Error('diff() called ' + prep + ' non-document');
         })
-        .join("");
+        .join('');
     });
     const retDelta = new Delta();
     const diffResult = diff(strings[0], strings[1], index);
@@ -298,14 +298,14 @@ export default class Delta {
             opLength = Math.min(
               thisIter.peekLength(),
               otherIter.peekLength(),
-              length
+              length,
             );
             const thisOp = thisIter.next(opLength);
             const otherOp = otherIter.next(opLength);
             if (equal(thisOp.insert, otherOp.insert)) {
               retDelta.retain(
                 opLength,
-                Attributes.diff(thisOp.attributes, otherOp.attributes)
+                Attributes.diff(thisOp.attributes, otherOp.attributes),
               );
             } else {
               retDelta.push(otherOp).delete(opLength);
@@ -322,21 +322,21 @@ export default class Delta {
     predicate: (
       line: Delta,
       attributes: Attributes,
-      index: number
+      index: number,
     ) => boolean | void,
-    newline: string = "\n"
+    newline: string = '\n',
   ): void {
     const iter = Op.iterator(this.ops);
     let line = new Delta();
     let i = 0;
     while (iter.hasNext()) {
-      if (iter.peekType() !== "insert") {
+      if (iter.peekType() !== 'insert') {
         return;
       }
       const thisOp = iter.peek();
       const start = Op.length(thisOp) - iter.peekLength();
       const index =
-        typeof thisOp.insert === "string"
+        typeof thisOp.insert === 'string'
           ? thisOp.insert.indexOf(newline, start) - start
           : -1;
       if (index < 0) {
@@ -360,7 +360,7 @@ export default class Delta {
   transform(other: Delta, priority?: boolean): Delta;
   transform(arg: number | Delta, priority: boolean = false): typeof arg {
     priority = !!priority;
-    if (typeof arg === "number") {
+    if (typeof arg === 'number') {
       return this.transformPosition(arg, priority);
     }
     const other: Delta = arg;
@@ -369,11 +369,11 @@ export default class Delta {
     const delta = new Delta();
     while (thisIter.hasNext() || otherIter.hasNext()) {
       if (
-        thisIter.peekType() === "insert" &&
-        (priority || otherIter.peekType() !== "insert")
+        thisIter.peekType() === 'insert' &&
+        (priority || otherIter.peekType() !== 'insert')
       ) {
         delta.retain(Op.length(thisIter.next()));
-      } else if (otherIter.peekType() === "insert") {
+      } else if (otherIter.peekType() === 'insert') {
         delta.push(otherIter.next());
       } else {
         const length = Math.min(thisIter.peekLength(), otherIter.peekLength());
@@ -391,8 +391,8 @@ export default class Delta {
             Attributes.transform(
               thisOp.attributes,
               otherOp.attributes,
-              priority
-            )
+              priority,
+            ),
           );
         }
       }
@@ -408,10 +408,10 @@ export default class Delta {
       const length = thisIter.peekLength();
       const nextType = thisIter.peekType();
       thisIter.next();
-      if (nextType === "delete") {
+      if (nextType === 'delete') {
         index -= Math.min(length, index - offset);
         continue;
-      } else if (nextType === "insert" && (offset < index || !priority)) {
+      } else if (nextType === 'insert' && (offset < index || !priority)) {
         index += length;
       }
       offset += length;
