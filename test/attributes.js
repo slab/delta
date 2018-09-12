@@ -1,12 +1,12 @@
-var Attributes = require("../dist/Attributes").default;
+var AttributeMap = require("../dist/AttributeMap").default;
 
-describe("attributes", function() {
+describe("AttributeMap", function() {
   describe("compose()", function() {
     var attributes = { bold: true, color: "red" };
 
     it("left is undefined", function() {
       expect(
-        Attributes.compose(
+        AttributeMap.compose(
           undefined,
           attributes
         )
@@ -15,7 +15,7 @@ describe("attributes", function() {
 
     it("right is undefined", function() {
       expect(
-        Attributes.compose(
+        AttributeMap.compose(
           attributes,
           undefined
         )
@@ -24,7 +24,7 @@ describe("attributes", function() {
 
     it("both are undefined", function() {
       expect(
-        Attributes.compose(
+        AttributeMap.compose(
           undefined,
           undefined
         )
@@ -33,7 +33,7 @@ describe("attributes", function() {
 
     it("missing", function() {
       expect(
-        Attributes.compose(
+        AttributeMap.compose(
           attributes,
           { italic: true }
         )
@@ -46,7 +46,7 @@ describe("attributes", function() {
 
     it("overwrite", function() {
       expect(
-        Attributes.compose(
+        AttributeMap.compose(
           attributes,
           { bold: false, color: "blue" }
         )
@@ -58,7 +58,7 @@ describe("attributes", function() {
 
     it("remove", function() {
       expect(
-        Attributes.compose(
+        AttributeMap.compose(
           attributes,
           { bold: null }
         )
@@ -69,7 +69,7 @@ describe("attributes", function() {
 
     it("remove to none", function() {
       expect(
-        Attributes.compose(
+        AttributeMap.compose(
           attributes,
           { bold: null, color: null }
         )
@@ -78,7 +78,7 @@ describe("attributes", function() {
 
     it("remove missing", function() {
       expect(
-        Attributes.compose(
+        AttributeMap.compose(
           attributes,
           { italic: null }
         )
@@ -90,34 +90,34 @@ describe("attributes", function() {
     var format = { bold: true, color: "red" };
 
     it("left is undefined", function() {
-      expect(Attributes.diff(undefined, format)).toEqual(format);
+      expect(AttributeMap.diff(undefined, format)).toEqual(format);
     });
 
     it("right is undefined", function() {
       var expected = { bold: null, color: null };
-      expect(Attributes.diff(format, undefined)).toEqual(expected);
+      expect(AttributeMap.diff(format, undefined)).toEqual(expected);
     });
 
     it("same format", function() {
-      expect(Attributes.diff(format, format)).toEqual(undefined);
+      expect(AttributeMap.diff(format, format)).toEqual(undefined);
     });
 
     it("add format", function() {
       var added = { bold: true, italic: true, color: "red" };
       var expected = { italic: true };
-      expect(Attributes.diff(format, added)).toEqual(expected);
+      expect(AttributeMap.diff(format, added)).toEqual(expected);
     });
 
     it("remove format", function() {
       var removed = { bold: true };
       var expected = { color: null };
-      expect(Attributes.diff(format, removed)).toEqual(expected);
+      expect(AttributeMap.diff(format, removed)).toEqual(expected);
     });
 
     it("overwrite format", function() {
       var overwritten = { bold: true, color: "blue" };
       var expected = { color: "blue" };
-      expect(Attributes.diff(format, overwritten)).toEqual(expected);
+      expect(AttributeMap.diff(format, overwritten)).toEqual(expected);
     });
   });
 
@@ -126,29 +126,29 @@ describe("attributes", function() {
     var right = { color: "blue", font: "serif", italic: true };
 
     it("left is undefined", function() {
-      expect(Attributes.transform(undefined, left, false)).toEqual(left);
+      expect(AttributeMap.transform(undefined, left, false)).toEqual(left);
     });
 
     it("right is undefined", function() {
-      expect(Attributes.transform(left, undefined, false)).toEqual(
+      expect(AttributeMap.transform(left, undefined, false)).toEqual(
         undefined
       );
     });
 
     it("both are undefined", function() {
-      expect(Attributes.transform(undefined, undefined, false)).toEqual(
+      expect(AttributeMap.transform(undefined, undefined, false)).toEqual(
         undefined
       );
     });
 
     it("with priority", function() {
-      expect(Attributes.transform(left, right, true)).toEqual({
+      expect(AttributeMap.transform(left, right, true)).toEqual({
         italic: true
       });
     });
 
     it("without priority", function() {
-      expect(Attributes.transform(left, right, false)).toEqual(right);
+      expect(AttributeMap.transform(left, right, false)).toEqual(right);
     });
   });
 });

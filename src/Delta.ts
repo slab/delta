@@ -1,7 +1,7 @@
 import equal = require('deep-equal');
 import extend = require('extend');
 import diff = require('fast-diff');
-import Attributes from './Attributes';
+import AttributeMap from './AttributeMap';
 import Op from './Op';
 
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
@@ -19,7 +19,7 @@ export default class Delta {
     }
   }
 
-  insert(arg: string | object, attributes?: Attributes): this {
+  insert(arg: string | object, attributes?: AttributeMap): this {
     const newOp: Op = {};
     if (typeof arg === 'string' && arg.length === 0) {
       return this;
@@ -42,7 +42,7 @@ export default class Delta {
     return this.push({ delete: length });
   }
 
-  retain(length: number, attributes?: Attributes): this {
+  retain(length: number, attributes?: AttributeMap): this {
     if (length <= 0) {
       return this;
     }
@@ -220,7 +220,7 @@ export default class Delta {
             newOp.insert = thisOp.insert;
           }
           // Preserve null when composing with a retain, otherwise remove it for inserts
-          const attributes = Attributes.compose(
+          const attributes = AttributeMap.compose(
             thisOp.attributes,
             otherOp.attributes,
             typeof thisOp.retain === 'number',
@@ -305,7 +305,7 @@ export default class Delta {
             if (equal(thisOp.insert, otherOp.insert)) {
               retDelta.retain(
                 opLength,
-                Attributes.diff(thisOp.attributes, otherOp.attributes),
+                AttributeMap.diff(thisOp.attributes, otherOp.attributes),
               );
             } else {
               retDelta.push(otherOp).delete(opLength);
@@ -321,7 +321,7 @@ export default class Delta {
   eachLine(
     predicate: (
       line: Delta,
-      attributes: Attributes,
+      attributes: AttributeMap,
       index: number,
     ) => boolean | void,
     newline: string = '\n',
@@ -388,7 +388,7 @@ export default class Delta {
           // We retain either their retain or insert
           delta.retain(
             length,
-            Attributes.transform(
+            AttributeMap.transform(
               thisOp.attributes,
               otherOp.attributes,
               priority,
@@ -420,4 +420,4 @@ export default class Delta {
   }
 }
 
-export { Op, Attributes };
+export { Op, AttributeMap };

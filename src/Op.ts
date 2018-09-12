@@ -1,4 +1,4 @@
-import Attributes from './Attributes';
+import AttributeMap from './AttributeMap';
 import Iterator from './Iterator';
 
 interface Op {
@@ -7,7 +7,7 @@ interface Op {
   delete?: number;
   retain?: number;
 
-  attributes?: Attributes;
+  attributes?: AttributeMap;
 }
 
 namespace Op {

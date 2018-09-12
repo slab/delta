@@ -1,16 +1,16 @@
 import equal = require('deep-equal');
 import extend = require('extend');
 
-interface Attributes {
+interface AttributeMap {
   [key: string]: any;
 }
 
-namespace Attributes {
+namespace AttributeMap {
   export function compose(
-    a: Attributes = {},
-    b: Attributes = {},
+    a: AttributeMap = {},
+    b: AttributeMap = {},
     keepNull: boolean,
-  ): Attributes | undefined {
+  ): AttributeMap | undefined {
     if (typeof a !== 'object') {
       a = {};
     }
@@ -19,7 +19,7 @@ namespace Attributes {
     }
     let attributes = extend(true, {}, b);
     if (!keepNull) {
-      attributes = Object.keys(attributes).reduce<Attributes>((copy, key) => {
+      attributes = Object.keys(attributes).reduce<AttributeMap>((copy, key) => {
         if (attributes[key] != null) {
           copy[key] = attributes[key];
         }
@@ -35,9 +35,9 @@ namespace Attributes {
   }
 
   export function diff(
-    a: Attributes = {},
-    b: Attributes = {},
-  ): Attributes | undefined {
+    a: AttributeMap = {},
+    b: AttributeMap = {},
+  ): AttributeMap | undefined {
     if (typeof a !== 'object') {
       a = {};
     }
@@ -46,7 +46,7 @@ namespace Attributes {
     }
     const attributes = Object.keys(a)
       .concat(Object.keys(b))
-      .reduce<Attributes>((attrs, key) => {
+      .reduce<AttributeMap>((attrs, key) => {
         if (!equal(a[key], b[key])) {
           attrs[key] = b[key] === undefined ? null : b[key];
         }
@@ -56,10 +56,10 @@ namespace Attributes {
   }
 
   export function transform(
-    a: Attributes | undefined,
-    b: Attributes | undefined,
+    a: AttributeMap | undefined,
+    b: AttributeMap | undefined,
     priority: boolean = false,
-  ): Attributes | undefined {
+  ): AttributeMap | undefined {
     if (typeof a !== 'object') {
       return b;
     }
@@ -69,7 +69,7 @@ namespace Attributes {
     if (!priority) {
       return b; // b simply overwrites us without priority
     }
-    const attributes = Object.keys(b).reduce<Attributes>((attrs, key) => {
+    const attributes = Object.keys(b).reduce<AttributeMap>((attrs, key) => {
       if (a[key] === undefined) {
         attrs[key] = b[key]; // null is a valid value
       }
@@ -79,4 +79,4 @@ namespace Attributes {
   }
 }
 
-export default Attributes;
+export default AttributeMap;
