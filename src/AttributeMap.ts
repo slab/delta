@@ -1,5 +1,5 @@
-import equal = require('deep-equal');
-import extend = require('extend');
+import equal from 'deep-equal';
+import extend from 'extend';
 
 interface AttributeMap {
   [key: string]: any;

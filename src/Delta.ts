@@ -1,12 +1,15 @@
-import equal = require('deep-equal');
-import extend = require('extend');
-import diff = require('fast-diff');
+import equal from 'deep-equal';
+import extend from 'extend';
+import diff from 'fast-diff';
 import AttributeMap from './AttributeMap';
 import Op from './Op';
 
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
 
-export default class Delta {
+export = class Delta {
+  static Op = Op;
+  static AttributeMap = AttributeMap;
+
   ops: Op[];
   constructor(ops?: Op[] | { ops: Op[] }) {
     // Assume we are given a well formed ops
@@ -418,6 +421,24 @@ export default class Delta {
     }
     return index;
   }
+};
+
+/*
+// Copy Op and AttributeMap to Delta.Op and Delta.AttributeMap
+import _Op = Op;
+import _AttributeMap = AttributeMap;
+namespace Delta {
+  /* tslint:disable:no-shadowed-variable *
+  export import Op = _Op;
+  export import AttributeMap = _AttributeMap;
+  /* tslint:disable:no-shadowed-variable *
 }
 
+export default Delta;
 export { Op, AttributeMap };
+
+import blah from './Test';
+import { Op } from './Test';
+
+const y = blah;
+const */

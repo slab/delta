@@ -1,4 +1,4 @@
-var AttributeMap = require("../dist/AttributeMap").default;
+var AttributeMap = require("../dist/Delta").AttributeMap;
 
 describe("AttributeMap", function() {
   describe("compose()", function() {

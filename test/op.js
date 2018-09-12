@@ -1,5 +1,5 @@
-var Delta = require("../dist/Delta").default;
-var Op = require("../dist/Op").default;
+var Delta = require("../dist/Delta");
+var Op = require("../dist/Delta").Op;
 
 describe("Op", function() {
   describe("length()", function() {
