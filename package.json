@@ -23,6 +23,11 @@
     "tslint-plugin-prettier": "^1.3.0",
     "typescript": "^3.0.0"
   },
+  "files": [
+    "tsconfig.json",
+    "dist",
+    "src"
+  ],
   "license": "MIT",
   "scripts": {
     "build": "tsc",
