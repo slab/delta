@@ -26,6 +26,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "prepare": "npm run build",
     "lint": "tslint 'src/**/*.ts'",
     "test": "npm run build; jasmine test/*.js test/**/*.js",
     "test:coverage": "istanbul cover jasmine test/*.js test/**/*.js",
