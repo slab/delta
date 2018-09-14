@@ -4,7 +4,7 @@
   "description": "Format for representing rich text documents and changes.",
   "author": "Jason Chen <jhchen7@gmail.com>",
   "homepage": "https://github.com/quilljs/delta",
-  "main": "dist/delta.js",
+  "main": "dist/Delta.js",
   "dependencies": {
     "deep-equal": "^1.0.1",
     "extend": "^3.0.2",
