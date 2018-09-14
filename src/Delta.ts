@@ -6,7 +6,7 @@ import Op from './Op';
 
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
 
-export = class Delta {
+class Delta {
   static Op = Op;
   static AttributeMap = AttributeMap;
 
@@ -421,24 +421,6 @@ export = class Delta {
     }
     return index;
   }
-};
-
-/*
-// Copy Op and AttributeMap to Delta.Op and Delta.AttributeMap
-import _Op = Op;
-import _AttributeMap = AttributeMap;
-namespace Delta {
-  /* tslint:disable:no-shadowed-variable *
-  export import Op = _Op;
-  export import AttributeMap = _AttributeMap;
-  /* tslint:disable:no-shadowed-variable *
 }
 
-export default Delta;
-export { Op, AttributeMap };
-
-import blah from './Test';
-import { Op } from './Test';
-
-const y = blah;
-const */
+export = Delta;
