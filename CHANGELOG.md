@@ -1,3 +1,7 @@
+## v4.0.1
+
+- Fix build package casing
+
 ## v4.0.0
 
 Source rewritten in Typescript
