@@ -1,3 +1,14 @@
+## v4.0.0
+
+Source rewritten in Typescript
+
+#### Breaking Changes
+
+These were never documented as officially supported but to be safe we are doing a major version bump.
+
+- No longer works in IE8 as there is function called `delete` and IE8 treats that as a reserved identifier
+- The source structure has changed so those utilizing NPM's ability to import from arbitrary directories ex. `import DeltaOp from 'quill-delta/lib/op'` will have to update their imports
+
 ## v3.6.3
 
 - Performance optimization for `compose`
@@ -14,47 +25,42 @@
 
 - Add experimental method `changeLength()`
 
-
 ## v3.5.0
 
 - Add counter and early return to `eachLine()`
-
 
 ## v3.4.0
 
 - Support index suggestion in `diff()`
 
-
 ## v3.3.0
 
 - Add `partition()`
-
 
 ## v3.2.0
 
 - Add `eachLine()`, `map()`, `reduce()`, `filter()`, `forEach()`
 
-
 ## v3.1.0
 
 - Pull out quilljs/delta from ottypes/rich-text
 
-
 ## v3.0.0
 
 #### Breaking Changes
-- Deep copy and compare attributes and deltas
 
+- Deep copy and compare attributes and deltas
 
 ## v2.1.0
 
 - Add `concat()` method for document Deltas
 
-
 ## v2.0.0
 
 #### Breaking Changes
+
 - `compose()` returns a new Delta instead of self-modifying
 
 #### Features
+
 - Support embed being any non-string type
