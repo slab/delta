@@ -8,7 +8,7 @@
   "dependencies": {
     "deep-equal": "^1.0.1",
     "extend": "^3.0.2",
-    "fast-diff": "github:jhchen/fast-diff#f4e19f4486123086679ee2c8f703efb44dfb2499"
+    "fast-diff": "1.2.0"
   },
   "devDependencies": {
     "@types/deep-equal": "^1.0.1",
