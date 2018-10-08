@@ -1,3 +1,7 @@
+## v4.1.0
+
+- Use fast-diff 1.2.0 in `diff()`, so that diffs do not split Unicode surrogate pairs
+
 ## v4.0.1
 
 - Fix build package casing
