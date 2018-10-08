@@ -264,7 +264,7 @@ class Delta {
     return delta;
   }
 
-  diff(other: Delta, index?: number): Delta {
+  diff(other: Delta, cursor?: number | diff.CursorInfo): Delta {
     if (this.ops === other.ops) {
       return new Delta();
     }
@@ -280,7 +280,7 @@ class Delta {
         .join('');
     });
     const retDelta = new Delta();
-    const diffResult = diff(strings[0], strings[1], index);
+    const diffResult = diff(strings[0], strings[1], cursor);
     const thisIter = Op.iterator(this.ops);
     const otherIter = Op.iterator(other.ops);
     diffResult.forEach(component => {
