@@ -1,6 +1,6 @@
-import equal from 'deep-equal';
-import extend from 'extend';
-import diff from 'fast-diff';
+import equal = require('deep-equal');
+import extend = require('extend');
+import diff = require('fast-diff');
 import AttributeMap from './AttributeMap';
 import Op from './Op';
 
