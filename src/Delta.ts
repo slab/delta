@@ -271,7 +271,7 @@ class Delta {
     const strings = [this, other].map(delta => {
       return delta
         .map(op => {
-          if (op.insert != null) {
+          if (op.insert != null || op.retain != null) {
             return typeof op.insert === 'string' ? op.insert : NULL_CHARACTER;
           }
           const prep = delta === other ? 'on' : 'with';
