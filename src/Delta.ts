@@ -359,6 +359,25 @@ class Delta {
     }
   }
 
+  invert(base: Delta): Delta {
+    const inverted = new Delta();
+    this.reduce((baseIndex, op) => {
+      if (op.insert) {
+        inverted.delete(Op.length(op));
+      } else if (op.retain && op.attributes == null) {
+        inverted.retain(op.retain);
+        return baseIndex + op.retain;
+      } else if (op.delete) {
+        base
+          .slice(baseIndex, baseIndex + op.delete)
+          .forEach(o => inverted.push(o));
+        return baseIndex + op.delete;
+      }
+      return baseIndex;
+    }, 0);
+    return inverted;
+  }
+
   transform(index: number, priority?: boolean): number;
   transform(other: Delta, priority?: boolean): Delta;
   transform(arg: number | Delta, priority: boolean = false): typeof arg {
