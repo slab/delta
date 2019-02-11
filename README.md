@@ -12,7 +12,7 @@ Don’t be confused by its name Delta&mdash;Deltas represents both documents and
 ```js
 // Document with text "Gandalf the Grey"
 // with "Gandalf" bolded, and "Grey" in grey
-var delta = new Delta([
+const delta = new Delta([
   { insert: 'Gandalf', attributes: { bold: true } },
   { insert: ' the ' },
   { insert: 'Grey', attributes: { color: '#ccc' } }
@@ -21,9 +21,9 @@ var delta = new Delta([
 // Change intended to be applied to above:
 // Keep the first 12 characters, delete the next 4,
 // and insert a white 'White'
-var death = new Delta().retain(12)
-                       .delete(4)
-                       .insert('White', { color: '#fff' });
+const death = new Delta().retain(12)
+                         .delete(4)
+                         .insert('White', { color: '#fff' });
 // {
 //   ops: [
 //     { retain: 12 },
@@ -33,7 +33,7 @@ var death = new Delta().retain(12)
 // }
 
 // Applying the above:
-var restored = delta.compose(death);
+const restored = delta.compose(death);
 // {
 //   ops: [
 //     { insert: 'Gandalf ', attributes: { bold: true } },
@@ -172,16 +172,16 @@ Creates a new Delta object.
 #### Example
 
 ```js
-var delta = new Delta([
+const delta = new Delta([
   { insert: 'Hello World' },
   { insert: '!', attributes: { bold: true }}
 ]);
 
-var packet = JSON.stringify(delta);
+const packet = JSON.stringify(delta);
 
-var other = new Delta(JSON.parse(packet));
+const other = new Delta(JSON.parse(packet));
 
-var chained = new Delta().insert('Hello World').insert('!', { bold: true });
+const chained = new Delta().insert('Hello World').insert('!', { bold: true });
 ```
 
 ---
@@ -270,8 +270,8 @@ Returns a new Delta representing the concatenation of this and another document 
 #### Example
 
 ```js
-var a = new Delta().insert('Hello');
-var b = new Delta().insert('!', { bold: true });
+const a = new Delta().insert('Hello');
+const b = new Delta().insert('!', { bold: true });
 
 
 // {
@@ -280,7 +280,7 @@ var b = new Delta().insert('!', { bold: true });
 //     { insert: '!', attributes: { bold: true } }
 //   ]
 // }
-var concat = a.concat(b);
+const concat = a.concat(b);
 ```
 
 ---
@@ -306,11 +306,11 @@ Returns a Delta representing the difference between two documents. Optionally, a
 #### Example
 
 ```js
-var a = new Delta().insert('Hello');
-var b = new Delta().insert('Hello!');
+const a = new Delta().insert('Hello');
+const b = new Delta().insert('Hello!');
 
-var diff = a.diff(b);  // { ops: [{ retain: 5 }, { insert: '!' }] }
-                       // a.compose(diff) == b
+const diff = a.diff(b);  // { ops: [{ retain: 5 }, { insert: '!' }] }
+                         // a.compose(diff) == b
 
 ```
 
@@ -332,13 +332,13 @@ Iterates through document Delta, calling a given function with a Delta and attri
 #### Example
 
 ```js
-var delta = new Delta().insert('Hello\n\n')
-                       .insert('World')
-                       .insert({ image: 'octocat.png' })
-                       .insert('\n', { align: 'right' })
-                       .insert('!');
+const delta = new Delta().insert('Hello\n\n')
+                         .insert('World')
+                         .insert({ image: 'octocat.png' })
+                         .insert('\n', { align: 'right' })
+                         .insert('!');
 
-delta.eachLine(function(line, attributes, i) {
+delta.eachLine((line, attributes, i) => {
   console.log(line, attributes, i);
   // Can return false to exit loop early
 });
@@ -370,16 +370,16 @@ Returned an inverted delta that has the opposite effect of against a base docume
 #### Example
 
 ```js
-var base = new Delta().insert('Hello\n')
-                       .insert('World');
-var delta = new Delta().retain(6, { bold: true }).delete(5).insert('!');
+const base = new Delta().insert('Hello\n')
+                        .insert('World');
+const delta = new Delta().retain(6, { bold: true }).delete(5).insert('!');
 
-var inverted = delta.invert(base);  // { ops: [
-                                    //   { retain: 6, attributes: { bold: null } },
-                                    //   { insert: 'World' },
-                                    //   { delete: 1 }
-                                    // ]}
-                                    // base.compose(delta).compose(inverted) === base
+const inverted = delta.invert(base);  // { ops: [
+                                      //   { retain: 6, attributes: { bold: null } },
+                                      //   { insert: 'World' },
+                                      //   { delete: 1 }
+                                      // ]}
+                                      // base.compose(delta).compose(inverted) === base
 ```
 
 
@@ -404,15 +404,14 @@ Returns an array of operations that passes a given function.
 #### Example
 
 ```js
-var delta = new Delta().insert('Hello', { bold: true })
-                       .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
-                       .insert('World!');
+const delta = new Delta().insert('Hello', { bold: true })
+                         .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
+                         .insert('World!');
 
-var text = delta.filter(function(op) {
-  return typeof op.insert === 'string';
-}).map(function(op) {
-  return op.insert;
-}).join('');
+const text = delta
+  .filter((op) => typeof op.insert === 'string')
+  .map((op) => op.insert)
+  .join('');
 ```
 
 ---
@@ -432,7 +431,7 @@ Iterates through operations, calling the provided function for each operation.
 #### Example
 
 ```js
-delta.forEach(function(op) {
+delta.forEach((op) => {
   console.log(op);
 });
 ```
@@ -476,17 +475,19 @@ Returns a new array with the results of calling provided function on each operat
 #### Example
 
 ```js
-var delta = new Delta().insert('Hello', { bold: true })
-                       .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
-                       .insert('World!');
+const delta = new Delta().insert('Hello', { bold: true })
+                         .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
+                         .insert('World!');
 
-var text = delta.map(function(op) {
-  if (typeof op.insert === 'string') {
-    return op.insert;
-  } else {
-    return '';
-  }
-}).join('');
+const text = delta
+  .map((op) => {
+    if (typeof op.insert === 'string') {
+      return op.insert;
+    } else {
+      return '';
+    }
+  })
+  .join('');
 ```
 
 ---
@@ -510,16 +511,14 @@ Create an array of two arrays, the first with operations that pass the given fun
 #### Example
 
 ```js
-var delta = new Delta().insert('Hello', { bold: true })
-                       .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
-                       .insert('World!');
+const delta = new Delta().insert('Hello', { bold: true })
+                         .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
+                         .insert('World!');
 
-var results = delta.partition(function(op) {
-  return typeof op.insert === 'string';
-});
-var passed = results[0];  // [{ insert: 'Hello', attributes: { bold: true }},
-                          //  { insert: 'World'}]
-var failed = results[1];  // [{ insert: { image: 'https://octodex.github.com/images/labtocat.png' }}]
+const results = delta.partition((op) => typeof op.insert === 'string');
+const passed = results[0];  // [{ insert: 'Hello', attributes: { bold: true }},
+                            //  { insert: 'World'}]
+const failed = results[1];  // [{ insert: { image: 'https://octodex.github.com/images/labtocat.png' }}]
 ```
 
 ---
@@ -544,13 +543,13 @@ Applies given function against an accumulator and each operation to reduce to a 
 #### Example
 
 ```js
-var delta = new Delta().insert('Hello', { bold: true })
-                       .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
-                       .insert('World!');
+const delta = new Delta().insert('Hello', { bold: true })
+                         .insert({ image: 'https://octodex.github.com/images/labtocat.png' })
+                         .insert('World!');
 
-var length = delta.reduce(function(length, op) {
-  return length + (op.insert.length || 1);
-}, 0);
+const length = delta.reduce((length, op) => (
+  length + (op.insert.length || 1);
+), 0);
 ```
 
 ---
@@ -573,7 +572,7 @@ Returns copy of delta with subset of operations.
 #### Example
 
 ```js
-var delta = new Delta().insert('Hello', { bold: true }).insert(' World');
+const delta = new Delta().insert('Hello', { bold: true }).insert(' World');
 
 // {
 //   ops: [
@@ -581,13 +580,13 @@ var delta = new Delta().insert('Hello', { bold: true }).insert(' World');
 //     { insert: ' World' }
 //   ]
 // }
-var copy = delta.slice();
+const copy = delta.slice();
 
 // { ops: [{ insert: 'World' }] }
-var world = delta.slice(6);
+const world = delta.slice(6);
 
 // { ops: [{ insert: ' ' }] }
-var space = delta.slice(5, 6);
+const space = delta.slice(5, 6);
 ```
 
 
@@ -608,10 +607,10 @@ Returns a Delta that is equivalent to applying the operations of own Delta, foll
 #### Example
 
 ```js
-var a = new Delta().insert('abc');
-var b = new Delta().retain(1).delete(1);
+const a = new Delta().insert('abc');
+const b = new Delta().retain(1).delete(1);
 
-var composed = a.compose(b);  // composed == new Delta().insert('ac');
+const composed = a.compose(b);  // composed == new Delta().insert('ac');
 
 ```
 
@@ -639,8 +638,8 @@ Transform given Delta against own operations.
 #### Example
 
 ```js
-var a = new Delta().insert('a');
-var b = new Delta().insert('b').retain(5).insert('c');
+const a = new Delta().insert('a');
+const b = new Delta().insert('b').retain(5).insert('c');
 
 a.transform(b, true);  // new Delta().retain(1).insert('b').retain(5).insert('c');
 a.transform(b, false); // new Delta().insert('b').retain(6).insert('c');
@@ -667,7 +666,7 @@ Transform an index against the delta. Useful for representing cursor/selection p
 #### Example
 
 ```js
-var delta = new Delta().retain(5).insert('a');
+const delta = new Delta().retain(5).insert('a');
 delta.transformPosition(4); // 4
 delta.transformPosition(5); // 6
 ```
