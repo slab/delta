@@ -71,6 +71,7 @@ These methods called on or with non-document Deltas will result in undefined beh
 - [`concat`](#concat)
 - [`diff`](#diff)
 - [`eachLine`](#eachline)
+- [`invert`](#invert)
 
 #### Utility
 
@@ -346,6 +347,39 @@ delta.eachLine(function(line, attributes, i) {
 // { ops: [] }, {}, 1
 // { ops: [{ insert: 'World' }, { insert: { image: 'octocat.png' } }] }, { align: 'right' }, 2
 // { ops: [{ insert: '!' }] }, {}, 3
+```
+
+---
+
+### invert()
+
+Returned an inverted delta that has the opposite effect of against a base document delta. That is `base.compose(delta).compose(inverted) === base`.
+
+#### Methods
+
+- `invert(base)`
+
+#### Parameters
+
+- `base` - Document delta to invert against
+
+#### Returns
+
+- `Delta` - inverted delta against the base delta
+
+#### Example
+
+```js
+var base = new Delta().insert('Hello\n')
+                       .insert('World');
+var delta = new Delta().retain(6, { bold: true }).delete(5).insert('!');
+
+var inverted = delta.invert(base);  // { ops: [
+                                    //   { retain: 6, attributes: { bold: null } },
+                                    //   { insert: 'World' },
+                                    //   { delete: 1 }
+                                    // ]}
+                                    // base.compose(delta).compose(inverted) === base
 ```
 
 
