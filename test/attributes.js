@@ -121,6 +121,58 @@ describe('AttributeMap', function() {
     });
   });
 
+  describe('invert()', function() {
+    it('attributes is undefined', function() {
+      var base = { bold: true };
+      expect(AttributeMap.invert(undefined, base)).toEqual({});
+    });
+
+    it('base is undefined', function() {
+      var attributes = { bold: true };
+      var expected = { bold: null };
+      expect(AttributeMap.invert(attributes, undefined)).toEqual(expected);
+    });
+
+    it('both undefined', function() {
+      expect(AttributeMap.invert()).toEqual({});
+    });
+
+    it('merge', function() {
+      var attributes = { bold: true };
+      var base = { italic: true };
+      var expected = { bold: null };
+      expect(AttributeMap.invert(attributes, base)).toEqual(expected);
+    });
+
+    it('null', function() {
+      var attributes = { bold: null };
+      var base = { bold: true };
+      var expected = { bold: true };
+      expect(AttributeMap.invert(attributes, base)).toEqual(expected);
+    });
+
+    it('replace', function() {
+      var attributes = { color: 'red' };
+      var base = { color: 'blue' };
+      var expected = base;
+      expect(AttributeMap.invert(attributes, base)).toEqual(expected);
+    });
+
+    it('noop', function() {
+      var attributes = { color: 'red' };
+      var base = { color: 'red' };
+      var expected = {};
+      expect(AttributeMap.invert(attributes, base)).toEqual(expected);
+    });
+
+    it('combined', function() {
+      var attributes = { bold: true, italic: null, color: 'red', size: '12px' };
+      var base = { font: 'serif', italic: true, color: 'blue', size: '12px' };
+      var expected = { bold: null, italic: true, color: 'blue' };
+      expect(AttributeMap.invert(attributes, base)).toEqual(expected);
+    });
+  });
+
   describe('transform()', function() {
     var left = { bold: true, color: 'red', font: null };
     var right = { color: 'blue', font: 'serif', italic: true };

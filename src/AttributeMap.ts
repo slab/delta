@@ -55,6 +55,22 @@ namespace AttributeMap {
     return Object.keys(attributes).length > 0 ? attributes : undefined;
   }
 
+  export function invert(attr: AttributeMap = {}, base: AttributeMap = {}) {
+    attr = attr || {};
+    const baseInverted = Object.keys(base).reduce<AttributeMap>((memo, key) => {
+      if (base[key] !== attr[key] && attr[key] !== undefined) {
+        memo[key] = base[key];
+      }
+      return memo;
+    }, {});
+    return Object.keys(attr).reduce<AttributeMap>((memo, key) => {
+      if (attr[key] !== base[key] && base[key] === undefined) {
+        memo[key] = null;
+      }
+      return memo;
+    }, baseInverted);
+  }
+
   export function transform(
     a: AttributeMap | undefined,
     b: AttributeMap | undefined,
