@@ -367,15 +367,24 @@ class Delta {
       } else if (op.retain && op.attributes == null) {
         inverted.retain(op.retain);
         return baseIndex + op.retain;
-      } else if (op.delete) {
-        base
-          .slice(baseIndex, baseIndex + op.delete)
-          .forEach(o => inverted.push(o));
-        return baseIndex + op.delete;
+      } else if (op.delete || (op.retain && op.attributes)) {
+        const length = (op.delete || op.retain) as number;
+        const slice = base.slice(baseIndex, baseIndex + length);
+        slice.forEach(baseOp => {
+          if (op.delete) {
+            inverted.push(baseOp);
+          } else if (op.retain && op.attributes) {
+            inverted.retain(
+              op.retain,
+              AttributeMap.invert(op.attributes, baseOp.attributes),
+            );
+          }
+        });
+        return baseIndex + length;
       }
       return baseIndex;
     }, 0);
-    return inverted;
+    return inverted.chop();
   }
 
   transform(index: number, priority?: boolean): number;
