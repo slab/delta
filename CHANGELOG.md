@@ -1,3 +1,7 @@
+## v4.2.1
+
+- Fix invert retain across multiple ops
+
 ## v4.2.0
 
 - Add `invert()`

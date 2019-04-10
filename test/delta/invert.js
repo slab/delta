@@ -28,6 +28,15 @@ describe('invert()', function() {
     expect(base.compose(delta).compose(inverted)).toEqual(base);
   });
 
+  it('retain on a delta with different attributes', function() {
+    var base = new Delta().insert('123').insert('4', { bold: true });
+    var delta = new Delta().retain(4, { italic: true });
+    var expected = new Delta().retain(4, { italic: null });
+    var inverted = delta.invert(base);
+    expect(expected).toEqual(inverted);
+    expect(base.compose(delta).compose(inverted)).toEqual(base);
+  });
+
   it('combined', function() {
     var delta = new Delta()
       .retain(2)

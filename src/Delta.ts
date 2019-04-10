@@ -375,7 +375,7 @@ class Delta {
             inverted.push(baseOp);
           } else if (op.retain && op.attributes) {
             inverted.retain(
-              op.retain,
+              Op.length(baseOp),
               AttributeMap.invert(op.attributes, baseOp.attributes),
             );
           }
