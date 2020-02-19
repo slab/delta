@@ -18,6 +18,15 @@ namespace AttributeMap {
       b = {};
     }
     let attributes = extend(true, {}, b);
+    for (const key in a) {
+      if (isObject(a[key]) && isObject(attributes[key])) {
+        attributes[key] = compose(
+          a[key],
+          attributes[key],
+          keepNull,
+        );
+      }
+    }
     if (!keepNull) {
       attributes = Object.keys(attributes).reduce<AttributeMap>((copy, key) => {
         if (attributes[key] != null) {
@@ -48,7 +57,13 @@ namespace AttributeMap {
       .concat(Object.keys(b))
       .reduce<AttributeMap>((attrs, key) => {
         if (!equal(a[key], b[key])) {
-          attrs[key] = b[key] === undefined ? null : b[key];
+          if (b[key] === undefined) {
+            attrs[key] = null;
+          } else if (isObject(a[key]) && isObject(b[key])) {
+            attrs[key] = diff(a[key], b[key]);
+          } else {
+            attrs[key] = b[key];
+          }
         }
         return attrs;
       }, {});
@@ -58,8 +73,12 @@ namespace AttributeMap {
   export function invert(attr: AttributeMap = {}, base: AttributeMap = {}) {
     attr = attr || {};
     const baseInverted = Object.keys(base).reduce<AttributeMap>((memo, key) => {
-      if (base[key] !== attr[key] && attr[key] !== undefined) {
-        memo[key] = base[key];
+      if (!equal(base[key], attr[key]) && attr[key] !== undefined) {
+        if (isObject(attr[key]) && isObject(base[key])) {
+          memo[key] = invert(attr[key], base[key]);
+        } else {
+          memo[key] = base[key];
+        }
       }
       return memo;
     }, {});
@@ -88,11 +107,17 @@ namespace AttributeMap {
     const attributes = Object.keys(b).reduce<AttributeMap>((attrs, key) => {
       if (a[key] === undefined) {
         attrs[key] = b[key]; // null is a valid value
+      } else if (isObject(a[key]) && isObject(b[key])) {
+        attrs[key] = transform(a[key], b[key], true);
       }
       return attrs;
     }, {});
     return Object.keys(attributes).length > 0 ? attributes : undefined;
   }
+}
+
+function isObject(value: any): boolean {
+  return value === Object(value) && !Array.isArray(value);
 }
 
 export default AttributeMap;
