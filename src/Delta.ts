@@ -1,6 +1,6 @@
-import equal from 'deep-equal';
-import extend from 'extend';
 import diff from 'fast-diff';
+import cloneDeep from 'lodash.clonedeep';
+import isEqual from 'lodash.isequal';
 import AttributeMap from './AttributeMap';
 import Op from './Op';
 
@@ -63,7 +63,7 @@ class Delta {
   push(newOp: Op): this {
     let index = this.ops.length;
     let lastOp = this.ops[index - 1];
-    newOp = extend(true, {}, newOp);
+    newOp = cloneDeep(newOp);
     if (typeof lastOp === 'object') {
       if (
         typeof newOp.delete === 'number' &&
@@ -82,7 +82,7 @@ class Delta {
           return this;
         }
       }
-      if (equal(newOp.attributes, lastOp.attributes)) {
+      if (isEqual(newOp.attributes, lastOp.attributes)) {
         if (
           typeof newOp.insert === 'string' &&
           typeof lastOp.insert === 'string'
@@ -135,7 +135,7 @@ class Delta {
   partition(predicate: (op: Op) => boolean): [Op[], Op[]] {
     const passed: Op[] = [];
     const failed: Op[] = [];
-    this.forEach(op => {
+    this.forEach((op) => {
       const target = predicate(op) ? passed : failed;
       target.push(op);
     });
@@ -166,7 +166,7 @@ class Delta {
     }, 0);
   }
 
-  slice(start: number = 0, end: number = Infinity): Delta {
+  slice(start = 0, end = Infinity): Delta {
     const ops = [];
     const iter = Op.iterator(this.ops);
     let index = 0;
@@ -236,7 +236,7 @@ class Delta {
           // Optimization if rest of other is just retain
           if (
             !otherIter.hasNext() &&
-            equal(delta.ops[delta.ops.length - 1], newOp)
+            isEqual(delta.ops[delta.ops.length - 1], newOp)
           ) {
             const rest = new Delta(thisIter.rest());
             return delta.concat(rest).chop();
@@ -268,9 +268,9 @@ class Delta {
     if (this.ops === other.ops) {
       return new Delta();
     }
-    const strings = [this, other].map(delta => {
+    const strings = [this, other].map((delta) => {
       return delta
-        .map(op => {
+        .map((op) => {
           if (op.insert != null) {
             return typeof op.insert === 'string' ? op.insert : NULL_CHARACTER;
           }
@@ -283,7 +283,7 @@ class Delta {
     const diffResult = diff(strings[0], strings[1], cursor);
     const thisIter = Op.iterator(this.ops);
     const otherIter = Op.iterator(other.ops);
-    diffResult.forEach(component => {
+    diffResult.forEach((component: diff.Diff) => {
       let length = component[1].length;
       while (length > 0) {
         let opLength = 0;
@@ -305,7 +305,7 @@ class Delta {
             );
             const thisOp = thisIter.next(opLength);
             const otherOp = otherIter.next(opLength);
-            if (equal(thisOp.insert, otherOp.insert)) {
+            if (isEqual(thisOp.insert, otherOp.insert)) {
               retDelta.retain(
                 opLength,
                 AttributeMap.diff(thisOp.attributes, otherOp.attributes),
@@ -327,7 +327,7 @@ class Delta {
       attributes: AttributeMap,
       index: number,
     ) => boolean | void,
-    newline: string = '\n',
+    newline = '\n',
   ): void {
     const iter = Op.iterator(this.ops);
     let line = new Delta();
@@ -370,7 +370,7 @@ class Delta {
       } else if (op.delete || (op.retain && op.attributes)) {
         const length = (op.delete || op.retain) as number;
         const slice = base.slice(baseIndex, baseIndex + length);
-        slice.forEach(baseOp => {
+        slice.forEach((baseOp) => {
           if (op.delete) {
             inverted.push(baseOp);
           } else if (op.retain && op.attributes) {
@@ -389,7 +389,7 @@ class Delta {
 
   transform(index: number, priority?: boolean): number;
   transform(other: Delta, priority?: boolean): Delta;
-  transform(arg: number | Delta, priority: boolean = false): typeof arg {
+  transform(arg: number | Delta, priority = false): typeof arg {
     priority = !!priority;
     if (typeof arg === 'number') {
       return this.transformPosition(arg, priority);
@@ -431,7 +431,7 @@ class Delta {
     return delta.chop();
   }
 
-  transformPosition(index: number, priority: boolean = false): number {
+  transformPosition(index: number, priority = false): number {
     priority = !!priority;
     const thisIter = Op.iterator(this.ops);
     let offset = 0;

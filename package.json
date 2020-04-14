@@ -6,21 +6,23 @@
   "homepage": "https://github.com/quilljs/delta",
   "main": "dist/Delta.js",
   "dependencies": {
-    "deep-equal": "^1.0.1",
-    "extend": "^3.0.2",
-    "fast-diff": "1.2.0"
+    "fast-diff": "1.2.0",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.isequal": "^4.5.0"
   },
   "devDependencies": {
-    "@types/deep-equal": "^1.0.1",
-    "@types/extend": "^3.0.0",
-    "coveralls": "^3.0.2",
+    "@types/lodash.clonedeep": "^4.5.0",
+    "@types/lodash.isequal": "^4.5.0",
+    "@typescript-eslint/eslint-plugin": "^2.28.0",
+    "@typescript-eslint/parser": "^2.28.0",
+    "coveralls": "^3.0.11",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
     "istanbul": "~0.4.5",
-    "jasmine": "^3.3.1",
-    "prettier": "^1.16.4",
-    "tslint": "^5.12.1",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.3.3"
+    "jasmine": "^3.5.0",
+    "prettier": "^2.0.4",
+    "typescript": "^3.8.3"
   },
   "files": [
     "tsconfig.json",
@@ -31,10 +33,33 @@
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
-    "lint": "tslint 'src/**/*.ts'",
+    "lint": "eslint 'src/**/*.ts'",
     "test": "npm run build; jasmine test/*.js test/**/*.js",
     "test:coverage": "istanbul cover jasmine test/*.js test/**/*.js",
     "test:coverage:report": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "plugin:@typescript-eslint/recommended",
+      "prettier/@typescript-eslint",
+      "plugin:prettier/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    },
+    "rules": {
+      "@typescript-eslint/ban-ts-ignore": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-namespace": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ]
+    }
   },
   "prettier": {
     "singleQuote": true,

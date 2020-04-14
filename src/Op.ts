@@ -11,7 +11,7 @@ interface Op {
 }
 
 namespace Op {
-  export function iterator(ops: Op[]) {
+  export function iterator(ops: Op[]): Iterator {
     return new Iterator(ops);
   }
 

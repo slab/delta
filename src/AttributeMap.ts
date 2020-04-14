@@ -1,5 +1,5 @@
-import equal from 'deep-equal';
-import extend from 'extend';
+import cloneDeep from 'lodash.clonedeep';
+import isEqual from 'lodash.isequal';
 
 interface AttributeMap {
   [key: string]: any;
@@ -17,7 +17,7 @@ namespace AttributeMap {
     if (typeof b !== 'object') {
       b = {};
     }
-    let attributes = extend(true, {}, b);
+    let attributes = cloneDeep(b);
     if (!keepNull) {
       attributes = Object.keys(attributes).reduce<AttributeMap>((copy, key) => {
         if (attributes[key] != null) {
@@ -47,7 +47,7 @@ namespace AttributeMap {
     const attributes = Object.keys(a)
       .concat(Object.keys(b))
       .reduce<AttributeMap>((attrs, key) => {
-        if (!equal(a[key], b[key])) {
+        if (!isEqual(a[key], b[key])) {
           attrs[key] = b[key] === undefined ? null : b[key];
         }
         return attrs;
@@ -55,7 +55,10 @@ namespace AttributeMap {
     return Object.keys(attributes).length > 0 ? attributes : undefined;
   }
 
-  export function invert(attr: AttributeMap = {}, base: AttributeMap = {}) {
+  export function invert(
+    attr: AttributeMap = {},
+    base: AttributeMap = {},
+  ): AttributeMap {
     attr = attr || {};
     const baseInverted = Object.keys(base).reduce<AttributeMap>((memo, key) => {
       if (base[key] !== attr[key] && attr[key] !== undefined) {
@@ -74,7 +77,7 @@ namespace AttributeMap {
   export function transform(
     a: AttributeMap | undefined,
     b: AttributeMap | undefined,
-    priority: boolean = false,
+    priority = false,
   ): AttributeMap | undefined {
     if (typeof a !== 'object') {
       return b;
