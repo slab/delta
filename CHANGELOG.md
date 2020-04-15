@@ -1,3 +1,7 @@
+## v4.2.2
+
+- Switch dependent internal utility functions to lodash family
+
 ## v4.2.1
 
 - Fix invert retain across multiple ops
