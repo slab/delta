@@ -451,4 +451,5 @@ class Delta {
   }
 }
 
-export = Delta;
+export default Delta;
+export { AttributeMap };
