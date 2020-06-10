@@ -198,7 +198,12 @@ describe('AttributeMap', function() {
     });
 
     it('without priority', function() {
-      expect(AttributeMap.transform(left, right, false)).toEqual(right);
+      expect(AttributeMap.transform(left, right, false)).toEqual({
+        color: 'blue',
+        font: 'serif',
+        italic: true,
+        bold: true,
+      });
     });
   });
 });
