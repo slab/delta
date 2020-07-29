@@ -85,15 +85,23 @@ namespace AttributeMap {
     if (typeof b !== 'object') {
       return undefined;
     }
+
+    let attributes = {};
+
     if (!priority) {
-      return b; // b simply overwrites us without priority
+      attributes = Object.keys(b).reduce<AttributeMap>((attrs, key) => {
+        attrs[key] = b[key];
+        return attrs;
+      }, cloneDeep(a));
+    } else {
+      attributes = Object.keys(b).reduce<AttributeMap>((attrs, key) => {
+        if (a[key] === undefined) {
+          attrs[key] = b[key]; // null is a valid value
+        }
+        return attrs;
+      }, {});
     }
-    const attributes = Object.keys(b).reduce<AttributeMap>((attrs, key) => {
-      if (a[key] === undefined) {
-        attrs[key] = b[key]; // null is a valid value
-      }
-      return attrs;
-    }, {});
+
     return Object.keys(attributes).length > 0 ? attributes : undefined;
   }
 }

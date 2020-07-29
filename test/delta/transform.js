@@ -73,7 +73,7 @@ describe('transform()', function() {
     var a2 = new Delta().retain(1, { color: 'blue' });
     var b2 = new Delta().retain(1, { bold: true, color: 'red' });
     var expected1 = new Delta().retain(1, { bold: true, color: 'red' });
-    var expected2 = new Delta().retain(1, { color: 'blue' });
+    var expected2 = new Delta().retain(1, { bold: true, color: 'blue' });
     expect(a1.transform(b1, false)).toEqual(expected1);
     expect(b2.transform(a2, false)).toEqual(expected2);
   });
