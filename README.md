@@ -37,7 +37,7 @@ const restored = delta.compose(death);
 // {
 //   ops: [
 //     { insert: 'Gandalf ', attributes: { bold: true } },
-//     { insert: 'the ' },
+//     { insert: ' the ' },
 //     { insert: 'White', attributes: { color: '#fff' } }
 //   ]
 // }
