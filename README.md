@@ -36,7 +36,7 @@ const death = new Delta().retain(12)
 const restored = delta.compose(death);
 // {
 //   ops: [
-//     { insert: 'Gandalf ', attributes: { bold: true } },
+//     { insert: 'Gandalf', attributes: { bold: true } },
 //     { insert: ' the ' },
 //     { insert: 'White', attributes: { color: '#fff' } }
 //   ]
