@@ -3,6 +3,7 @@ import cloneDeep from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';
 import AttributeMap from './AttributeMap';
 import Op from './Op';
+import Iterator from './Iterator';
 
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
 
@@ -171,7 +172,7 @@ class Delta {
 
   slice(start = 0, end = Infinity): Delta {
     const ops = [];
-    const iter = Op.iterator(this.ops);
+    const iter = new Iterator(this.ops);
     let index = 0;
     while (index < end && iter.hasNext()) {
       let nextOp;
@@ -187,8 +188,8 @@ class Delta {
   }
 
   compose(other: Delta): Delta {
-    const thisIter = Op.iterator(this.ops);
-    const otherIter = Op.iterator(other.ops);
+    const thisIter = new Iterator(this.ops);
+    const otherIter = new Iterator(other.ops);
     const ops = [];
     const firstOther = otherIter.peek();
     if (
@@ -284,8 +285,8 @@ class Delta {
     });
     const retDelta = new Delta();
     const diffResult = diff(strings[0], strings[1], cursor);
-    const thisIter = Op.iterator(this.ops);
-    const otherIter = Op.iterator(other.ops);
+    const thisIter = new Iterator(this.ops);
+    const otherIter = new Iterator(other.ops);
     diffResult.forEach((component: diff.Diff) => {
       let length = component[1].length;
       while (length > 0) {
@@ -332,7 +333,7 @@ class Delta {
     ) => boolean | void,
     newline = '\n',
   ): void {
-    const iter = Op.iterator(this.ops);
+    const iter = new Iterator(this.ops);
     let line = new Delta();
     let i = 0;
     while (iter.hasNext()) {
@@ -398,8 +399,8 @@ class Delta {
       return this.transformPosition(arg, priority);
     }
     const other: Delta = arg;
-    const thisIter = Op.iterator(this.ops);
-    const otherIter = Op.iterator(other.ops);
+    const thisIter = new Iterator(this.ops);
+    const otherIter = new Iterator(other.ops);
     const delta = new Delta();
     while (thisIter.hasNext() || otherIter.hasNext()) {
       if (
@@ -436,7 +437,7 @@ class Delta {
 
   transformPosition(index: number, priority = false): number {
     priority = !!priority;
-    const thisIter = Op.iterator(this.ops);
+    const thisIter = new Iterator(this.ops);
     let offset = 0;
     while (thisIter.hasNext() && offset <= index) {
       const length = thisIter.peekLength();
