@@ -9,6 +9,7 @@ const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in 
 
 class Delta {
   static Op = Op;
+  static Iterator = Iterator;
   static AttributeMap = AttributeMap;
 
   ops: Op[];
