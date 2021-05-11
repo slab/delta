@@ -45,18 +45,12 @@ function redoToRemoveSplitAttributesForThis(
   lengthToGoBack: number,
 ): Delta {
   const operationsToRedo = [];
-  let lastOp = delta.pop();
   let backCursor = 0;
-  while (lastOp) {
+  while (backCursor < lengthToGoBack) {
+    const lastOp = delta.pop();
+    if (!lastOp) break;
     operationsToRedo.unshift(lastOp);
-    if (typeof lastOp.retain === 'number') {
-      backCursor += Op.length(lastOp);
-    }
-    if (backCursor >= lengthToGoBack) {
-      break;
-    } else {
-      lastOp = delta.pop();
-    }
+    backCursor += Op.length(lastOp);
   }
 
   // Account for if we went too far back
@@ -486,6 +480,8 @@ class Delta {
     const otherIter = Op.iterator(other.ops);
     const delta = new Delta();
 
+    const thisAttributeMarker: Array<[number, number, string]> = [];
+
     const splitValues = REMOVE_SPLIT_ATTRIBUTES.reduce<AttributeBlacklistMap>(
       (map, attrKey) => {
         map[attrKey] = [];
@@ -511,7 +507,13 @@ class Delta {
           });
         }
 
-        delta.retain(Op.length(thisIter.next()));
+        const thisAttr = thisIter.peekAttributes();
+        const length = Op.length(thisIter.next())
+        if (thisAttr?.detectionId) {
+          thisAttributeMarker.push([delta.length(), length, thisAttr.detectionId]);
+        }
+
+        delta.retain(length);
       } else if (otherIter.peekType() === 'insert') {
         // Check if this insert has split any attributes
         const thisAttr = thisIter.peekAttributes();
@@ -536,6 +538,11 @@ class Delta {
         const length = Math.min(thisIter.peekLength(), otherIter.peekLength());
         const thisOp = thisIter.next(length);
         const otherOp = otherIter.next(length);
+
+        // TODO: generalise this
+        if (thisOp.attributes?.detectionId) {
+          thisAttributeMarker.push([delta.length(), delta.length() + length, thisOp.attributes.detectionId]);
+        }
 
         if (thisOp.delete) {
           // Check if a detection has been split
@@ -568,31 +575,22 @@ class Delta {
           // Our delete either makes their delete redundant or removes their retain
           continue;
         } else if (otherOp.delete) {
-          // Check if a detection has been split
-          [thisOp].forEach((op) => {
-            const thisAttr = op.attributes;
-            if (thisAttr) {
-              REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
-                if (thisAttr[key]) {
-                  splitValues[key].push(thisAttr[key]);
-                  redoToRemoveSplitAttributesForThis(
-                    delta,
-                    key,
-                    thisIter.currentOffset(),
-                  );
-                }
-              });
-            }
+          // TODO: generalise this
+          const low = delta.length() - otherOp.delete;
+          const high = delta.length();
+          const toChange = thisAttributeMarker.filter(([start, end]) => !(high < start || low >= end)).map(([start, _, detId]) => {
+            splitValues['detectionId'].push(detId);
+            return start
           });
-          // TODO: Because this is a delete op, we need to check the prev ops too!
-          // [thisOp, ...thisIter.getPrevOps(length)].forEach((op) => {
-          //   const thisAttr = op.attributes;
-          //   if (thisAttr) {
-          //     REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
-          //       if (thisAttr[key]) splitValues[key].push(thisAttr[key]);
-          //     });
-          //   }
-          // });
+          if (toChange.length > 0) {
+            const min = Math.min(...toChange);
+            redoToRemoveSplitAttributesForThis(
+              delta,
+              'detectionId',
+              delta.length() - min
+            )
+          }
+
           delta.push(otherOp);
         } else {
           // We retain either their retain or insert
