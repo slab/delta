@@ -60,7 +60,7 @@ function redoToRemoveSplitAttributesForThis(
   }
 
   // Account for if we went too far back
-  const offset = backCursor - lengthToGoBack;
+  const offset = Math.max(0, backCursor - lengthToGoBack);
   let forwardCursor = 0;
 
   operationsToRedo.forEach((op) => {
@@ -539,18 +539,28 @@ class Delta {
 
         if (thisOp.delete) {
           // Check if a detection has been split
-          // Because this is a delete op, we need to check the prev ops too!
-          // const otherAttrs = otherIter
-          //   .getPrevOps(length)
-          //   .map((o) => o.attributes);
-          // otherAttrs.forEach((otherAttr) => {
+          [otherOp].forEach((op) => {
+            const otherAttr = op.attributes;
+            if (otherAttr) {
+              REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
+                if (otherAttr[key]) {
+                  splitValues[key].push(otherAttr[key]);
+
+                  redoToRemoveSplitAttributesForOther(
+                    delta,
+                    key,
+                    otherAttr[key],
+                  );
+                }
+              });
+            }
+          });
+          // TODO: Because this is a delete op, we need to check the prev ops too!
+          // [otherOp, ...otherIter.getPrevOps(length)].forEach((op) => {
+          //   const otherAttr = op.attributes;
           //   if (otherAttr) {
           //     REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
-          //       const hasBeenSplit = otherAttr[key];
-          //       if (hasBeenSplit) {
-          //         splitValues[key].push(hasBeenSplit);
-          //         redoToRemoveSplitAttributesForOther(delta, key, hasBeenSplit);
-          //       }
+          //       if (otherAttr[key]) splitValues[key].push(otherAttr[key]);
           //     });
           //   }
           // });
@@ -559,32 +569,30 @@ class Delta {
           continue;
         } else if (otherOp.delete) {
           // Check if a detection has been split
-          // Because this is a delete op, we need to check the prev ops too!
-          // const lengthToGoBack: { [s: string]: number } = {};
-          // console.log(thisIter.getPrevOps(length));
-          // thisIter.getPrevOps(length).forEach((op) => {
-          //   if (!op.attributes) return;
+          [thisOp].forEach((op) => {
+            const thisAttr = op.attributes;
+            if (thisAttr) {
+              REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
+                if (thisAttr[key]) {
+                  splitValues[key].push(thisAttr[key]);
+                  redoToRemoveSplitAttributesForThis(
+                    delta,
+                    key,
+                    thisIter.currentOffset(),
+                  );
+                }
+              });
+            }
+          });
+          // TODO: Because this is a delete op, we need to check the prev ops too!
+          // [thisOp, ...thisIter.getPrevOps(length)].forEach((op) => {
           //   const thisAttr = op.attributes;
-          //   REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
-          //     const hasBeenSplit = thisAttr[key];
-          //     if (hasBeenSplit) {
-          //       splitValues[key].push(hasBeenSplit);
-
-          //       if (!lengthToGoBack[key]) lengthToGoBack[key] = 0;
-          //       if (op === thisOp) {
-          //         lengthToGoBack[key] += thisIter.currentOffset();
-          //       } else {
-          //         lengthToGoBack[key] += Op.length(op);
-          //       }
-          //     }
-          //   });
+          //   if (thisAttr) {
+          //     REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
+          //       if (thisAttr[key]) splitValues[key].push(thisAttr[key]);
+          //     });
+          //   }
           // });
-
-          // console.log(lengthToGoBack);
-          // Object.keys(lengthToGoBack).forEach((key) => {
-          //   redoToRemoveSplitAttributesForThis(delta, key, lengthToGoBack[key]);
-          // });
-
           delta.push(otherOp);
         } else {
           // We retain either their retain or insert

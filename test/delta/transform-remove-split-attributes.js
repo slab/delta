@@ -119,7 +119,7 @@ it('detectionId + delete - edit starts in range and ends outside of range (shoul
   const expected1 = new Delta();
   const a2 = new Delta(a1);
   const b2 = new Delta(b1);
-  const expected2 = new Delta().retain(4, { detectionId: null }).delete(5);
+  const expected2 = new Delta().retain(1, { detectionId: null }).delete(5);
   expect(a1.transform(b1)).toEqual(expected1);
   expect(b2.transform(a2)).toEqual(expected2);
 });

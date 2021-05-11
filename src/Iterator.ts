@@ -102,4 +102,25 @@ export default class Iterator {
       return [next].concat(rest);
     }
   }
+
+  getPrevOps(length: number): Op[] {
+    const ops = [];
+    if (this.offset >= length) {
+      if (this.ops[this.index]) {
+        return [this.ops[this.index]];
+      } else {
+        return [];
+      }
+    }
+    let backCursor = this.offset;
+    let index = this.index - 1;
+    while (backCursor < length && index >= 0) {
+      const op = this.ops[index];
+      ops.unshift(op);
+      backCursor += Op.length(op);
+      index -= 1;
+    }
+
+    return ops;
+  }
 }
