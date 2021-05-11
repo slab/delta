@@ -1,10 +1,92 @@
 import diff from 'fast-diff';
 import cloneDeep from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';
-import AttributeMap from './AttributeMap';
+import clamp from 'lodash.clamp';
+import AttributeMap, { AttributeBlacklistMap } from './AttributeMap';
 import Op from './Op';
 
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
+
+// TODO: allow to be modified
+const REMOVE_SPLIT_ATTRIBUTES: string[] = ['detectionId'];
+
+function redoToRemoveSplitAttributesForOther(
+  delta: Delta,
+  splitKey: string,
+  splitValue: any,
+): Delta {
+  const operationsToRedo = [];
+  let lastOp = delta.pop();
+  while (lastOp && lastOp.attributes?.[splitKey] === splitValue) {
+    operationsToRedo.unshift(lastOp);
+    lastOp = delta.pop();
+  }
+  if (lastOp) operationsToRedo.unshift(lastOp);
+
+  operationsToRedo.forEach((op) => {
+    const newAttributes = op.attributes;
+    if (newAttributes && newAttributes[splitKey] === splitValue) {
+      delete newAttributes[splitKey];
+    }
+    if (op.insert) {
+      delta.insert(op.insert, newAttributes);
+    } else if (op.delete) {
+      delta.delete(op.delete);
+    } else if (op.retain) {
+      delta.retain(op.retain, newAttributes);
+    }
+  });
+  return delta;
+}
+
+function redoToRemoveSplitAttributesForThis(
+  delta: Delta,
+  splitKey: string,
+  lengthToGoBack: number,
+): Delta {
+  const operationsToRedo = [];
+  let lastOp = delta.pop();
+  let backCursor = 0;
+  while (lastOp) {
+    operationsToRedo.unshift(lastOp);
+    if (typeof lastOp.retain === 'number') {
+      backCursor += Op.length(lastOp);
+    }
+    if (backCursor >= lengthToGoBack) {
+      break;
+    } else {
+      lastOp = delta.pop();
+    }
+  }
+
+  // Account for if we went too far back
+  const offset = backCursor - lengthToGoBack;
+  let forwardCursor = 0;
+
+  operationsToRedo.forEach((op) => {
+    // We don't need to modify insert or deletes
+    // as they aren't from current list of operations
+    if (op.insert || op.delete) {
+      delta.push(op);
+    } else if (op.retain) {
+      const length = Op.length(op);
+      const lengthToIgnore = clamp(forwardCursor - offset, 0, length);
+      const lengthToChange = length - lengthToIgnore;
+
+      if (lengthToIgnore > 0) {
+        delta.retain(lengthToIgnore, op.attributes);
+      }
+      if (lengthToChange > 0) {
+        // We need to purposefully "null" this attribute;
+        const newAttributes = op.attributes || {};
+        newAttributes[splitKey] = null;
+        delta.retain(lengthToChange, newAttributes);
+      }
+      forwardCursor += length;
+    }
+  });
+  return delta;
+}
 
 class Delta {
   static Op = Op;
@@ -110,6 +192,11 @@ class Delta {
       this.ops.splice(index, 0, newOp);
     }
     return this;
+  }
+
+  pop(): Op | undefined {
+    const op = this.ops.pop();
+    return op;
   }
 
   chop(): this {
@@ -398,22 +485,106 @@ class Delta {
     const thisIter = Op.iterator(this.ops);
     const otherIter = Op.iterator(other.ops);
     const delta = new Delta();
+
+    const splitValues = REMOVE_SPLIT_ATTRIBUTES.reduce<AttributeBlacklistMap>(
+      (map, attrKey) => {
+        map[attrKey] = [];
+        return map;
+      },
+      {},
+    );
+
     while (thisIter.hasNext() || otherIter.hasNext()) {
       if (
         thisIter.peekType() === 'insert' &&
         (priority || otherIter.peekType() !== 'insert')
       ) {
+        // Check if this insert has split any attributes
+        const otherAttr = otherIter.peekAttributes();
+        if (otherAttr) {
+          REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
+            const hasBeenSplit = otherAttr[key];
+            if (hasBeenSplit) {
+              splitValues[key].push(hasBeenSplit);
+              redoToRemoveSplitAttributesForOther(delta, key, hasBeenSplit);
+            }
+          });
+        }
+
         delta.retain(Op.length(thisIter.next()));
       } else if (otherIter.peekType() === 'insert') {
+        // Check if this insert has split any attributes
+        const thisAttr = thisIter.peekAttributes();
+        if (thisAttr) {
+          REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
+            const hasBeenSplit = thisAttr[key];
+            if (hasBeenSplit) {
+              splitValues[key].push(hasBeenSplit);
+
+              // TODO: handle those detections that span over one operation...
+              redoToRemoveSplitAttributesForThis(
+                delta,
+                key,
+                thisIter.currentOffset(),
+              );
+            }
+          });
+        }
+
         delta.push(otherIter.next());
       } else {
         const length = Math.min(thisIter.peekLength(), otherIter.peekLength());
         const thisOp = thisIter.next(length);
         const otherOp = otherIter.next(length);
+
         if (thisOp.delete) {
+          // Check if a detection has been split
+          // Because this is a delete op, we need to check the prev ops too!
+          // const otherAttrs = otherIter
+          //   .getPrevOps(length)
+          //   .map((o) => o.attributes);
+          // otherAttrs.forEach((otherAttr) => {
+          //   if (otherAttr) {
+          //     REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
+          //       const hasBeenSplit = otherAttr[key];
+          //       if (hasBeenSplit) {
+          //         splitValues[key].push(hasBeenSplit);
+          //         redoToRemoveSplitAttributesForOther(delta, key, hasBeenSplit);
+          //       }
+          //     });
+          //   }
+          // });
+
           // Our delete either makes their delete redundant or removes their retain
           continue;
         } else if (otherOp.delete) {
+          // Check if a detection has been split
+          // Because this is a delete op, we need to check the prev ops too!
+          // const lengthToGoBack: { [s: string]: number } = {};
+          // console.log(thisIter.getPrevOps(length));
+          // thisIter.getPrevOps(length).forEach((op) => {
+          //   if (!op.attributes) return;
+          //   const thisAttr = op.attributes;
+          //   REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
+          //     const hasBeenSplit = thisAttr[key];
+          //     if (hasBeenSplit) {
+          //       splitValues[key].push(hasBeenSplit);
+
+          //       if (!lengthToGoBack[key]) lengthToGoBack[key] = 0;
+          //       if (op === thisOp) {
+          //         lengthToGoBack[key] += thisIter.currentOffset();
+          //       } else {
+          //         lengthToGoBack[key] += Op.length(op);
+          //       }
+          //     }
+          //   });
+          // });
+
+          // console.log(lengthToGoBack);
+          // Object.keys(lengthToGoBack).forEach((key) => {
+          //   redoToRemoveSplitAttributesForThis(delta, key, lengthToGoBack[key]);
+          // });
+
           delta.push(otherOp);
         } else {
           // We retain either their retain or insert
@@ -423,6 +594,7 @@ class Delta {
               thisOp.attributes,
               otherOp.attributes,
               priority,
+              splitValues,
             ),
           );
         }

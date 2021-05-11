@@ -1,3 +1,4 @@
+import AttributeMap from './AttributeMap';
 import Op from './Op';
 
 export default class Iterator {
@@ -52,8 +53,16 @@ export default class Iterator {
     }
   }
 
+  currentOffset(): number {
+    return this.offset;
+  }
+
   peek(): Op {
     return this.ops[this.index];
+  }
+
+  peekAttributes(): AttributeMap | undefined {
+    return this.ops[this.index] && this.ops[this.index].attributes;
   }
 
   peekLength(): number {
