@@ -50,11 +50,7 @@ function redoToRemoveSplitAttributesForThis(
     const lastOp = delta.pop();
     if (!lastOp) break;
     operationsToRedo.unshift(lastOp);
-    if (lastOp.delete) {
-      backCursor -= Op.length(lastOp);
-    } else {
-      backCursor += Op.length(lastOp);
-    }
+    backCursor += Op.length(lastOp);
   }
 
   // Account for if we went too far back
@@ -493,8 +489,11 @@ class Delta {
     );
 
     let runningCursor = 0;
-    const thisAttributeMarker: Array<[number, number, string]> = [];
-    const otherAttributeMarker: Array<[number, number, string]> = [];
+
+    // TODO: generalise this....
+    // detId, text start, text end, delta start
+    const thisAttributeMarker: Array<[string, number, number, number]> = [];
+    const otherAttributeMarker: Array<[string, number, number, number]> = [];
 
     while (thisIter.hasNext() || otherIter.hasNext()) {
       if (
@@ -517,9 +516,10 @@ class Delta {
         const length = Op.length(thisIter.next());
         if (thisAttr?.detectionId) {
           thisAttributeMarker.push([
+            thisAttr.detectionId,
             runningCursor,
             runningCursor + length,
-            thisAttr.detectionId,
+            delta.length(),
           ]);
         }
 
@@ -549,9 +549,10 @@ class Delta {
         const length = Op.length(op);
         if (otherAttr?.detectionId) {
           otherAttributeMarker.push([
+            otherAttr.detectionId,
             runningCursor,
             runningCursor + length,
-            otherAttr.detectionId,
+            delta.length(),
           ]);
         }
 
@@ -565,16 +566,18 @@ class Delta {
         // TODO: generalise this
         if (thisOp.attributes?.detectionId) {
           thisAttributeMarker.push([
+            thisOp.attributes.detectionId,
             runningCursor,
             thisOp.delete ? runningCursor - length : runningCursor + length,
-            thisOp.attributes.detectionId,
+            delta.length(),
           ]);
         }
         if (otherOp.attributes?.detectionId) {
           otherAttributeMarker.push([
+            otherOp.attributes.detectionId,
             runningCursor,
             otherOp.delete ? runningCursor - length : runningCursor + length,
-            otherOp.attributes.detectionId,
+            delta.length(),
           ]);
         }
 
@@ -583,10 +586,10 @@ class Delta {
           // Check if a detection has been split
           const low = runningCursor - thisOp.delete;
           const high = runningCursor;
-          const toChange = otherAttributeMarker.filter(
-            ([start, end]) => !(high < start || low >= end),
-          );
-          toChange.forEach(([, , detId]) => {
+          otherAttributeMarker.forEach(([detId, start, end]) => {
+            // Filter out things outside this edit range..
+            if (high < start || low >= end) return;
+
             splitValues['detectionId'].push(detId);
             redoToRemoveSplitAttributesForOther(delta, 'detectionId', detId);
           });
@@ -598,18 +601,25 @@ class Delta {
           // TODO: generalise this
           const low = runningCursor - otherOp.delete;
           const high = runningCursor;
-          const toChange = thisAttributeMarker
-            .filter(([start, end]) => !(high < start || low >= end))
-            .map(([start, _, detId]) => {
+          const lengthToStartChange = thisAttributeMarker.reduce<number | null>(
+            (min, [detId, start, end, deltaStart]) => {
+              // Filter out things outside this edit range..
+              if (high < start || low >= end) return min;
+
               splitValues['detectionId'].push(detId);
-              return start;
-            });
-          if (toChange.length > 0) {
-            const min = Math.min(...toChange);
+              if (min === null) {
+                return deltaStart;
+              } else {
+                return Math.min(deltaStart, min);
+              }
+            },
+            null,
+          );
+          if (lengthToStartChange !== null) {
             redoToRemoveSplitAttributesForThis(
               delta,
               'detectionId',
-              runningCursor - min,
+              delta.length() - lengthToStartChange,
             );
           }
 
