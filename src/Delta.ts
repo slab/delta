@@ -82,6 +82,78 @@ function redoToRemoveSplitAttributesForThis(
   return delta;
 }
 
+function redoToRemoveSplitAttributes(
+  delta: Delta,
+  //  key, value, deltaStart,
+  toRemove: Array<[string, any, number]>,
+  _startAt?: number,
+): number {
+  if (toRemove.length === 0) return 0;
+
+  const startAt =
+    typeof _startAt !== 'undefined'
+      ? _startAt
+      : toRemove.reduce<number>(
+          (min, [, , start]) => Math.min(min, start),
+          Number.MAX_VALUE,
+        );
+
+  const operationsToRedo = [];
+  while (delta.length() > startAt) {
+    const lastOp = delta.pop();
+    if (!lastOp) break;
+    operationsToRedo.unshift(lastOp);
+  }
+
+  // TODO: account for going too far back....
+
+  let i = 0;
+  operationsToRedo.forEach((op) => {
+    if (i === toRemove.length) {
+      // we have reach the end so everything else stays the same....
+      delta.push(op);
+      return;
+    }
+    const [key, value, deltaStart] = toRemove[i];
+
+    // check if these overlap...
+    if (deltaStart === delta.length()) {
+      if (op.retain) {
+        if (op.attributes && op.attributes[key]) {
+          if (op.attributes[key] === value) {
+            // we need to delete the key
+            const newAttributes = op.attributes;
+            delete newAttributes[key];
+            delta.retain(op.retain, newAttributes);
+          } else {
+            throw Error('We should never get here (retain incorrect value)');
+          }
+        } else {
+          // we need to null it
+          delta.retain(op.retain, { ...op.attributes, [key]: null });
+        }
+        i++;
+      } else if (op.insert) {
+        if (op.attributes && op.attributes[key] === value) {
+          // we need to delete the key
+          const newAttributes = op.attributes;
+          delete newAttributes[key];
+          delta.insert(op.insert, newAttributes);
+        } else {
+          throw Error('We should never get here (insert incorrect value)');
+        }
+        i++;
+      } else if (op.delete) {
+        delta.push(op);
+      }
+    } else {
+      delta.push(op);
+    }
+  });
+
+  return i;
+}
+
 class Delta {
   static Op = Op;
   static AttributeMap = AttributeMap;
@@ -543,6 +615,17 @@ class Delta {
             }
           });
         }
+        redoToRemoveSplitAttributes(
+          delta,
+          thisAttributeMarker
+            .filter(
+              ([, start, end]) => start < runningCursor && end < runningCursor,
+            )
+            .map(([detId, , , deltaStart]) => {
+              splitValues['detectionId'].push(detId);
+              return ['detectionId', detId, deltaStart];
+            }),
+        );
 
         const otherAttr = otherIter.peekAttributes();
         const op = otherIter.next();
@@ -586,13 +669,16 @@ class Delta {
           // Check if a detection has been split
           const low = runningCursor - thisOp.delete;
           const high = runningCursor;
-          otherAttributeMarker.forEach(([detId, start, end]) => {
-            // Filter out things outside this edit range..
-            if (high < start || low >= end) return;
 
-            splitValues['detectionId'].push(detId);
-            redoToRemoveSplitAttributesForOther(delta, 'detectionId', detId);
-          });
+          redoToRemoveSplitAttributes(
+            delta,
+            otherAttributeMarker
+              .filter(([, start, end]) => !(high < start || low >= end))
+              .map(([detId, , , deltaStart]) => {
+                splitValues['detectionId'].push(detId);
+                return ['detectionId', detId, deltaStart];
+              }),
+          );
 
           // Our delete either makes their delete redundant or removes their retain
           runningCursor -= length;
@@ -601,27 +687,16 @@ class Delta {
           // TODO: generalise this
           const low = runningCursor - otherOp.delete;
           const high = runningCursor;
-          const lengthToStartChange = thisAttributeMarker.reduce<number | null>(
-            (min, [detId, start, end, deltaStart]) => {
-              // Filter out things outside this edit range..
-              if (high < start || low >= end) return min;
 
-              splitValues['detectionId'].push(detId);
-              if (min === null) {
-                return deltaStart;
-              } else {
-                return Math.min(deltaStart, min);
-              }
-            },
-            null,
+          redoToRemoveSplitAttributes(
+            delta,
+            thisAttributeMarker
+              .filter(([, start, end]) => !(high < start || low >= end))
+              .map(([detId, , , deltaStart]) => {
+                splitValues['detectionId'].push(detId);
+                return ['detectionId', detId, deltaStart];
+              }),
           );
-          if (lengthToStartChange !== null) {
-            redoToRemoveSplitAttributesForThis(
-              delta,
-              'detectionId',
-              delta.length() - lengthToStartChange,
-            );
-          }
 
           delta.push(otherOp);
           runningCursor -= length;
