@@ -5,42 +5,6 @@ interface AttributeMap {
   [key: string]: any;
 }
 
-export interface AttributeBlacklistMap {
-  [key: string]: any[];
-}
-
-function validate<T>(
-  key: string,
-  value: T,
-  blacklist: AttributeBlacklistMap | undefined,
-  useNull: boolean,
-): T | null | undefined {
-  if (!key || !value || !blacklist) return value;
-  const blacklistValues = blacklist[key] || [];
-  if (blacklistValues.indexOf(value) !== -1) {
-    if (useNull) return null;
-    else return undefined;
-  } else {
-    return value;
-  }
-}
-
-function validateAll(
-  attributes: AttributeMap | undefined,
-  blacklist: AttributeBlacklistMap | undefined,
-  useNull: boolean,
-): AttributeBlacklistMap | undefined {
-  if (!attributes || !blacklist) return attributes;
-  const attr = Object.keys(attributes).reduce<AttributeMap>((copy, key) => {
-    copy[key] = validate(key, attributes[key], blacklist, useNull);
-    if (typeof copy[key] === 'undefined') {
-      delete copy[key];
-    }
-    return copy;
-  }, {});
-  return Object.keys(attr).length > 0 ? attr : undefined;
-}
-
 namespace AttributeMap {
   export function compose(
     a: AttributeMap = {},
@@ -114,28 +78,19 @@ namespace AttributeMap {
     a: AttributeMap | undefined,
     b: AttributeMap | undefined,
     priority = false,
-    blacklist: AttributeBlacklistMap | undefined = undefined,
   ): AttributeMap | undefined {
     if (typeof a !== 'object') {
-      return validateAll(b, blacklist, false);
+      return b;
     }
     if (typeof b !== 'object') {
-      return diff(a, validateAll(a, blacklist, true)); // only need the difference
+      return undefined;
     }
     if (!priority) {
-      return validateAll(b, blacklist, false); // b simply overwrites us without priority
+      return b; // b simply overwrites us without priority
     }
     const attributes = Object.keys(b).reduce<AttributeMap>((attrs, key) => {
       if (a[key] === undefined) {
-        attrs[key] = validate(key, b[key], blacklist, false);
-        if (typeof attrs[key] === 'undefined') {
-          delete attrs[key]; // should delete becuase its invalid
-        }
-      } else if (a[key] !== null) {
-        if (validate(key, a[key], blacklist, true) === null) {
-          // we need to delete because it's invalid...
-          attrs[key] = null;
-        }
+        attrs[key] = b[key]; // null is a valid value
       }
       return attrs;
     }, {});
