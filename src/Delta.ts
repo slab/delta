@@ -1,14 +1,13 @@
 import diff from 'fast-diff';
 import cloneDeep from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';
-import clamp from 'lodash.clamp';
-import AttributeMap, { AttributeBlacklistMap } from './AttributeMap';
+// import clamp from 'lodash.clamp';
+import AttributeMap from './AttributeMap';
 import Op from './Op';
 
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
 
-// TODO: allow to be modified
-const REMOVE_SPLIT_ATTRIBUTES: string[] = ['detectionId'];
+/*
 
 function redoToRemoveSplitAttributesForOther(
   delta: Delta,
@@ -153,6 +152,8 @@ function redoToRemoveSplitAttributes(
 
   return i;
 }
+
+*/
 
 class Delta {
   static Op = Op;
@@ -552,169 +553,555 @@ class Delta {
     const otherIter = Op.iterator(other.ops);
     const delta = new Delta();
 
-    const splitValues = REMOVE_SPLIT_ATTRIBUTES.reduce<AttributeBlacklistMap>(
-      (map, attrKey) => {
-        map[attrKey] = [];
-        return map;
-      },
-      {},
-    );
-
     let runningCursor = 0;
+
+    let combined: Array<{
+      start: number;
+      end: number;
+      opLength: number;
+      detId: string;
+      thisOrOther: boolean;
+    }> = [];
 
     // TODO: generalise this....
     // detId, text start, text end, delta start
-    const thisAttributeMarker: Array<[string, number, number, number]> = [];
-    const otherAttributeMarker: Array<[string, number, number, number]> = [];
+    const thisAttributeMarker: {
+      [id: string]: Array<[number, number, number | null]>;
+    } = {};
+    const otherAttributeMarker: {
+      [id: string]: Array<[number, number, number | null]>;
+    } = {};
 
     while (thisIter.hasNext() || otherIter.hasNext()) {
       if (
         thisIter.peekType() === 'insert' &&
         (priority || otherIter.peekType() !== 'insert')
       ) {
-        // Check if this insert has split any attributes
-        const otherAttr = otherIter.peekAttributes();
-        if (otherAttr) {
-          REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
-            const hasBeenSplit = otherAttr[key];
-            if (hasBeenSplit) {
-              splitValues[key].push(hasBeenSplit);
-              redoToRemoveSplitAttributesForOther(delta, key, hasBeenSplit);
-            }
-          });
-        }
+        const thisOp = thisIter.next();
+        const length = Op.length(thisOp);
+        delta.retain(length);
 
-        const thisAttr = thisIter.peekAttributes();
-        const length = Op.length(thisIter.next());
-        if (thisAttr?.detectionId) {
-          thisAttributeMarker.push([
-            thisAttr.detectionId,
+        if (thisOp.attributes?.detectionId) {
+          if (!thisAttributeMarker[thisOp.attributes.detectionId]) {
+            thisAttributeMarker[thisOp.attributes.detectionId] = [];
+          }
+          thisAttributeMarker[thisOp.attributes.detectionId].push([
             runningCursor,
             runningCursor + length,
             delta.length(),
           ]);
         }
 
-        delta.retain(length);
         runningCursor += length;
       } else if (otherIter.peekType() === 'insert') {
-        // Check if this insert has split any attributes
-        const thisAttr = thisIter.peekAttributes();
-        if (thisAttr) {
-          REMOVE_SPLIT_ATTRIBUTES.forEach((key) => {
-            const hasBeenSplit = thisAttr[key];
-            if (hasBeenSplit) {
-              splitValues[key].push(hasBeenSplit);
+        const otherOp = otherIter.next();
+        const length = Op.length(otherOp);
+        delta.push(otherOp);
 
-              // TODO: handle those detections that span over one operation...
-              redoToRemoveSplitAttributesForThis(
-                delta,
-                key,
-                thisIter.currentOffset(),
-              );
-            }
-          });
-        }
-        redoToRemoveSplitAttributes(
-          delta,
-          thisAttributeMarker
-            .filter(
-              ([, start, end]) => start < runningCursor && end < runningCursor,
-            )
-            .map(([detId, , , deltaStart]) => {
-              splitValues['detectionId'].push(detId);
-              return ['detectionId', detId, deltaStart];
-            }),
-        );
-
-        const otherAttr = otherIter.peekAttributes();
-        const op = otherIter.next();
-        const length = Op.length(op);
-        if (otherAttr?.detectionId) {
-          otherAttributeMarker.push([
-            otherAttr.detectionId,
+        if (otherOp.attributes?.detectionId) {
+          if (!otherAttributeMarker[otherOp.attributes.detectionId]) {
+            otherAttributeMarker[otherOp.attributes.detectionId] = [];
+          }
+          otherAttributeMarker[otherOp.attributes.detectionId].push([
             runningCursor,
             runningCursor + length,
             delta.length(),
           ]);
         }
 
-        delta.push(op);
         runningCursor += length;
       } else {
         const length = Math.min(thisIter.peekLength(), otherIter.peekLength());
         const thisOp = thisIter.next(length);
         const otherOp = otherIter.next(length);
 
-        // TODO: generalise this
-        if (thisOp.attributes?.detectionId) {
-          thisAttributeMarker.push([
-            thisOp.attributes.detectionId,
-            runningCursor,
-            thisOp.delete ? runningCursor - length : runningCursor + length,
-            delta.length(),
-          ]);
-        }
-        if (otherOp.attributes?.detectionId) {
-          otherAttributeMarker.push([
-            otherOp.attributes.detectionId,
-            runningCursor,
-            otherOp.delete ? runningCursor - length : runningCursor + length,
-            delta.length(),
-          ]);
-        }
-
         if (thisOp.delete) {
-          // TODO: generalise this
-          // Check if a detection has been split
-          const low = runningCursor - thisOp.delete;
-          const high = runningCursor;
+          if (otherOp.attributes?.detectionId) {
+            if (!otherAttributeMarker[otherOp.attributes.detectionId]) {
+              otherAttributeMarker[otherOp.attributes.detectionId] = [];
+            }
+            otherAttributeMarker[otherOp.attributes.detectionId].push([
+              runningCursor,
+              runningCursor + length,
+              null,
+            ]);
+          }
 
-          redoToRemoveSplitAttributes(
-            delta,
-            otherAttributeMarker
-              .filter(([, start, end]) => !(high < start || low >= end))
-              .map(([detId, , , deltaStart]) => {
-                splitValues['detectionId'].push(detId);
-                return ['detectionId', detId, deltaStart];
-              }),
-          );
+          // TODO: handle these deletes...
+          // const high = runningCursor;
+          // const low = runningCursor - length;
+          // const otherKeysInRange = Object.keys(otherAttributeMarker).filter(
+          //   (detId) => {
+          //     return otherAttributeMarker[detId].some(
+          //       ([start, end, op]) =>
+          //         op !== null && !(high < start || low >= end),
+          //     );
+          //   },
+          // );
+          // const thisKeysInRange = Object.keys(thisAttributeMarker).filter(
+          //   (detId) => {
+          //     return thisAttributeMarker[detId].some(
+          //       ([start, end, op]) =>
+          //         op !== null && !(high < start || low >= end),
+          //     );
+          //   },
+          // );
+          // thisKeysInRange.forEach((detId) => {
+          //   // filter things that have already been removed....
+          //   combined = [
+          //     ...combined,
+          //     ...(thisAttributeMarker[detId].filter(
+          //       ([, , op]) => op !== null,
+          //     ) as Array<[number, number, number]>).map(
+          //       ([start, end, opLength]) => ({
+          //         start,
+          //         end,
+          //         opLength,
+          //         detId,
+          //         thisOrOther: true,
+          //       }),
+          //     ),
+          //   ];
+
+          //   delete thisAttributeMarker[detId];
+          // });
+          // otherKeysInRange.forEach((detId) => {
+          //   // filter things that have already been removed....
+          //   combined = [
+          //     ...combined,
+          //     ...(otherAttributeMarker[detId].filter(
+          //       ([, , op]) => op !== null,
+          //     ) as Array<[number, number, number]>).map(
+          //       ([start, end, opLength]) => ({
+          //         start,
+          //         end,
+          //         opLength,
+          //         detId,
+          //         thisOrOther: false,
+          //       }),
+          //     ),
+          //   ];
+
+          //   delete otherAttributeMarker[detId];
+          // });
+
+          runningCursor -= length;
 
           // Our delete either makes their delete redundant or removes their retain
-          runningCursor -= length;
           continue;
         } else if (otherOp.delete) {
-          // TODO: generalise this
-          const low = runningCursor - otherOp.delete;
-          const high = runningCursor;
-
-          redoToRemoveSplitAttributes(
-            delta,
-            thisAttributeMarker
-              .filter(([, start, end]) => !(high < start || low >= end))
-              .map(([detId, , , deltaStart]) => {
-                splitValues['detectionId'].push(detId);
-                return ['detectionId', detId, deltaStart];
-              }),
-          );
+          if (thisOp.attributes?.detectionId) {
+            if (!thisAttributeMarker[thisOp.attributes.detectionId]) {
+              thisAttributeMarker[thisOp.attributes.detectionId] = [];
+            }
+            thisAttributeMarker[thisOp.attributes.detectionId].push([
+              runningCursor,
+              runningCursor + length,
+              null,
+            ]);
+          }
 
           delta.push(otherOp);
+
+          // TODO: handle these deletes....
+          // const high = runningCursor;
+          // const low = runningCursor - length;
+          // const otherKeysInRange = Object.keys(otherAttributeMarker).filter(
+          //   (detId) => {
+          //     return otherAttributeMarker[detId].some(
+          //       ([start, end, op]) =>
+          //         op !== null && !(high < start || low >= end),
+          //     );
+          //   },
+          // );
+          // const thisKeysInRange = Object.keys(thisAttributeMarker).filter(
+          //   (detId) => {
+          //     return thisAttributeMarker[detId].some(
+          //       ([start, end, op]) =>
+          //         op !== null && !(high < start || low >= end),
+          //     );
+          //   },
+          // );
+          // thisKeysInRange.forEach((detId) => {
+          //   // filter things that have already been removed....
+          //   combined = [
+          //     ...combined,
+          //     ...(thisAttributeMarker[detId].filter(
+          //       ([, , op]) => op !== null,
+          //     ) as Array<[number, number, number]>).map(
+          //       ([start, end, opLength]) => ({
+          //         start,
+          //         end,
+          //         opLength,
+          //         detId,
+          //         thisOrOther: true,
+          //       }),
+          //     ),
+          //   ];
+
+          //   delete thisAttributeMarker[detId];
+          // });
+          // otherKeysInRange.forEach((detId) => {
+          //   // filter things that have already been removed....
+          //   combined = [
+          //     ...combined,
+          //     ...(otherAttributeMarker[detId].filter(
+          //       ([, , op]) => op !== null,
+          //     ) as Array<[number, number, number]>).map(
+          //       ([start, end, opLength]) => ({
+          //         start,
+          //         end,
+          //         opLength,
+          //         detId,
+          //         thisOrOther: false,
+          //       }),
+          //     ),
+          //   ];
+
+          //   delete otherAttributeMarker[detId];
+          // });
+
           runningCursor -= length;
         } else {
-          // We retain either their retain or insert
-          delta.retain(
-            length,
-            AttributeMap.transform(
-              thisOp.attributes,
-              otherOp.attributes,
-              priority,
-              splitValues,
-            ),
+          const transformedAttrs = AttributeMap.transform(
+            thisOp.attributes,
+            otherOp.attributes,
+            priority,
           );
+
+          // Only add the one that is getting added....
+          if (
+            thisOp.attributes?.detectionId &&
+            !transformedAttrs?.detectionId
+          ) {
+            if (!thisAttributeMarker[thisOp.attributes.detectionId]) {
+              thisAttributeMarker[thisOp.attributes.detectionId] = [];
+            }
+            thisAttributeMarker[thisOp.attributes.detectionId].push([
+              runningCursor,
+              runningCursor + length,
+              delta.length(),
+            ]);
+          } else if (
+            otherOp.attributes?.detectionId &&
+            otherOp.attributes.detectionId === transformedAttrs?.detectionId
+          ) {
+            if (!otherAttributeMarker[otherOp.attributes.detectionId]) {
+              otherAttributeMarker[otherOp.attributes.detectionId] = [];
+            }
+            otherAttributeMarker[otherOp.attributes.detectionId].push([
+              runningCursor,
+              runningCursor + length,
+              delta.length(),
+            ]);
+          }
+
+          // We retain either their retain or insert
+          delta.retain(length, transformedAttrs);
           runningCursor += length;
         }
       }
     }
+
+    // const thisDetIdToRemove = Object.keys(thisAttributeMarker).reduce<
+    //   Array<[number, string, number, boolean]>
+    // >((acc, detId) => {
+    //   let shouldAdd = false;
+    //   let lastEnd: number | null = null;
+    //   // [op-index, detId, length, thisOrOther - this = true]
+    //   const toModify: Array<[number, string, number, boolean]> = [];
+
+    //   thisAttributeMarker[detId].forEach(([start, end, op]) => {
+    //     if (lastEnd === null) {
+    //       lastEnd = start;
+    //     } else if (start !== lastEnd) {
+    //       shouldAdd = true;
+    //     }
+    //     if (op === null) shouldAdd = true;
+    //     if (deletes.some(([high, low]) => !(high < start || low >= end))) {
+    //       shouldAdd = true;
+    //     }
+
+    //     if (op !== null) {
+    //       toModify.push([op, detId, end - start, true]);
+    //     }
+    //   });
+
+    //   if (shouldAdd) {
+    //     return [...acc, ...toModify];
+    //   } else {
+    //     return acc;
+    //   }
+    // }, []);
+
+    // const otherDetIdToRemove = Object.keys(otherAttributeMarker).reduce<
+    //   Array<[number, string, number, boolean]>
+    // >((acc, detId) => {
+    //   let shouldAdd = false;
+    //   let lastEnd: number | null = null;
+    //   // [op-index, detId, length, thisOrOther - other = false]
+    //   const toModify: Array<[number, string, number, boolean]> = [];
+
+    //   otherAttributeMarker[detId].forEach(([start, end, op]) => {
+    //     if (lastEnd === null) {
+    //       lastEnd = start;
+    //     } else if (start !== lastEnd) {
+    //       shouldAdd = true;
+    //     }
+    //     if (op === null) shouldAdd = true;
+    //     if (deletes.some(([high, low]) => !(high < start || low >= end))) {
+    //       shouldAdd = true;
+    //     }
+
+    //     if (op !== null) {
+    //       toModify.push([op, detId, end - start, false]);
+    //     }
+    //   });
+
+    //   if (shouldAdd) {
+    //     return [...acc, ...toModify];
+    //   } else {
+    //     return acc;
+    //   }
+    // }, []);
+
+    // const combined = [...thisDetIdToRemove, ...otherDetIdToRemove]
+    //   .reduce<
+    //     Array<
+    //       [
+    //         number,
+    //         Array<{ detId: string; thisOrOther: boolean; length: number }>,
+    //       ]
+    //     >
+    //   >((acc, [op, detId, length, thisOrOther]) => {
+    //     if (acc.length === 0) {
+    //       acc.push([op, [{ detId, thisOrOther, length }]]);
+    //     } else if (acc[acc.length - 1][0] === op) {
+    //       acc[acc.length - 1][1].push({ detId, thisOrOther, length });
+    //     } else {
+    //       acc.push([op, [{ detId, thisOrOther, length }]]);
+    //     }
+    //     return acc;
+    //   }, [])
+    //   .sort(([a], [b]) => a - b);
+
+    // console.log(combined);
+
+    // if (combined.length > 0) {
+    //   console.log(combined);
+
+    //   const clonedOps = delta.ops;
+    //   const newDelta = new Delta();
+    //   let i = 0;
+    //   combined.forEach(([opLength, detIds]) => {
+    //     let op = clonedOps[0];
+    //     while (
+    //       !(
+    //         newDelta.length() <= opLength &&
+    //         opLength < newDelta.length() + Op.length(op)
+    //       )
+    //     ) {
+    //       newDelta.push(op);
+    //       i++;
+    //       op = clonedOps[i];
+    //     }
+
+    //     if (!op) {
+    //       throw Error(`opLength ${opLength}`);
+    //     }
+
+    //     const offset = opLength - newDelta.length();
+    //     if (offset > 0) {
+    //       if (typeof op.delete === 'number') {
+    //         throw Error('why is there a delete...');
+    //       } else if (typeof op.retain === 'number') {
+    //         newDelta.retain(offset, op.attributes);
+    //       } else if (typeof op.insert === 'string') {
+    //         newDelta.insert(op.insert.slice(0, offset), op.attributes);
+    //       } else {
+    //         throw Error('not handling embeds yet');
+    //       }
+    //     }
+
+    //     if (detIds.length > 1) {
+    //       throw Error('not handling things with over one detId yet');
+    //     } else {
+    //       const { detId, thisOrOther, length } = detIds[0];
+    //       if (Op.length(op) - offset !== length) {
+    //         throw Error('not handling different lengths now');
+    //       } else {
+    //         let attr = op.attributes;
+    //         if (thisOrOther) {
+    //           attr = { ...attr, detectionId: null };
+    //         } else if (attr?.detectionId === detId) {
+    //           delete attr['detectionId'];
+    //         }
+    //         if (typeof op.delete === 'number') {
+    //           throw Error('why is there a delete...');
+    //         } else if (typeof op.retain === 'number') {
+    //           newDelta.retain(length, attr);
+    //         } else if (typeof op.insert === 'string') {
+    //           newDelta.insert(op.insert.slice(offset, offset + length), attr);
+    //         } else {
+    //           throw Error('not handling embeds yet');
+    //         }
+    //       }
+    //     }
+    //   });
+    //   clonedOps.slice(i + 1).forEach((op) => newDelta.push(op));
+    //   return newDelta.chop();
+    // }
+
+    /*
+     * Delete if:
+     * - det's are not consective
+     * - if there is a null & there is at least one number
+     * - if it was in the range of a delete that occured after them...
+     */
+    const thisDetIdToRemove = Object.keys(thisAttributeMarker).filter((key) => {
+      let lastEnd: number | null = null;
+      let hasNull = false;
+      return (
+        thisAttributeMarker[key].some(([start, , op]) => {
+          if (lastEnd === null) {
+            lastEnd = start;
+          } else if (start !== lastEnd) {
+            return true;
+          }
+          if (op === null) {
+            hasNull = true;
+            return false;
+          }
+        }) ||
+        (hasNull && lastEnd !== null)
+      );
+    });
+    const otherDetIdToRemove = Object.keys(otherAttributeMarker).filter(
+      (key) => {
+        let lastEnd: number | null = null;
+        let hasNull = false;
+        return (
+          otherAttributeMarker[key].some(([start, , op]) => {
+            if (lastEnd === null) {
+              lastEnd = start;
+            } else if (start !== lastEnd) {
+              return true;
+            }
+            if (op === null) {
+              hasNull = true;
+              return false;
+            }
+          }) ||
+          (hasNull && lastEnd !== null)
+        );
+      },
+    );
+
+    thisDetIdToRemove.forEach((detId) => {
+      // filter things that have already been removed....
+      combined = [
+        ...combined,
+        ...(thisAttributeMarker[detId].filter(
+          ([, , op]) => op !== null,
+        ) as Array<[number, number, number]>).map(([start, end, opLength]) => ({
+          start,
+          end,
+          opLength,
+          detId,
+          thisOrOther: true,
+        })),
+      ];
+    });
+    otherDetIdToRemove.forEach((detId) => {
+      // filter things that have already been removed....
+      combined = [
+        ...combined,
+        ...(otherAttributeMarker[detId].filter(
+          ([, , op]) => op !== null,
+        ) as Array<[number, number, number]>).map(([start, end, opLength]) => ({
+          start,
+          end,
+          opLength,
+          detId,
+          thisOrOther: false,
+        })),
+      ];
+    });
+    // console.log(thisAttributeMarker);
+    // console.log(otherAttributeMarker);
+    combined.sort((a, b) => a.opLength - b.opLength);
+
+    // In theory, there should be NO attributes with the same opLength....
+    console.log(combined);
+
+    if (combined.length > 0) {
+      console.log(delta.ops);
+      const newDelta = new Delta();
+      const iter = Op.iterator(delta.ops);
+      combined.forEach(({ start, end, opLength, detId, thisOrOther }) => {
+        while (
+          !(
+            newDelta.length() <= opLength &&
+            opLength < newDelta.length() + iter.peekLength()
+          )
+        ) {
+          newDelta.push(iter.next());
+        }
+
+        const offset = opLength - newDelta.length();
+        if (offset > 0) {
+          newDelta.push(iter.next(offset));
+        }
+
+        const length = end - start;
+        if (iter.peekLength() < length) {
+          throw Error('not handling this case yet yet');
+        } else {
+          const op = iter.next(length);
+          if (typeof op.delete === 'number') {
+            throw Error('delete should never be here...');
+          }
+          if (thisOrOther) {
+            const attr = { ...op.attributes, detectionId: null };
+            if (typeof op.retain === 'number') {
+              newDelta.retain(op.retain, attr);
+            } else if (op.insert) {
+              newDelta.insert(op.insert, attr);
+            } else {
+              throw Error('not valid operation');
+            }
+          } else {
+            const attr = op.attributes;
+            if (attr?.detectionId === detId) {
+              delete attr['detectionId'];
+              if (typeof op.retain === 'number') {
+                newDelta.retain(op.retain, attr);
+              } else if (op.insert) {
+                newDelta.insert(op.insert, attr);
+              } else {
+                throw Error('not valid operation');
+              }
+            } else {
+              console.warn(
+                `detectionId not the same....${attr?.detectionId} vs ${detId}`,
+              );
+              if (typeof op.retain === 'number') {
+                newDelta.retain(op.retain, attr);
+              } else if (op.insert) {
+                newDelta.insert(op.insert, attr);
+              } else {
+                throw Error('not valid operation');
+              }
+            }
+          }
+        }
+      });
+      while (iter.hasNext()) {
+        newDelta.push(iter.next());
+      }
+      return newDelta.chop();
+    }
+
     return delta.chop();
   }
 

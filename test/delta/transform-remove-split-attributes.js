@@ -11,13 +11,13 @@ it('detectionId + insert - edit starts before range (should be original function
   expect(b2.transform(a2)).toEqual(expected2);
 });
 
-it('detectionId + insert - edit starts at start of range (should delete)', function () {
+it('detectionId + insert - edit starts at start of range (should be original functinality)', function () {
   const a1 = new Delta().insert('AB');
   const b1 = new Delta().retain(2, { detectionId: '123' });
-  const expected1 = new Delta();
+  const expected1 = new Delta().retain(2).retain(2, { detectionId: '123' });
   const a2 = new Delta(a1);
   const b2 = new Delta(b1);
-  const expected2 = new Delta().insert('AB').retain(2, { detectionId: null });
+  const expected2 = new Delta().insert('AB');
   expect(a1.transform(b1)).toEqual(expected1);
   expect(b2.transform(a2)).toEqual(expected2);
 });
