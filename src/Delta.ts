@@ -564,12 +564,12 @@ class Delta {
     }> = [];
 
     // TODO: generalise this....
-    // detId, text start, text end, delta start
+    // detId, text start, text end, delta start, toDelete
     const thisAttributeMarker: {
-      [id: string]: Array<[number, number, number | null]>;
+      [id: string]: Array<[number, number, number | null, boolean]>;
     } = {};
     const otherAttributeMarker: {
-      [id: string]: Array<[number, number, number | null]>;
+      [id: string]: Array<[number, number, number | null, boolean]>;
     } = {};
 
     while (thisIter.hasNext() || otherIter.hasNext()) {
@@ -579,7 +579,6 @@ class Delta {
       ) {
         const thisOp = thisIter.next();
         const length = Op.length(thisOp);
-        delta.retain(length);
 
         if (thisOp.attributes?.detectionId) {
           if (!thisAttributeMarker[thisOp.attributes.detectionId]) {
@@ -589,14 +588,15 @@ class Delta {
             runningCursor,
             runningCursor + length,
             delta.length(),
+            false,
           ]);
         }
 
+        delta.retain(length);
         runningCursor += length;
       } else if (otherIter.peekType() === 'insert') {
         const otherOp = otherIter.next();
         const length = Op.length(otherOp);
-        delta.push(otherOp);
 
         if (otherOp.attributes?.detectionId) {
           if (!otherAttributeMarker[otherOp.attributes.detectionId]) {
@@ -606,8 +606,11 @@ class Delta {
             runningCursor,
             runningCursor + length,
             delta.length(),
+            false,
           ]);
         }
+
+        delta.push(otherOp);
 
         runningCursor += length;
       } else {
@@ -624,8 +627,44 @@ class Delta {
               runningCursor,
               runningCursor + length,
               null,
+              false,
             ]);
           }
+
+          const high = runningCursor;
+          const low = runningCursor - length;
+          Object.keys(thisAttributeMarker).forEach((detId) => {
+            const oldValues = thisAttributeMarker[detId];
+            thisAttributeMarker[detId] = oldValues.map((original) => {
+              const [start, end, op, hasBeenDeleted] = original;
+              if (op === null) {
+                return original; // has technically already been deleted
+              } else {
+                return [
+                  start,
+                  end,
+                  op,
+                  hasBeenDeleted || !(high < start || low >= end),
+                ];
+              }
+            });
+          });
+          Object.keys(otherAttributeMarker).forEach((detId) => {
+            const oldValues = otherAttributeMarker[detId];
+            otherAttributeMarker[detId] = oldValues.map((original) => {
+              const [start, end, op, hasBeenDeleted] = original;
+              if (op === null) {
+                return original; // has technically already been deleted
+              } else {
+                return [
+                  start,
+                  end,
+                  op,
+                  hasBeenDeleted || !(high < start || low >= end),
+                ];
+              }
+            });
+          });
 
           // TODO: handle these deletes...
           // const high = runningCursor;
@@ -698,10 +737,46 @@ class Delta {
               runningCursor,
               runningCursor + length,
               null,
+              false,
             ]);
           }
 
           delta.push(otherOp);
+
+          const high = runningCursor;
+          const low = runningCursor - length;
+          Object.keys(thisAttributeMarker).forEach((detId) => {
+            const oldValues = thisAttributeMarker[detId];
+            thisAttributeMarker[detId] = oldValues.map((original) => {
+              const [start, end, op, hasBeenDeleted] = original;
+              if (op === null) {
+                return original; // has technically already been deleted
+              } else {
+                return [
+                  start,
+                  end,
+                  op,
+                  hasBeenDeleted || !(high < start || low >= end),
+                ];
+              }
+            });
+          });
+          Object.keys(otherAttributeMarker).forEach((detId) => {
+            const oldValues = otherAttributeMarker[detId];
+            otherAttributeMarker[detId] = oldValues.map((original) => {
+              const [start, end, op, hasBeenDeleted] = original;
+              if (op === null) {
+                return original; // has technically already been deleted
+              } else {
+                return [
+                  start,
+                  end,
+                  op,
+                  hasBeenDeleted || !(high < start || low >= end),
+                ];
+              }
+            });
+          });
 
           // TODO: handle these deletes....
           // const high = runningCursor;
@@ -781,6 +856,7 @@ class Delta {
               runningCursor,
               runningCursor + length,
               delta.length(),
+              false,
             ]);
           } else if (
             otherOp.attributes?.detectionId &&
@@ -793,6 +869,7 @@ class Delta {
               runningCursor,
               runningCursor + length,
               delta.length(),
+              false,
             ]);
           }
 
@@ -962,7 +1039,7 @@ class Delta {
       let lastEnd: number | null = null;
       let hasNull = false;
       return (
-        thisAttributeMarker[key].some(([start, , op]) => {
+        thisAttributeMarker[key].some(([start, , op, hasBeenDeleted]) => {
           if (lastEnd === null) {
             lastEnd = start;
           } else if (start !== lastEnd) {
@@ -972,6 +1049,7 @@ class Delta {
             hasNull = true;
             return false;
           }
+          return hasBeenDeleted;
         }) ||
         (hasNull && lastEnd !== null)
       );
@@ -981,7 +1059,7 @@ class Delta {
         let lastEnd: number | null = null;
         let hasNull = false;
         return (
-          otherAttributeMarker[key].some(([start, , op]) => {
+          otherAttributeMarker[key].some(([start, , op, hasBeenDeleted]) => {
             if (lastEnd === null) {
               lastEnd = start;
             } else if (start !== lastEnd) {
@@ -991,6 +1069,7 @@ class Delta {
               hasNull = true;
               return false;
             }
+            return hasBeenDeleted;
           }) ||
           (hasNull && lastEnd !== null)
         );
@@ -1003,13 +1082,15 @@ class Delta {
         ...combined,
         ...(thisAttributeMarker[detId].filter(
           ([, , op]) => op !== null,
-        ) as Array<[number, number, number]>).map(([start, end, opLength]) => ({
-          start,
-          end,
-          opLength,
-          detId,
-          thisOrOther: true,
-        })),
+        ) as Array<[number, number, number, boolean]>).map(
+          ([start, end, opLength]) => ({
+            start,
+            end,
+            opLength,
+            detId,
+            thisOrOther: true,
+          }),
+        ),
       ];
     });
     otherDetIdToRemove.forEach((detId) => {
@@ -1018,24 +1099,30 @@ class Delta {
         ...combined,
         ...(otherAttributeMarker[detId].filter(
           ([, , op]) => op !== null,
-        ) as Array<[number, number, number]>).map(([start, end, opLength]) => ({
-          start,
-          end,
-          opLength,
-          detId,
-          thisOrOther: false,
-        })),
+        ) as Array<[number, number, number, boolean]>).map(
+          ([start, end, opLength]) => ({
+            start,
+            end,
+            opLength,
+            detId,
+            thisOrOther: false,
+          }),
+        ),
       ];
     });
     // console.log(thisAttributeMarker);
     // console.log(otherAttributeMarker);
     combined.sort((a, b) => a.opLength - b.opLength);
 
-    // In theory, there should be NO attributes with the same opLength....
-    console.log(combined);
+    // console.log(this.ops);
+    // console.log(other.ops);
+    // console.log(thisAttributeMarker);
+    // console.log(otherAttributeMarker);
+    // console.log(combined);
+    // console.log(delta.ops);
 
+    // In theory, there should be NO attributes with the same opLength....
     if (combined.length > 0) {
-      console.log(delta.ops);
       const newDelta = new Delta();
       const iter = Op.iterator(delta.ops);
       combined.forEach(({ start, end, opLength, detId, thisOrOther }) => {
@@ -1053,9 +1140,55 @@ class Delta {
           newDelta.push(iter.next(offset));
         }
 
-        const length = end - start;
+        let lengthToChange = end - start;
+        while (lengthToChange > 0) {
+          const length = Math.min(iter.peekLength(), lengthToChange);
+          const op = iter.next(length);
+          if (typeof op.delete === 'number') {
+            throw Error('delete should never be here...');
+          }
+          if (thisOrOther) {
+            const attr = { ...op.attributes, detectionId: null };
+            if (typeof op.retain === 'number') {
+              newDelta.retain(op.retain, attr);
+            } else if (op.insert) {
+              newDelta.insert(op.insert, attr);
+            } else {
+              throw Error('not valid operation');
+            }
+          } else {
+            const attr = op.attributes;
+            if (attr?.detectionId === detId) {
+              delete attr['detectionId'];
+              if (typeof op.retain === 'number') {
+                newDelta.retain(op.retain, attr);
+              } else if (op.insert) {
+                newDelta.insert(op.insert, attr);
+              } else {
+                throw Error('not valid operation');
+              }
+            } else {
+              console.warn(
+                `detectionId not the same....${attr?.detectionId} vs ${detId}`,
+              );
+              if (typeof op.retain === 'number') {
+                newDelta.retain(op.retain, attr);
+              } else if (op.insert) {
+                newDelta.insert(op.insert, attr);
+              } else {
+                throw Error('not valid operation');
+              }
+            }
+          }
+          lengthToChange -= length;
+        }
+
+        /*
+
         if (iter.peekLength() < length) {
-          throw Error('not handling this case yet yet');
+          throw Error(
+            `not handling this case yet yet ${iter.peekLength()} vs ${length}`,
+          );
         } else {
           const op = iter.next(length);
           if (typeof op.delete === 'number') {
@@ -1095,6 +1228,8 @@ class Delta {
             }
           }
         }
+
+        */
       });
       while (iter.hasNext()) {
         newDelta.push(iter.next());
