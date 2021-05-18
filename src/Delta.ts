@@ -22,7 +22,10 @@ class Delta {
     }
   }
 
-  insert(arg: string | object, attributes?: AttributeMap): this {
+  insert(
+    arg: string | Record<string, unknown>,
+    attributes?: AttributeMap,
+  ): this {
     const newOp: Op = {};
     if (typeof arg === 'string' && arg.length === 0) {
       return this;
