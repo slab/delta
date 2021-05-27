@@ -61,4 +61,39 @@ describe('invert()', () => {
     expect(expected).toEqual(inverted);
     expect(base.compose(delta).compose(inverted)).toEqual(base);
   });
+
+  describe('custom embed handler', () => {
+    beforeEach(() => {
+      Delta.registerHandler('delta', {
+        compose: (a, b) => new Delta(a).compose(new Delta(b)).ops,
+        invert: (a, b) => new Delta(a).invert(new Delta(b)).ops,
+      });
+    });
+
+    afterEach(() => {
+      Delta.unregisterHandler('delta');
+    });
+
+    it('invert a normal change', () => {
+      const delta = new Delta().retain(1, { bold: true });
+      const base = new Delta().insert({ delta: [{ insert: 'a' }] });
+
+      const expected = new Delta().retain(1, { bold: null });
+      const inverted = delta.invert(base);
+      expect(expected).toEqual(inverted);
+      expect(base.compose(delta).compose(inverted)).toEqual(base);
+    });
+
+    it('invert an embed change', () => {
+      const delta = new Delta().retain({ delta: [{ insert: 'b' }] });
+      const base = new Delta().insert({ delta: [{ insert: 'a' }] });
+
+      const expected = new Delta().retain({
+        delta: [{ delete: 1 }],
+      });
+      const inverted = delta.invert(base);
+      expect(expected).toEqual(inverted);
+      expect(base.compose(delta).compose(inverted)).toEqual(base);
+    });
+  });
 });
