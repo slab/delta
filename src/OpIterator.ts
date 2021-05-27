@@ -39,6 +39,12 @@ export default class Iterator {
         }
         if (typeof nextOp.retain === 'number') {
           retOp.retain = length;
+        } else if (
+          typeof nextOp.retain === 'object' &&
+          nextOp.retain !== null
+        ) {
+          // offset should === 0, length should === 1
+          retOp.retain = nextOp.retain;
         } else if (typeof nextOp.insert === 'string') {
           retOp.insert = nextOp.insert.substr(offset, length);
         } else {
@@ -66,10 +72,14 @@ export default class Iterator {
   }
 
   peekType(): string {
-    if (this.ops[this.index]) {
-      if (typeof this.ops[this.index].delete === 'number') {
+    const op = this.ops[this.index];
+    if (op) {
+      if (typeof op.delete === 'number') {
         return 'delete';
-      } else if (typeof this.ops[this.index].retain === 'number') {
+      } else if (
+        typeof op.retain === 'number' ||
+        (typeof op.retain === 'object' && op.retain !== null)
+      ) {
         return 'retain';
       } else {
         return 'insert';
