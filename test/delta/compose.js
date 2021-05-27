@@ -209,4 +209,45 @@ describe('compose()', () => {
       .insert('F');
     expect(a.compose(b)).toEqual(expected);
   });
+
+  describe('custom embed handler', () => {
+    beforeEach(() => {
+      Delta.registerHandler('delta', {
+        compose: (a, b) => new Delta(a).compose(new Delta(b)).ops,
+        invert: (a, b) => new Delta(a).invert(new Delta(b)).ops,
+      });
+    });
+
+    afterEach(() => {
+      Delta.unregisterHandler('delta');
+    });
+
+    it('retain an embed with a number', () => {
+      const a = new Delta().insert({ delta: [{ insert: 'a' }] });
+      const b = new Delta().retain(1, { bold: true });
+      const expected = new Delta().insert(
+        { delta: [{ insert: 'a' }] },
+        { bold: true },
+      );
+      expect(a.compose(b)).toEqual(expected);
+    });
+
+    it('retain a number with an embed', () => {
+      const a = new Delta().retain(10, { bold: true });
+      const b = new Delta().retain({ delta: [{ insert: 'b' }] });
+      const expected = new Delta()
+        .retain({ delta: [{ insert: 'b' }] }, { bold: true })
+        .retain(9, { bold: true });
+      expect(a.compose(b)).toEqual(expected);
+    });
+
+    it('retain an embed with an embed', () => {
+      const a = new Delta().insert({ delta: [{ insert: 'a' }] });
+      const b = new Delta().retain({ delta: [{ insert: 'b' }] });
+      const expected = new Delta().insert({
+        delta: [{ insert: 'ba' }],
+      });
+      expect(a.compose(b)).toEqual(expected);
+    });
+  });
 });

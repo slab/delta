@@ -4,7 +4,7 @@ interface Op {
   // only one property out of {insert, delete, retain} will be present
   insert?: string | Record<string, unknown>;
   delete?: number;
-  retain?: number | object;
+  retain?: number | Record<string, unknown>;
 
   attributes?: AttributeMap;
 }

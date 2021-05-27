@@ -149,4 +149,30 @@ describe('transform()', () => {
     expect(a1).toEqual(a2);
     expect(b1).toEqual(b2);
   });
+
+  describe('custom embed handler', () => {
+    beforeEach(() => {
+      Delta.registerHandler('delta', {
+        compose: () => null,
+        invert: () => null,
+        transform: (a, b, priority) =>
+          new Delta(a).transform(new Delta(b), priority).ops,
+      });
+    });
+
+    afterEach(() => {
+      Delta.unregisterHandler('delta');
+    });
+
+    it('transform an embed change', () => {
+      const a = new Delta().retain({ delta: [{ insert: 'a' }] });
+      const b = new Delta().retain({ delta: [{ insert: 'b' }] });
+      const expected1 = new Delta().retain({
+        delta: [{ retain: 1 }, { insert: 'b' }],
+      });
+      const expected2 = new Delta().retain({ delta: [{ insert: 'b' }] });
+      expect(a.transform(b, true)).toEqual(expected1);
+      expect(a.transform(b)).toEqual(expected2);
+    });
+  });
 });
