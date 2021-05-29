@@ -7,7 +7,7 @@ import Op from './Op';
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
 
 interface EmbedHandler {
-  compose<T>(a: T, b: T): T;
+  compose<T>(a: T, b: T, keepNull: boolean): T;
   invert<T>(a: T, b: T): T;
   transform<T>(a: T, b: T, priority: boolean): T;
 }
@@ -280,7 +280,11 @@ class Delta {
               );
               const handler = Delta.getHandler(embedType);
               newOp[action] = {
-                [embedType]: handler.compose(thisData, otherData),
+                [embedType]: handler.compose(
+                  thisData,
+                  otherData,
+                  action === 'retain',
+                ),
               };
             }
           }
