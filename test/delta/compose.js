@@ -212,14 +212,14 @@ describe('compose()', function () {
 
   describe('custom embed handler', () => {
     beforeEach(() => {
-      Delta.registerHandler('delta', {
+      Delta.registerEmbed('delta', {
         compose: (a, b) => new Delta(a).compose(new Delta(b)).ops,
         invert: (a, b) => new Delta(a).invert(new Delta(b)).ops,
       });
     });
 
     afterEach(() => {
-      Delta.unregisterHandler('delta');
+      Delta.unregisterEmbed('delta');
     });
 
     it('retain an embed with a number', function () {
