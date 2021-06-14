@@ -152,7 +152,7 @@ describe('transform()', () => {
 
   describe('custom embed handler', () => {
     beforeEach(() => {
-      Delta.registerHandler('delta', {
+      Delta.registerEmbed('delta', {
         compose: () => null,
         invert: () => null,
         transform: (a, b, priority) =>
@@ -161,7 +161,7 @@ describe('transform()', () => {
     });
 
     afterEach(() => {
-      Delta.unregisterHandler('delta');
+      Delta.unregisterEmbed('delta');
     });
 
     it('transform an embed change', () => {

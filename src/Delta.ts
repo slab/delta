@@ -38,11 +38,11 @@ class Delta {
   static AttributeMap = AttributeMap;
   private static handlers: { [embedType: string]: EmbedHandler } = {};
 
-  static registerHandler(embedType: string, handler: EmbedHandler): void {
+  static registerEmbed(embedType: string, handler: EmbedHandler): void {
     this.handlers[embedType] = handler;
   }
 
-  static unregisterHandler(embedType: string): void {
+  static unregisterEmbed(embedType: string): void {
     delete this.handlers[embedType];
   }
 
