@@ -498,9 +498,12 @@ class Delta {
         } else if (otherOp.delete) {
           delta.push(otherOp);
         } else {
-          let transformedData: Op['retain'] = length;
           const thisData = thisOp.retain;
           const otherData = otherOp.retain;
+          let transformedData: Op['retain'] =
+            typeof otherData === 'object' && otherData !== null
+              ? otherData
+              : length;
           if (
             typeof thisData === 'object' &&
             thisData !== null &&
