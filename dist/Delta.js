@@ -421,9 +421,11 @@ var Delta = /** @class */ (function () {
                     delta.push(otherOp);
                 }
                 else {
-                    var transformedData = length_3;
                     var thisData = thisOp.retain;
                     var otherData = otherOp.retain;
+                    var transformedData = typeof otherData === 'object' && otherData !== null
+                        ? otherData
+                        : length_3;
                     if (typeof thisData === 'object' &&
                         thisData !== null &&
                         typeof otherData === 'object' &&

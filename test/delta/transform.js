@@ -159,11 +159,19 @@ describe('transform()', function () {
       Delta.unregisterEmbed('delta');
     });
 
+    it('transform an embed change with number', () => {
+      var a = new Delta().retain(1);
+      var b = new Delta().retain({ delta: [{ insert: 'b' }] });
+      var expected = new Delta().retain({
+        delta: [{ insert: 'b' }],
+      });
+      expect(a.transform(b, true)).toEqual(expected);
+      expect(a.transform(b)).toEqual(expected);
+    });
+
     it('transform an embed change', () => {
       var a = new Delta().retain({ delta: [{ insert: 'a' }] });
       var b = new Delta().retain({ delta: [{ insert: 'b' }] });
-      console.dir(a.transform(b, true), { depth: 10 });
-      console.dir(a.transform(b), { depth: 10 });
       var expected1 = new Delta().retain({
         delta: [{ retain: 1 }, { insert: 'b' }],
       });
