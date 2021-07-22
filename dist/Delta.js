@@ -381,10 +381,12 @@ var Delta = /** @class */ (function () {
                 return baseIndex + length_2;
             }
             else if (typeof op.retain === 'object' && op.retain !== null) {
-                var baseOp = Op_1.default.iterator(base.ops).next();
+                var slice = base.slice(baseIndex, baseIndex + 1);
+                var baseOp = Op_1.default.iterator(slice.ops).next();
                 var _b = getEmbedTypeAndData(op.retain, baseOp.insert), embedType = _b[0], opData = _b[1], baseOpData = _b[2];
                 var handler = Delta.getHandler(embedType);
                 inverted.retain((_a = {}, _a[embedType] = handler.invert(opData, baseOpData), _a), AttributeMap_1.default.invert(op.attributes, baseOp.attributes));
+                return baseIndex + 1;
             }
             return baseIndex;
         }, 0);

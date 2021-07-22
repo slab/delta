@@ -448,7 +448,8 @@ class Delta {
         });
         return baseIndex + length;
       } else if (typeof op.retain === 'object' && op.retain !== null) {
-        const baseOp = Op.iterator(base.ops).next();
+        const slice = base.slice(baseIndex, baseIndex + 1);
+        const baseOp = Op.iterator(slice.ops).next();
         const [embedType, opData, baseOpData] = getEmbedTypeAndData(
           op.retain,
           baseOp.insert,
@@ -458,6 +459,7 @@ class Delta {
           { [embedType]: handler.invert(opData, baseOpData) },
           AttributeMap.invert(op.attributes, baseOp.attributes),
         );
+        return baseIndex + 1;
       }
       return baseIndex;
     }, 0);
