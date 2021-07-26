@@ -249,5 +249,12 @@ describe('compose()', () => {
       });
       expect(a.compose(b)).toEqual(expected);
     });
+
+    it('keeps other delete when this op is a retain', () => {
+      var a = new Delta().retain({ delta: [{ insert: 'a' }] });
+      var b = new Delta().insert('\n').delete(1);
+      var expected = new Delta().insert('\n').delete(1);
+      expect(a.compose(b)).toEqual(expected);
+    });
   });
 });
