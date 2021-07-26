@@ -312,7 +312,8 @@ class Delta {
           // Insert + delete cancels out
         } else if (
           typeof otherOp.delete === 'number' &&
-          typeof thisOp.retain === 'number'
+          (typeof thisOp.retain === 'number' ||
+            (typeof thisOp.retain === 'object' && thisOp.retain !== null))
         ) {
           delta.push(otherOp);
         }
