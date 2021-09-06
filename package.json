@@ -15,7 +15,6 @@
     "@types/lodash.isequal": "^4.5.5",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
     "@typescript-eslint/parser": "^4.31.0",
-    "coveralls": "^3.1.1",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -36,7 +35,7 @@
     "lint": "eslint 'src/**/*.ts'",
     "test": "npm run build; jasmine test/*.js test/**/*.js",
     "test:coverage": "nyc npm run test",
-    "test:coverage:report": "nyc report --reporter=text-lcov | coveralls"
+    "test:coverage:report": "nyc report --reporter=lcov"
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
