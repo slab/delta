@@ -19,16 +19,16 @@ const delta = new Delta([
 ]);
 
 // Change intended to be applied to above:
-// Keep the first 12 characters, delete the next 4,
-// and insert a white 'White'
+// Keep the first 12 characters, insert a white 'White'
+// and delete the next four characters ('Grey')
 const death = new Delta().retain(12)
-                         .delete(4)
-                         .insert('White', { color: '#fff' });
+                         .insert('White', { color: '#fff' })
+                         .delete(4);
 // {
 //   ops: [
 //     { retain: 12 },
-//     { delete: 4 },
-//     { insert: 'White', attributes: { color: '#fff' } }
+//     { insert: 'White', attributes: { color: '#fff' } },
+//     { delete: 4 }
 //   ]
 // }
 
@@ -372,7 +372,7 @@ Returned an inverted delta that has the opposite effect of against a base docume
 ```js
 const base = new Delta().insert('Hello\n')
                         .insert('World');
-const delta = new Delta().retain(6, { bold: true }).delete(5).insert('!');
+const delta = new Delta().retain(6, { bold: true }).insert('!').delete(5);
 
 const inverted = delta.invert(base);  // { ops: [
                                       //   { retain: 6, attributes: { bold: null } },
