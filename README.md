@@ -1,4 +1,4 @@
-# Delta [![Build Status](https://travis-ci.org/quilljs/delta.svg?branch=master)](http://travis-ci.org/quilljs/delta) [![Coverage Status](https://img.shields.io/coveralls/quilljs/delta.svg)](https://coveralls.io/r/quilljs/delta)
+# Delta [![Build Status](https://github.com/quilljs/delta/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/quilljs/delta/actions?query=branch%3Amaster) [![Coverage Status](https://img.shields.io/coveralls/quilljs/delta.svg)](https://coveralls.io/r/quilljs/delta)
 
 Deltas are a simple, yet expressive format that can be used to describe contents and changes. The format is JSON based, and is human readable, yet easily parsible by machines. Deltas can describe any rich text document, includes all text and formatting information, without the ambiguity and complexity of HTML.
 
