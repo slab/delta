@@ -2,7 +2,7 @@ import cloneDeep from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';
 
 interface AttributeMap {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 namespace AttributeMap {
