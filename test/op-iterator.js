@@ -1,7 +1,7 @@
 var Delta = require('../dist/Delta');
-var Iterator = require('../dist/Delta').Iterator;
+var OpIterator = require('../dist/Delta').OpIterator;
 
-describe('Iterator', function() {
+describe('OpIterator', function() {
   beforeEach(function() {
     this.delta = new Delta()
       .insert('Hello', { bold: true })
@@ -11,17 +11,17 @@ describe('Iterator', function() {
   });
 
   it('hasNext() true', function() {
-    var iter = new Iterator(this.delta.ops);
+    var iter = new OpIterator(this.delta.ops);
     expect(iter.hasNext()).toEqual(true);
   });
 
   it('hasNext() false', function() {
-    var iter = new Iterator([]);
+    var iter = new OpIterator([]);
     expect(iter.hasNext()).toEqual(false);
   });
 
   it('peekLength() offset === 0', function() {
-    var iter = new Iterator(this.delta.ops);
+    var iter = new OpIterator(this.delta.ops);
     expect(iter.peekLength()).toEqual(5);
     iter.next();
     expect(iter.peekLength()).toEqual(3);
@@ -32,18 +32,18 @@ describe('Iterator', function() {
   });
 
   it('peekLength() offset > 0', function() {
-    var iter = new Iterator(this.delta.ops);
+    var iter = new OpIterator(this.delta.ops);
     iter.next(2);
     expect(iter.peekLength()).toEqual(5 - 2);
   });
 
   it('peekLength() no ops left', function() {
-    var iter = new Iterator([]);
+    var iter = new OpIterator([]);
     expect(iter.peekLength()).toEqual(Infinity);
   });
 
   it('peekType()', function() {
-    var iter = new Iterator(this.delta.ops);
+    var iter = new OpIterator(this.delta.ops);
     expect(iter.peekType()).toEqual('insert');
     iter.next();
     expect(iter.peekType()).toEqual('retain');
@@ -56,7 +56,7 @@ describe('Iterator', function() {
   });
 
   it('next()', function() {
-    var iter = new Iterator(this.delta.ops);
+    var iter = new OpIterator(this.delta.ops);
     for (var i = 0; i < this.delta.ops.length; i += 1) {
       expect(iter.next()).toEqual(this.delta.ops[i]);
     }
@@ -66,7 +66,7 @@ describe('Iterator', function() {
   });
 
   it('next(length)', function() {
-    var iter = new Iterator(this.delta.ops);
+    var iter = new OpIterator(this.delta.ops);
     expect(iter.next(2)).toEqual({
       insert: 'He',
       attributes: { bold: true },
@@ -80,7 +80,7 @@ describe('Iterator', function() {
   });
 
   it('rest()', function() {
-    var iter = new Iterator(this.delta.ops);
+    var iter = new OpIterator(this.delta.ops);
     iter.next(2);
     expect(iter.rest()).toEqual([
       { insert: 'llo', attributes: { bold: true } },

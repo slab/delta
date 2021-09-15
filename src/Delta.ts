@@ -3,13 +3,13 @@ import cloneDeep from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';
 import AttributeMap from './AttributeMap';
 import Op from './Op';
-import Iterator from './Iterator';
+import OpIterator from './OpIterator';
 
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
 
 class Delta {
   static Op = Op;
-  static Iterator = Iterator;
+  static OpIterator = OpIterator;
   static AttributeMap = AttributeMap;
 
   ops: Op[];
@@ -173,7 +173,7 @@ class Delta {
 
   slice(start = 0, end = Infinity): Delta {
     const ops = [];
-    const iter = new Iterator(this.ops);
+    const iter = new OpIterator(this.ops);
     let index = 0;
     while (index < end && iter.hasNext()) {
       let nextOp;
@@ -189,8 +189,8 @@ class Delta {
   }
 
   compose(other: Delta): Delta {
-    const thisIter = new Iterator(this.ops);
-    const otherIter = new Iterator(other.ops);
+    const thisIter = new OpIterator(this.ops);
+    const otherIter = new OpIterator(other.ops);
     const ops = [];
     const firstOther = otherIter.peek();
     if (
@@ -286,8 +286,8 @@ class Delta {
     });
     const retDelta = new Delta();
     const diffResult = diff(strings[0], strings[1], cursor);
-    const thisIter = new Iterator(this.ops);
-    const otherIter = new Iterator(other.ops);
+    const thisIter = new OpIterator(this.ops);
+    const otherIter = new OpIterator(other.ops);
     diffResult.forEach((component: diff.Diff) => {
       let length = component[1].length;
       while (length > 0) {
@@ -334,7 +334,7 @@ class Delta {
     ) => boolean | void,
     newline = '\n',
   ): void {
-    const iter = new Iterator(this.ops);
+    const iter = new OpIterator(this.ops);
     let line = new Delta();
     let i = 0;
     while (iter.hasNext()) {
@@ -400,8 +400,8 @@ class Delta {
       return this.transformPosition(arg, priority);
     }
     const other: Delta = arg;
-    const thisIter = new Iterator(this.ops);
-    const otherIter = new Iterator(other.ops);
+    const thisIter = new OpIterator(this.ops);
+    const otherIter = new OpIterator(other.ops);
     const delta = new Delta();
     while (thisIter.hasNext() || otherIter.hasNext()) {
       if (
@@ -438,7 +438,7 @@ class Delta {
 
   transformPosition(index: number, priority = false): number {
     priority = !!priority;
-    const thisIter = new Iterator(this.ops);
+    const thisIter = new OpIterator(this.ops);
     let offset = 0;
     while (thisIter.hasNext() && offset <= index) {
       const length = thisIter.peekLength();
