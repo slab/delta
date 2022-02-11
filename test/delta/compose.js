@@ -97,6 +97,22 @@ describe('compose()', () => {
     expect(a.compose(b)).toEqual(expected);
   });
 
+  it('retain embed', () => {
+    const a = new Delta().retain(
+      { figure: true },
+      { src: 'http://quilljs.com/image.png' },
+    );
+    const b = new Delta().retain(1, { alt: 'logo' });
+    const expected = new Delta().retain(
+      { figure: true },
+      {
+        src: 'http://quilljs.com/image.png',
+        alt: 'logo',
+      },
+    );
+    expect(a.compose(b)).toEqual(expected);
+  });
+
   it('delete entire text', () => {
     const a = new Delta().retain(4).insert('Hello');
     const b = new Delta().delete(9);
@@ -251,10 +267,44 @@ describe('compose()', () => {
     });
 
     it('keeps other delete when this op is a retain', () => {
-      var a = new Delta().retain({ delta: [{ insert: 'a' }] });
-      var b = new Delta().insert('\n').delete(1);
-      var expected = new Delta().insert('\n').delete(1);
+      const a = new Delta().retain({ delta: [{ insert: 'a' }] });
+      const b = new Delta().insert('\n').delete(1);
+      const expected = new Delta().insert('\n').delete(1);
       expect(a.compose(b)).toEqual(expected);
+    });
+
+    it('retain an embed with a number', () => {
+      const a = new Delta().insert({ delta: [{ insert: 'a' }] });
+      const b = new Delta().retain(1, { bold: true });
+      const expected = new Delta().insert(
+        { delta: [{ insert: 'a' }] },
+        { bold: true },
+      );
+      expect(a.compose(b)).toEqual(expected);
+    });
+
+    it('retain an embed with another type of embed', () => {
+      const a = new Delta().insert({ delta: [{ insert: 'a' }] });
+      const b = new Delta().retain({ otherdelta: [{ insert: 'b' }] });
+      expect(() => {
+        a.compose(b);
+      }).toThrowError('embed types not matched: delta != otherdelta');
+    });
+
+    it('retain a string with an embed', () => {
+      const a = new Delta().insert('a');
+      const b = new Delta().retain({ delta: [{ insert: 'b' }] });
+      expect(() => {
+        a.compose(b);
+      }).toThrowError('cannot retain a string');
+    });
+
+    it('retain embeds without a handler', () => {
+      const a = new Delta().insert({ mydelta: [{ insert: 'a' }] });
+      const b = new Delta().retain({ mydelta: [{ insert: 'b' }] });
+      expect(() => {
+        a.compose(b);
+      }).toThrowError('no handlers for embed type "mydelta"');
     });
   });
 });
