@@ -16,7 +16,7 @@ interface EmbedHandler {
 const getEmbedTypeAndData = (
   a: Op['insert'] | Op['retain'],
   b: Op['insert'],
-): [string, any, any] => {
+): [string, unknown, unknown] => {
   if (typeof a !== 'object' || a === null) {
     throw new Error(`cannot retain a ${typeof a}`);
   }
@@ -93,7 +93,7 @@ class Delta {
   }
 
   retain(
-    length: number | Record<string, any>,
+    length: number | Record<string, unknown>,
     attributes?: AttributeMap,
   ): this {
     if (typeof length === 'number' && length <= 0) {
