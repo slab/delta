@@ -165,9 +165,9 @@ describe('transform()', () => {
     });
 
     it('transform an embed change with number', () => {
-      var a = new Delta().retain(1);
-      var b = new Delta().retain({ delta: [{ insert: 'b' }] });
-      var expected = new Delta().retain({
+      const a = new Delta().retain(1);
+      const b = new Delta().retain({ delta: [{ insert: 'b' }] });
+      const expected = new Delta().retain({
         delta: [{ insert: 'b' }],
       });
       expect(a.transform(b, true)).toEqual(expected);
