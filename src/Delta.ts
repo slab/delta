@@ -7,10 +7,10 @@ import OpIterator from './OpIterator';
 
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
 
-interface EmbedHandler {
-  compose<T>(a: T, b: T, keepNull: boolean): T;
-  invert<T>(a: T, b: T): T;
-  transform<T>(a: T, b: T, priority: boolean): T;
+interface EmbedHandler<T> {
+  compose(a: T, b: T, keepNull: boolean): T;
+  invert(a: T, b: T): T;
+  transform(a: T, b: T, priority: boolean): T;
 }
 
 const getEmbedTypeAndData = (
@@ -36,9 +36,9 @@ class Delta {
   static Op = Op;
   static OpIterator = OpIterator;
   static AttributeMap = AttributeMap;
-  private static handlers: { [embedType: string]: EmbedHandler } = {};
+  private static handlers: { [embedType: string]: EmbedHandler<unknown> } = {};
 
-  static registerEmbed(embedType: string, handler: EmbedHandler): void {
+  static registerEmbed<T>(embedType: string, handler: EmbedHandler<T>): void {
     this.handlers[embedType] = handler;
   }
 
@@ -46,7 +46,7 @@ class Delta {
     delete this.handlers[embedType];
   }
 
-  private static getHandler(embedType: string): EmbedHandler {
+  private static getHandler(embedType: string): EmbedHandler<unknown> {
     const handler = this.handlers[embedType];
     if (!handler) {
       throw new Error(`no handlers for embed type "${embedType}"`);
@@ -68,7 +68,7 @@ class Delta {
 
   insert(
     arg: string | Record<string, unknown>,
-    attributes?: AttributeMap,
+    attributes?: AttributeMap | null,
   ): this {
     const newOp: Op = {};
     if (typeof arg === 'string' && arg.length === 0) {
@@ -94,7 +94,7 @@ class Delta {
 
   retain(
     length: number | Record<string, unknown>,
-    attributes?: AttributeMap,
+    attributes?: AttributeMap | null,
   ): this {
     if (typeof length === 'number' && length <= 0) {
       return this;

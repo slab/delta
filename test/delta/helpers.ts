@@ -1,4 +1,4 @@
-var Delta = require('../../dist/Delta');
+import Delta from '../../src/Delta';
 
 describe('helpers', () => {
   describe('concat()', () => {
@@ -49,51 +49,43 @@ describe('helpers', () => {
   });
 
   describe('eachLine()', () => {
-    const spy = { predicate: () => {} };
-
-    beforeEach(() => {
-      spyOn(spy, 'predicate').and.callThrough();
-    });
-
     it('expected', () => {
+      const spy = jasmine.createSpy();
       const delta = new Delta()
         .insert('Hello\n\n')
         .insert('World', { bold: true })
         .insert({ image: 'octocat.png' })
         .insert('\n', { align: 'right' })
         .insert('!');
-      delta.eachLine(spy.predicate);
-      expect(spy.predicate.calls.count()).toEqual(4);
-      expect(spy.predicate.calls.argsFor(0)).toEqual([
+      delta.eachLine(spy);
+      expect(spy.calls.count()).toEqual(4);
+      expect(spy.calls.argsFor(0)).toEqual([
         new Delta().insert('Hello'),
         {},
         0,
       ]);
-      expect(spy.predicate.calls.argsFor(1)).toEqual([new Delta(), {}, 1]);
-      expect(spy.predicate.calls.argsFor(2)).toEqual([
+      expect(spy.calls.argsFor(1)).toEqual([new Delta(), {}, 1]);
+      expect(spy.calls.argsFor(2)).toEqual([
         new Delta()
           .insert('World', { bold: true })
           .insert({ image: 'octocat.png' }),
         { align: 'right' },
         2,
       ]);
-      expect(spy.predicate.calls.argsFor(3)).toEqual([
-        new Delta().insert('!'),
-        {},
-        3,
-      ]);
+      expect(spy.calls.argsFor(3)).toEqual([new Delta().insert('!'), {}, 3]);
     });
 
     it('trailing newline', () => {
+      const spy = jasmine.createSpy();
       const delta = new Delta().insert('Hello\nWorld!\n');
-      delta.eachLine(spy.predicate);
-      expect(spy.predicate.calls.count()).toEqual(2);
-      expect(spy.predicate.calls.argsFor(0)).toEqual([
+      delta.eachLine(spy);
+      expect(spy.calls.count()).toEqual(2);
+      expect(spy.calls.argsFor(0)).toEqual([
         new Delta().insert('Hello'),
         {},
         0,
       ]);
-      expect(spy.predicate.calls.argsFor(1)).toEqual([
+      expect(spy.calls.argsFor(1)).toEqual([
         new Delta().insert('World!'),
         {},
         1,
@@ -101,76 +93,73 @@ describe('helpers', () => {
     });
 
     it('non-document', () => {
+      const spy = jasmine.createSpy();
       const delta = new Delta().retain(1).delete(2);
-      delta.eachLine(spy.predicate);
-      expect(spy.predicate.calls.count()).toEqual(0);
+      delta.eachLine(spy);
+      expect(spy.calls.count()).toEqual(0);
     });
 
     it('early return', () => {
       const delta = new Delta().insert('Hello\nNew\nWorld!');
       let count = 0;
-      const spy = {
-        predicate: () => {
-          if (count === 1) return false;
-          count += 1;
-        },
-      };
-      spyOn(spy, 'predicate').and.callThrough();
-      delta.eachLine(spy.predicate);
-      expect(spy.predicate.calls.count()).toEqual(2);
+      const spy = jasmine.createSpy().and.callFake(() => {
+        if (count === 1) return false;
+        count += 1;
+      });
+      delta.eachLine(spy);
+      expect(spy.calls.count()).toEqual(2);
     });
   });
 
   describe('iteration', () => {
-    beforeEach(() => {
-      this.delta = new Delta()
-        .insert('Hello')
-        .insert({ image: true })
-        .insert('World!');
-    });
+    const delta = new Delta()
+      .insert('Hello')
+      .insert({ image: true })
+      .insert('World!');
 
     it('filter()', () => {
-      const arr = this.delta.filter(function (op) {
+      const arr = delta.filter(function (op) {
         return typeof op.insert === 'string';
       });
       expect(arr.length).toEqual(2);
     });
 
     it('forEach()', () => {
-      const spy = { predicate: () => {} };
-      spyOn(spy, 'predicate').and.callThrough();
-      this.delta.forEach(spy.predicate);
-      expect(spy.predicate.calls.count()).toEqual(3);
+      const spy = jasmine.createSpy();
+      delta.forEach(spy);
+      expect(spy.calls.count()).toEqual(3);
     });
 
     it('map()', () => {
-      const arr = this.delta.map(function (op) {
+      const arr = delta.map((op) => {
         return typeof op.insert === 'string' ? op.insert : '';
       });
       expect(arr).toEqual(['Hello', '', 'World!']);
     });
 
     it('partition()', () => {
-      const arr = this.delta.partition(function (op) {
+      const arr = delta.partition((op) => {
         return typeof op.insert === 'string';
       });
       const passed = arr[0],
         failed = arr[1];
-      expect(passed).toEqual([this.delta.ops[0], this.delta.ops[2]]);
-      expect(failed).toEqual([this.delta.ops[1]]);
+      expect(passed).toEqual([delta.ops[0], delta.ops[2]]);
+      expect(failed).toEqual([delta.ops[1]]);
     });
   });
 
   describe('length()', () => {
     it('document', () => {
-      const delta = new Delta().insert('AB', { bold: true }).insert(1);
+      const delta = new Delta()
+        .insert('AB', { bold: true })
+        .insert({ embed: 1 });
       expect(delta.length()).toEqual(3);
     });
 
     it('mixed', () => {
       const delta = new Delta()
         .insert('AB', { bold: true })
-        .insert(1)
+        .insert({ embed: 1 })
         .retain(2, { bold: null })
         .delete(1);
       expect(delta.length()).toEqual(6);

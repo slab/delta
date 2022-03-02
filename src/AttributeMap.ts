@@ -9,7 +9,7 @@ namespace AttributeMap {
   export function compose(
     a: AttributeMap = {},
     b: AttributeMap = {},
-    keepNull: boolean,
+    keepNull = false,
   ): AttributeMap | undefined {
     if (typeof a !== 'object') {
       a = {};
