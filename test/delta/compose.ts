@@ -1,4 +1,5 @@
-var Delta = require('../../dist/Delta');
+import Delta from '../../src/Delta';
+import Op from '../../src/Op';
 
 describe('compose()', () => {
   it('insert + insert', () => {
@@ -88,12 +89,18 @@ describe('compose()', () => {
   });
 
   it('insert embed', () => {
-    const a = new Delta().insert(1, { src: 'http://quilljs.com/image.png' });
+    const a = new Delta().insert(
+      { embed: 1 },
+      { src: 'http://quilljs.com/image.png' },
+    );
     const b = new Delta().retain(1, { alt: 'logo' });
-    const expected = new Delta().insert(1, {
-      src: 'http://quilljs.com/image.png',
-      alt: 'logo',
-    });
+    const expected = new Delta().insert(
+      { embed: 1 },
+      {
+        src: 'http://quilljs.com/image.png',
+        alt: 'logo',
+      },
+    );
     expect(a.compose(b)).toEqual(expected);
   });
 
@@ -128,9 +135,9 @@ describe('compose()', () => {
   });
 
   it('retain empty embed', () => {
-    const a = new Delta().insert(1);
+    const a = new Delta().insert({ embed: 1 });
     const b = new Delta().retain(1);
-    const expected = new Delta().insert(1);
+    const expected = new Delta().insert({ embed: 1 });
     expect(a.compose(b)).toEqual(expected);
   });
 
@@ -142,9 +149,9 @@ describe('compose()', () => {
   });
 
   it('remove all embed attributes', () => {
-    const a = new Delta().insert(2, { bold: true });
+    const a = new Delta().insert({ embed: 2 }, { bold: true });
     const b = new Delta().retain(1, { bold: null });
-    const expected = new Delta().insert(2);
+    const expected = new Delta().insert({ embed: 2 });
     expect(a.compose(b)).toEqual(expected);
   });
 
@@ -228,8 +235,10 @@ describe('compose()', () => {
 
   describe('custom embed handler', () => {
     beforeEach(() => {
-      Delta.registerEmbed('delta', {
+      Delta.registerEmbed<Op[]>('delta', {
         compose: (a, b) => new Delta(a).compose(new Delta(b)).ops,
+        transform: (a, b, priority) =>
+          new Delta(a).transform(new Delta(b), priority).ops,
         invert: (a, b) => new Delta(a).invert(new Delta(b)).ops,
       });
     });

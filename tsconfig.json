@@ -6,6 +6,7 @@
     "strict": true,
     "target": "ES2015",
     "module": "commonjs",
+    "strictNullChecks": true,
     "esModuleInterop": true,
     "noErrorTruncation": true,
     "noUnusedLocals": true,

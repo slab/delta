@@ -1,4 +1,5 @@
-var Delta = require('../../dist/Delta');
+import Delta from '../../src/Delta';
+import Op from '../../src/Op';
 
 describe('transform()', () => {
   it('insert + insert', () => {
@@ -152,11 +153,11 @@ describe('transform()', () => {
 
   describe('custom embed handler', () => {
     beforeEach(() => {
-      Delta.registerEmbed('delta', {
-        compose: () => null,
-        invert: () => null,
+      Delta.registerEmbed<Op[]>('delta', {
+        compose: (a, b) => new Delta(a).compose(new Delta(b)).ops,
         transform: (a, b, priority) =>
           new Delta(a).transform(new Delta(b), priority).ops,
+        invert: (a, b) => new Delta(a).invert(new Delta(b)).ops,
       });
     });
 
