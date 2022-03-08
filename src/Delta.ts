@@ -1,6 +1,6 @@
-import diff from 'fast-diff';
-import cloneDeep from 'lodash.clonedeep';
-import isEqual from 'lodash.isequal';
+import * as diff from 'fast-diff';
+import cloneDeep = require('lodash.clonedeep');
+import isEqual = require('lodash.isequal');
 import AttributeMap from './AttributeMap';
 import Op from './Op';
 import OpIterator from './OpIterator';
@@ -564,6 +564,8 @@ class Delta {
 }
 
 export default Delta;
+
+export { Op, OpIterator, AttributeMap };
 
 if (typeof module === 'object') {
   module.exports = Delta;
