@@ -1,6 +1,4 @@
-import Delta from '../src/Delta';
-
-const { AttributeMap } = Delta;
+import AttributeMap from '../src/AttributeMap';
 
 describe('AttributeMap', () => {
   describe('compose()', () => {

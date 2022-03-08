@@ -1,6 +1,4 @@
-import Delta from '../src/Delta';
-
-const { Op } = Delta;
+import { Op } from '../src/Delta';
 
 describe('Op', () => {
   describe('length()', () => {
