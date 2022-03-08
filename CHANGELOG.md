@@ -1,3 +1,17 @@
+## v5.0.0
+
+#### Breaking Changes
+
+- Drop support for Internet Explorer 11
+- Increase the minimum Node.js version to v12
+- `Op.iterator()` is removed in favor of `Delta.OpIterator`, so instead of `Delta.Op.iterator(ops)`, you should use `new Delta.OpIterator()`.
+  
+#### Features
+
+- Add `Delta.registerEmbed()` for [Operational Transform](https://en.wikipedia.org/wiki/Operational_transformation) support for embeds.
+- `esModuleInterop` option is not required for TypeScript projects.
+- `AttributeMap` is available as a top-level named export so you can import it like `import { AttributeMap } from 'quill-delta'`.
+
 ## v4.2.2
 
 - Switch dependent internal utility functions to lodash family
