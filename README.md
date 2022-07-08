@@ -451,7 +451,7 @@ Returns length of a Delta, which is the sum of the lengths of its operations.
 ```js
 new Delta().insert('Hello').length();  // Returns 5
 
-new Delta().insert('A').retain(2).delete(1) // Returns 4
+new Delta().insert('A').retain(2).delete(1).length(); // Returns 4
 ```
 
 ---
