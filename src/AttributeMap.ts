@@ -89,10 +89,7 @@ namespace AttributeMap {
       return memo;
     }, baseInverted);
   }
-  // 上面那个疑问会导致这里不成立
-  // 发个 issue 问问
-  // compose(b, invert(b, a)) === a
-  // 或许 Delta 只想把 b 对于 a 的影响撤销掉，而不是完全撤销到 a
+  // Delta 只想把 b 对于 a 的影响撤销掉，而不是完全撤销到 a
 
   export function transform(
     a: AttributeMap | undefined,
