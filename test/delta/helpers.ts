@@ -49,7 +49,7 @@ describe('helpers', () => {
   });
 
   describe('eachLine()', () => {
-    it('expected', () => {
+    fit('expected', () => {
       const spy = jasmine.createSpy();
       const delta = new Delta()
         .insert('Hello\n\n')

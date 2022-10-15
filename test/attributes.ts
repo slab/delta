@@ -85,6 +85,13 @@ describe('AttributeMap', () => {
       const expected = { color: 'blue' };
       expect(AttributeMap.diff(format, overwritten)).toEqual(expected);
     });
+
+    it('compose(a, diff(a, b)) === b', () => {
+      const overwritten = { bold: true, color: 'blue' };
+      const expected = { color: 'blue' };
+      expect(AttributeMap.diff(format, overwritten)).toEqual(expected);
+      expect(AttributeMap.compose(format, expected)).toEqual(overwritten);
+    });
   });
 
   describe('invert()', () => {
@@ -142,6 +149,24 @@ describe('AttributeMap', () => {
       const expected = { bold: null, italic: true, color: 'blue' };
       expect(AttributeMap.invert(attributes, base)).toEqual(expected);
     });
+
+    it('compose(compose(a, b), invert(b, a)) === a', () => {
+      const attributes = {
+        bold: true,
+        italic: null,
+        color: 'red',
+        size: '12px',
+      };
+      const base = { font: 'serif', italic: true, color: 'blue', size: '12px' };
+      const expected = { bold: null, italic: true, color: 'blue' };
+      expect(AttributeMap.invert(attributes, base)).toEqual(expected);
+      expect(
+        AttributeMap.compose(
+          AttributeMap.compose(base, attributes),
+          expected, // note keepNull is false
+        ),
+      ).toEqual(base);
+    });
   });
 
   describe('transform()', () => {
@@ -168,8 +193,42 @@ describe('AttributeMap', () => {
       });
     });
 
+    // it('transform from b without priority', () => {
+    //   expect(AttributeMap.transform(right, left, false)).toEqual(left);
+    // });
+
     it('without priority', () => {
       expect(AttributeMap.transform(left, right, false)).toEqual(right);
+    });
+
+    it('compose(a, transform(a, b)) === compose(b, transform(b, a))', () => {
+      expect(
+        AttributeMap.compose(
+          left,
+          AttributeMap.transform(left, right, true),
+          true,
+        ),
+      ).toEqual(
+        AttributeMap.compose(
+          right,
+          AttributeMap.transform(right, left, false),
+          true,
+        ),
+      );
+
+      expect(
+        AttributeMap.compose(
+          left,
+          AttributeMap.transform(left, right, false),
+          true,
+        ),
+      ).toEqual(
+        AttributeMap.compose(
+          right,
+          AttributeMap.transform(right, left, true),
+          true,
+        ),
+      );
     });
   });
 });

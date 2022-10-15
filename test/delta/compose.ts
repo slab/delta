@@ -104,6 +104,8 @@ describe('compose()', () => {
     expect(a.compose(b)).toEqual(expected);
   });
 
+  // NOTE: 这里似乎没有在 README 里说明
+  // retain embed 是拿来干嘛的？
   it('retain embed', () => {
     const a = new Delta().retain(
       { figure: true },
