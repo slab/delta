@@ -123,10 +123,8 @@ describe('diff()', () => {
       .insert('dog', { italic: true });
     const expected = new Delta()
       .insert('Good', { bold: true })
-      .delete(2)
-      .retain(1, { italic: true, color: null })
-      .delete(3)
-      .insert('og', { italic: true });
+      .insert('dog', { italic: true })
+      .delete(6);
     expect(a.diff(b)).toEqual(expected);
   });
 

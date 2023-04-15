@@ -352,7 +352,7 @@ class Delta {
         .join('');
     });
     const retDelta = new Delta();
-    const diffResult = diff(strings[0], strings[1], cursor);
+    const diffResult = diff(strings[0], strings[1], cursor, true);
     const thisIter = new OpIterator(this.ops);
     const otherIter = new OpIterator(other.ops);
     diffResult.forEach((component: diff.Diff) => {
