@@ -1,3 +1,7 @@
+## v5.1.0
+
+- Perform semantic cleanups for `Delta#diff()`.
+
 ## v5.0.0
 
 #### Breaking Changes
@@ -5,7 +9,7 @@
 - Drop support for Internet Explorer 11
 - Increase the minimum Node.js version to v12
 - `Op.iterator()` is removed in favor of `Delta.OpIterator`, so instead of `Delta.Op.iterator(ops)`, you should use `new Delta.OpIterator()`.
-  
+
 #### Features
 
 - Add `Delta.registerEmbed()` for [Operational Transform](https://en.wikipedia.org/wiki/Operational_transformation) support for embeds.
