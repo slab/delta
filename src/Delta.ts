@@ -1,13 +1,14 @@
-import * as diff from 'fast-diff';
-import cloneDeep = require('lodash.clonedeep');
-import isEqual = require('lodash.isequal');
+import diff from 'fast-diff';
+import type { CursorInfo } from 'fast-diff';
+import cloneDeep from 'lodash.clonedeep';
+import isEqual from 'lodash.isequal';
 import AttributeMap from './AttributeMap';
 import Op from './Op';
 import OpIterator from './OpIterator';
 
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
 
-interface EmbedHandler<T> {
+export interface EmbedHandler<T> {
   compose(a: T, b: T, keepNull: boolean): T;
   invert(a: T, b: T): T;
   transform(a: T, b: T, priority: boolean): T;
@@ -336,7 +337,7 @@ class Delta {
     return delta;
   }
 
-  diff(other: Delta, cursor?: number | diff.CursorInfo): Delta {
+  diff(other: Delta, cursor?: number | CursorInfo): Delta {
     if (this.ops === other.ops) {
       return new Delta();
     }
@@ -566,8 +567,3 @@ class Delta {
 export default Delta;
 
 export { Op, OpIterator, AttributeMap };
-
-if (typeof module === 'object') {
-  module.exports = Delta;
-  module.exports.default = Delta;
-}

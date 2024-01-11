@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import Delta from '../../src/Delta';
 
 describe('helpers', () => {
@@ -50,7 +51,7 @@ describe('helpers', () => {
 
   describe('eachLine()', () => {
     it('expected', () => {
-      const spy = jasmine.createSpy();
+      const spy = vi.fn();
       const delta = new Delta()
         .insert('Hello\n\n')
         .insert('World', { bold: true })
@@ -58,56 +59,44 @@ describe('helpers', () => {
         .insert('\n', { align: 'right' })
         .insert('!');
       delta.eachLine(spy);
-      expect(spy.calls.count()).toEqual(4);
-      expect(spy.calls.argsFor(0)).toEqual([
-        new Delta().insert('Hello'),
-        {},
-        0,
-      ]);
-      expect(spy.calls.argsFor(1)).toEqual([new Delta(), {}, 1]);
-      expect(spy.calls.argsFor(2)).toEqual([
+      expect(spy.mock.calls.length).toEqual(4);
+      expect(spy.mock.calls[0]).toEqual([new Delta().insert('Hello'), {}, 0]);
+      expect(spy.mock.calls[1]).toEqual([new Delta(), {}, 1]);
+      expect(spy.mock.calls[2]).toEqual([
         new Delta()
           .insert('World', { bold: true })
           .insert({ image: 'octocat.png' }),
         { align: 'right' },
         2,
       ]);
-      expect(spy.calls.argsFor(3)).toEqual([new Delta().insert('!'), {}, 3]);
+      expect(spy.mock.calls[3]).toEqual([new Delta().insert('!'), {}, 3]);
     });
 
     it('trailing newline', () => {
-      const spy = jasmine.createSpy();
+      const spy = vi.fn();
       const delta = new Delta().insert('Hello\nWorld!\n');
       delta.eachLine(spy);
-      expect(spy.calls.count()).toEqual(2);
-      expect(spy.calls.argsFor(0)).toEqual([
-        new Delta().insert('Hello'),
-        {},
-        0,
-      ]);
-      expect(spy.calls.argsFor(1)).toEqual([
-        new Delta().insert('World!'),
-        {},
-        1,
-      ]);
+      expect(spy.mock.calls.length).toEqual(2);
+      expect(spy.mock.calls[0]).toEqual([new Delta().insert('Hello'), {}, 0]);
+      expect(spy.mock.calls[1]).toEqual([new Delta().insert('World!'), {}, 1]);
     });
 
     it('non-document', () => {
-      const spy = jasmine.createSpy();
+      const spy = vi.fn();
       const delta = new Delta().retain(1).delete(2);
       delta.eachLine(spy);
-      expect(spy.calls.count()).toEqual(0);
+      expect(spy.mock.calls.length).toEqual(0);
     });
 
     it('early return', () => {
       const delta = new Delta().insert('Hello\nNew\nWorld!');
       let count = 0;
-      const spy = jasmine.createSpy().and.callFake(() => {
+      const spy = vi.fn(() => {
         if (count === 1) return false;
         count += 1;
       });
       delta.eachLine(spy);
-      expect(spy.calls.count()).toEqual(2);
+      expect(spy.mock.calls.length).toEqual(2);
     });
   });
 
@@ -125,9 +114,9 @@ describe('helpers', () => {
     });
 
     it('forEach()', () => {
-      const spy = jasmine.createSpy();
+      const spy = vi.fn();
       delta.forEach(spy);
-      expect(spy.calls.count()).toEqual(3);
+      expect(spy.mock.calls.length).toEqual(3);
     });
 
     it('map()', () => {

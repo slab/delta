@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import Delta from '../../src/Delta';
 import Op from '../../src/Op';
 

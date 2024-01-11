@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { Op } from '../src/Delta';
 
 describe('Op', () => {

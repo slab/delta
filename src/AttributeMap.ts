@@ -1,12 +1,12 @@
-import cloneDeep = require('lodash.clonedeep');
-import isEqual = require('lodash.isequal');
+import cloneDeep from 'lodash.clonedeep';
+import isEqual from 'lodash.isequal';
 
 interface AttributeMap {
   [key: string]: unknown;
 }
 
-namespace AttributeMap {
-  export function compose(
+const AttributeMap = {
+  compose(
     a: AttributeMap = {},
     b: AttributeMap = {},
     keepNull = false,
@@ -32,12 +32,9 @@ namespace AttributeMap {
       }
     }
     return Object.keys(attributes).length > 0 ? attributes : undefined;
-  }
+  },
 
-  export function diff(
-    a: AttributeMap = {},
-    b: AttributeMap = {},
-  ): AttributeMap | undefined {
+  diff(a: AttributeMap = {}, b: AttributeMap = {}): AttributeMap | undefined {
     if (typeof a !== 'object') {
       a = {};
     }
@@ -53,12 +50,9 @@ namespace AttributeMap {
         return attrs;
       }, {});
     return Object.keys(attributes).length > 0 ? attributes : undefined;
-  }
+  },
 
-  export function invert(
-    attr: AttributeMap = {},
-    base: AttributeMap = {},
-  ): AttributeMap {
+  invert(attr: AttributeMap = {}, base: AttributeMap = {}): AttributeMap {
     attr = attr || {};
     const baseInverted = Object.keys(base).reduce<AttributeMap>((memo, key) => {
       if (base[key] !== attr[key] && attr[key] !== undefined) {
@@ -72,9 +66,9 @@ namespace AttributeMap {
       }
       return memo;
     }, baseInverted);
-  }
+  },
 
-  export function transform(
+  transform(
     a: AttributeMap | undefined,
     b: AttributeMap | undefined,
     priority = false,
@@ -95,7 +89,7 @@ namespace AttributeMap {
       return attrs;
     }, {});
     return Object.keys(attributes).length > 0 ? attributes : undefined;
-  }
-}
+  },
+};
 
 export default AttributeMap;
