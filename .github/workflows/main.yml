@@ -5,11 +5,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [16, 18, 20]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: ${{ matrix.version }}
       - run: npm ci
       - run: npm run lint
       - run: npm test
