@@ -1,9 +1,9 @@
 import * as diff from 'fast-diff';
 import cloneDeep = require('lodash.clonedeep');
-import isEqual = require('lodash.isequal');
 import AttributeMap from './AttributeMap';
 import Op from './Op';
 import OpIterator from './OpIterator';
+import { isEqual } from './utils/isEqual';
 
 const NULL_CHARACTER = String.fromCharCode(0); // Placeholder char for embed in diff()
 
