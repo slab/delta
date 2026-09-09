@@ -32,6 +32,9 @@ const getEmbedTypeAndData = (
   return [embedType, a[embedType], b[embedType]];
 };
 
+const hasLoneSurrogate = (diffs: diff.Diff[]): boolean =>
+  diffs.some(([, text]) => /\p{Cs}/u.test(text));
+
 class Delta {
   static Op = Op;
   static OpIterator = OpIterator;
@@ -352,7 +355,12 @@ class Delta {
         .join('');
     });
     const retDelta = new Delta();
-    const diffResult = diff(strings[0], strings[1], cursor, true);
+    let diffResult = diff(strings[0], strings[1], cursor, true);
+    // `fast-diff` fixes up surrogate pairs before its semantic cleanup, which
+    // can then re-split them; its uncleaned diff never does
+    if (hasLoneSurrogate(diffResult)) {
+      diffResult = diff(strings[0], strings[1], cursor, false);
+    }
     const thisIter = new OpIterator(this.ops);
     const otherIter = new OpIterator(other.ops);
     diffResult.forEach((component: diff.Diff) => {

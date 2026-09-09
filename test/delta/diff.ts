@@ -157,4 +157,37 @@ describe('diff()', () => {
       a.diff(b);
     }).toThrow(new Error('diff() called on non-document'));
   });
+
+  describe('surrogate pairs', () => {
+    it('insert between astral characters', () => {
+      const a = new Delta().insert('x🌀');
+      const b = new Delta().insert('x🏆🌀');
+      const expected = new Delta().retain(1).insert('🏆');
+      expect(a.diff(b)).toEqual(expected);
+    });
+
+    it('delete an astral character', () => {
+      const a = new Delta().insert('x🌀🎉');
+      const b = new Delta().insert('x🎉');
+      const expected = new Delta().retain(1).delete(2);
+      expect(a.diff(b)).toEqual(expected);
+    });
+
+    it('attributed insert between astral characters', () => {
+      const a = new Delta().insert('x🌀');
+      const b = new Delta()
+        .insert('x')
+        .insert('🏆', { bold: true })
+        .insert('🌀');
+      const expected = new Delta().retain(1).insert('🏆', { bold: true });
+      expect(a.diff(b)).toEqual(expected);
+    });
+
+    it('keeps semantic cleanup when no pair is split', () => {
+      const a = new Delta().insert('🏆Badcat');
+      const b = new Delta().insert('🏆Gooddog');
+      const expected = new Delta().retain(2).insert('Gooddog').delete(6);
+      expect(a.diff(b)).toEqual(expected);
+    });
+  });
 });
