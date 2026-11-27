@@ -11,6 +11,18 @@ then
   exit 0
 fi
 
+if [ -n "$(npm view "$PACKAGE@>$VERSION" version 2> /dev/null)" ]
+then
+  COMMIT=$(git rev-parse HEAD)
+  BRANCH_TIP=$(git ls-remote --exit-code origin "${GITHUB_REF:?}" | cut -f1)
+
+  if [ "$COMMIT" != "$BRANCH_TIP" ]
+  then
+    echo "Version $VERSION superseded by a newer published version."
+    exit 0
+  fi
+fi
+
 git config --local user.email "github@reedsy.com"
 git config --local user.name "GitHub Action"
 
